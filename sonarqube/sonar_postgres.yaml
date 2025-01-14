@@ -1,0 +1,118 @@
+# StatefulSet Postgres Database
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sonar-postgres
+  namespace: devops-tools
+  labels:
+    app: sonar-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonar-postgres
+  template:
+    metadata:
+      name: sonar-postgres
+      labels:
+        app: sonar-postgres
+    spec:
+      containers:
+        - image: postgres:latest
+          name: sonar-postgres
+          env:
+            - name: POSTGRES_DB
+              value: sonar
+            - name: POSTGRES_USER
+              value: sonar
+            - name: POSTGRES_PASSWORD
+              value: sonar
+          ports:
+            - containerPort: 5432
+              name: postgresport
+          volumeMounts:
+            - name: data-disk
+              mountPath: /var/lib/postgresql/data
+          livenessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - exec pg_isready -U "postgres" -h 127.0.0.1 -p 5432
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+      volumes:
+        - name: data-disk
+          persistentVolumeClaim:
+            claimName: sonar-postgres-pvc
+
+#Service for Postgres Database            
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: devops-tools
+  name: sonar-postgres
+  labels:
+    app: sonar-postgres
+spec:
+  type: NodePort
+  selector:
+    app: sonar-postgres
+  ports:
+    - port: 5432
+
+#Volumes
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: local-sonar-postgres
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+#Persistent Volume and Persistent Volume Claim for Postgres Database
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  namespace: devops-tools
+  name: sonar-postgres-pv
+  labels:
+    type: local
+    app: sonar-postgres
+spec:
+  storageClassName: local-sonar-postgres
+  claimRef:
+    name: sonar-postgres-pvc
+    namespace: devops-tools
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  local:
+    path: /home/data/sonar-postgres
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - kind-worker
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  namespace: devops-tools
+  name: sonar-postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: local-sonar-postgres
+  resources:
+    requests:
+      storage: 10Gi

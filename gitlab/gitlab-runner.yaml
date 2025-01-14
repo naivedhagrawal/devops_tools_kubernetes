@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gitlab-admin
+  namespace: devops-tools
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: devops-tools
+  name: gitlab-admin
+rules:
+  - apiGroups: ['']
+    resources: ['*']
+    verbs: ['*']
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: gitlab-admin
+  namespace: devops-tools
+subjects:
+  - kind: ServiceAccount
+    name: gitlab-admin
+    namespace: devops-tools
+roleRef:
+  kind: Role
+  name: gitlab-admin
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitlab-runner-config
+  namespace: devops-tools
+data:
+  config.toml: |-
+    concurrent = 4
+    [[runners]]
+      name = "Kubernetes gitlab Runner"
+      url = "http://gitlab-service.devops-tools.svc.cluster.local:80"
+      token = "glrt-t1_tt43Cf4nMa6Vnjz_-DPe"
+      executor = "kubernetes"
+      [runners.kubernetes]
+        namespace = "gitlab-runner"
+        poll_timeout = 600
+        cpu_request = "1"
+        service_cpu_request = "200m"
+        [[runners.kubernetes.volumes.host_path]]
+            name = "docker"
+            mount_path = "/var/run/docker.sock"
+            host_path = "/var/run/docker.sock"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab-runner
+  namespace: devops-tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: gitlab-runner
+  template:
+    metadata:
+      labels:
+        name: gitlab-runner
+    spec:
+      serviceAccountName: gitlab-admin
+      containers:
+        - args:
+            - run
+          image: gitlab/gitlab-runner:latest
+          imagePullPolicy: Always
+          name: gitlab-runner
+          resources:
+            requests:
+              cpu: '100m'
+            limits:
+              cpu: '100m'
+          volumeMounts:
+            - name: config
+              mountPath: /etc/gitlab-runner/config.toml
+              readOnly: true
+              subPath: config.toml
+      volumes:
+        - name: config
+          configMap:
+            name: gitlab-runner-config
+      restartPolicy: Always
+
+---

@@ -1,0 +1,125 @@
+#SonarQube Deployment and Service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarqube
+  namespace: devops-tools
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: sonarqube
+  template:
+    metadata:
+      name: sonarqube
+      labels:
+        app: sonarqube
+    spec:
+      containers:
+        - image: sonarqube:community
+          name: sonarqube
+          #args:
+            #- -Dsonar.web.context=/sonar # With this argument, the URL will be http://localhost:9000/sonar but not able to set admin password during first login
+          env:
+            - name: SONAR_JDBC_URL
+              value: "jdbc:postgresql://sonar-postgres.devops-tools.svc.cluster.local:5432/sonar"
+            - name: SONAR_JDBC_USERNAME
+              value: "sonar"
+            - name: SONAR_JDBC_PASSWORD
+              value: "sonar"
+            - name: options.Cookie.HttpOnly
+              value: "true"
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - name: app-data
+              mountPath: /opt/sonarqube/data
+              subPath: data
+            - name: app-data
+              mountPath: /opt/sonarqube/conf
+              subPath: conf
+            - name: app-data
+              mountPath: /opt/sonarqube/extensions
+              subPath: extensions
+            - name: app-data
+              mountPath: /opt/sonarqube/logs
+              subPath: logs
+      initContainers:
+        - name: sysctl
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          command: ['sysctl', '-w', 'vm.max_map_count=262144']
+          securityContext:
+            privileged: true
+      volumes:
+        - name: app-data
+          persistentVolumeClaim:
+            claimName: sonar-pvc
+
+#Service for SonarQube
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: devops-tools
+  name: sonarqube-service
+spec:
+  type: NodePort
+  selector:
+    app: sonarqube
+  ports:
+    - port: 9000
+      nodePort: 31002
+
+#Volumes
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: local-sonar
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+#Persistent Volume and Persistent Volume Claim for SonarQube
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  namespace: devops-tools
+  name: sonar-pv
+  labels:
+    type: local
+    app: sonarqube
+spec:
+  storageClassName: local-sonar
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  local:
+    path: /home/data/sonar
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - kind-worker
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  namespace: devops-tools
+  name: sonar-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: local-sonar
+  resources:
+    requests:
+      storage: 1Gi
