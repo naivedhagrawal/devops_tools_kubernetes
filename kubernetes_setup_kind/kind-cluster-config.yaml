@@ -5,19 +5,21 @@ nodes:
 - role: control-plane
   extraPortMappings:
   - containerPort: 31000
-    hostPort: 80
+    hostPort: 80 #gitlab port
    # listenAddress: "0.0.0.0" # Optional, defaults to "0.0.0.0"
    # protocol: tcp # Optional, defaults to tcp
   - containerPort: 31001
-    hostPort: 8080
+    hostPort: 8080 #jenkins port
   - containerPort: 31002
-    hostPort: 9000
+    hostPort: 9000 #sonarqube port
   - containerPort: 31003
-    hostPort: 9090
+    hostPort: 9090 
   - containerPort: 31004
     hostPort: 4444
   - containerPort: 31005
     hostPort: 2222
+  - containerPort: 31006
+    hostPort: 3000 #grafana port
   #image: kindest/node:v1.32.0
 
 - role: worker
@@ -30,6 +32,8 @@ nodes:
     containerPath: /home/data/sonar-postgres
   - hostPath: /usr/appdata/sonar
     containerPath: /home/data/sonar
+  - hostPath: /usr/appdata/grafana
+    containerPath: /home/data/grafana
   #image: kindest/node:v1.32.0
 
 
