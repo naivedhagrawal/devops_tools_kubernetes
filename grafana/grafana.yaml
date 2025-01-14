@@ -68,7 +68,7 @@ metadata:
   namespace: devops-tools
   name: grafana
 spec:
-  type: nodePort
+  type: NodePort
   ports:
     - port: 3000
       protocol: TCP
