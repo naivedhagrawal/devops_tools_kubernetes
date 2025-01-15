@@ -22,5 +22,10 @@ pipeline {
                 echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
             }
         }
+        stage('npm') {
+            steps {
+                sh 'npm -v'
+            }
+        }
     }
 }
