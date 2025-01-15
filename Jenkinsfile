@@ -17,10 +17,9 @@ pipeline {
                 echo 'Deploying....'
             }
         }
-        stage('npm') {
+        stage('Example') {
             steps {
-                sh 'npm -v'
+                echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
             }
-        }
     }
 }
