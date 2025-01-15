@@ -1,16 +1,26 @@
-apiVersion: v1
-kind: Pod
+metadata:
+  labels:
+    some-label: some-label-value
 spec:
   containers:
+  - name: jnlp
+    env:
+    - name: CONTAINER_ENV_VAR
+      value: jnlp
   - name: maven
-    image: maven:3.9.9-eclipse-temurin-17
+    image: maven:3.8.1-jdk-8
     command:
     - sleep
     args:
     - 99d
-  - name: golang
-    image: golang:1.16.5
+    env:
+    - name: CONTAINER_ENV_VAR
+      value: maven
+  - name: busybox
+    image: busybox
     command:
-    - sleep
-    args:
-    - 99d
+    - cat
+    tty: true
+    env:
+    - name: CONTAINER_ENV_VAR
+      value: busybox
