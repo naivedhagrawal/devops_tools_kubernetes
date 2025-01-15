@@ -1,4 +1,7 @@
+Jenkinsfile (Scripted Pipeline)
 node {
-    checkout scm
-    /* .. snip .. */
+    stage('Build') {
+        sh 'make' 
+        archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true 
+    }
 }
