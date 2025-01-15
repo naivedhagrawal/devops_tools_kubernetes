@@ -57,7 +57,7 @@ type: kubernetes.io/service-account-token
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: local-storage
+  name: local-storage-jenkins
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
 
@@ -70,7 +70,7 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: local-storage
+  storageClassName: local-storage-jenkins
   claimRef:
     name: jenkins-pv-claim
     namespace: devops-tools
@@ -97,7 +97,7 @@ metadata:
   name: jenkins-pv-claim
   namespace: devops-tools
 spec:
-  storageClassName: local-storage
+  storageClassName: local-storage-jenkins
   accessModes:
     - ReadWriteMany
   resources:
