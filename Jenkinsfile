@@ -19,7 +19,7 @@ spec:
     - 99d
 '''
   ) {
-  node('maven') {
+  node('kubeagent') {
     stage('Build a Maven project') {
       git 'https://github.com/jenkinsci/kubernetes-plugin.git'
       sh 'mvn -B -ntp clean package -DskipTests'
