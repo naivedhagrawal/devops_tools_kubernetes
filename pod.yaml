@@ -1,6 +1,6 @@
 metadata:
   labels:
-    some-label: some-label-value
+    some-label: agent
 spec:
   containers:
   - name: jnlp

@@ -1,7 +1,7 @@
 pipeline {
   agent {
     kubernetes {
-      yamlFile ''
+      yamlFile 'naivedhagrawal/devops_tools_kubernetes/blob/main/pod.yaml'
     }
   }
   stages {
