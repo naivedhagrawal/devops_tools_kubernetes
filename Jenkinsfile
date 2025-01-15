@@ -17,5 +17,10 @@ pipeline {
                 echo 'Deploying....'
             }
         }
+        stage('npm') {
+            steps {
+                sh 'npm -v'
+            }
+        }
     }
 }
