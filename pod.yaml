@@ -5,10 +5,5 @@ spec:
   containers:
   - name: linux
     image: alpine
-    command:
-      run:
-      - apk add make
+    command: ["sh", "-c", "apk add make && make"]
     tty: true
-    env:
-    - name: CONTAINER_ENV_VAR
-      value: busybox
