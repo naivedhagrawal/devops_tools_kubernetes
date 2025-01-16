@@ -5,7 +5,9 @@ spec:
   containers:
   - name: linux
     image: ubuntu
-    command: ['sh','apt-get install make && sleep 6']
+    command:
+      - shell
+      - sudo apt-get update
     tty: true
     env:
     - name: CONTAINER_ENV_VAR
