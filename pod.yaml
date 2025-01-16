@@ -6,7 +6,7 @@ spec:
   - name: linux
     image: ubuntu
     command:
-      - /bash/bin
+      - /bin/bash
       - sudo apt-get update
     tty: true
     env:
