@@ -1,12 +1,7 @@
+/* groovylint-disable-next-line CompileStatic */
 pipeline {
-    agent {
-      kubernetes {
-        yamlFile 'pod.yaml'
-      }
-    }
-    options {
-        skipStagesAfterUnstable()
-    }
+    /* groovylint-disable-next-line SpaceAfterClosingBrace */
+    agent { kubernetes { yamlFile 'pod.yaml' } }
     stages {
         stage('Build') {
             steps {
