@@ -4,6 +4,6 @@ metadata:
 spec:
   containers:
   - name: linux
-    image: alpine
-    command: ["sh", "-c", "apk add make && make"]
+    image: alpine:latest
+    command: ["sh", "-R", "apk add make && make"]
     tty: true
