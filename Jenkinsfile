@@ -2,6 +2,7 @@ pipeline {
     agent {
       kubernetes {
         yamlFile 'pod.yaml'
+      }
     }
     options {
         skipStagesAfterUnstable()
