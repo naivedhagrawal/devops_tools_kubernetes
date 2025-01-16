@@ -5,7 +5,7 @@ pipeline {
     }
   }
   stages {
-    stage('Run maven') {
+    stage('maven build') {
       steps {
         sh 'set'
         sh "echo OUTSIDE_CONTAINER_ENV_VAR = ${CONTAINER_ENV_VAR}"
