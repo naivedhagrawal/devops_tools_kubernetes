@@ -4,10 +4,10 @@ metadata:
 spec:
   containers:
   - name: linux
-    image: ubuntu
+    image: alpine
     command:
-      - /bin/bash
-      - sudo apt-get update
+      run:
+      - apk add make
     tty: true
     env:
     - name: CONTAINER_ENV_VAR
