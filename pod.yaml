@@ -6,4 +6,5 @@ spec:
   - name: make
     image: busybox
     command:
+    - sh
     - apt-get install -y make
