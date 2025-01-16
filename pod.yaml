@@ -5,7 +5,7 @@ spec:
   containers:
   - name: busybox
     image: busybox
-    command: ['sh', '-c', 'apt update && sleep 6']
+    command: ['sh', '-c', 'install make && sleep 6']
     tty: true
     env:
     - name: CONTAINER_ENV_VAR
