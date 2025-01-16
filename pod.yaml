@@ -3,9 +3,9 @@ metadata:
     some-label: agent
 spec:
   containers:
-  - name: busybox
-    image: busybox
-    command: ['sh', '-c', 'install make && sleep 6']
+  - name: linux
+    image: ubuntu
+    command: ['sh','apt-get install make && sleep 6']
     tty: true
     env:
     - name: CONTAINER_ENV_VAR
