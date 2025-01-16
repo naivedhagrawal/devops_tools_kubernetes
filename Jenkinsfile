@@ -1,23 +1,27 @@
 pipeline {
-  agent {
-    kubernetes {
-      yamlFile 'pod.yaml'
+    agent {
+      kubernetes {
+        yamlFile 'pod.yaml'
     }
-  }
-  stages {
-    stage('maven build') {
-      steps {
-        sh 'set'
-        sh "echo OUTSIDE_CONTAINER_ENV_VAR = ${CONTAINER_ENV_VAR}"
-        container('maven') {
-          sh 'echo MAVEN_CONTAINER_ENV_VAR = ${CONTAINER_ENV_VAR}'
-          sh 'mvn -version'
-        }
-        container('busybox') {
-          sh 'echo BUSYBOX_CONTAINER_ENV_VAR = ${CONTAINER_ENV_VAR}'
-          sh '/bin/busybox'
-        }
-      }
+    options {
+        skipStagesAfterUnstable()
     }
-  }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'make'
+            }
+        }
+        stage('Test'){
+            steps {
+                sh 'make check'
+                junit 'reports/**/*.xml'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh 'make publish' //
+            }
+        }
+    }
 }
