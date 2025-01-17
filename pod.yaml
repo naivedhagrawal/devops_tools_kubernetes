@@ -3,7 +3,5 @@ metadata:
     some-label: agent
 spec:
   containers:
-  - name: linux
-    image: alpine:latest
-    command: ["sh", "-R", "apk add make && make"]
-    tty: true
+  - name: image
+    image: docker:latest
