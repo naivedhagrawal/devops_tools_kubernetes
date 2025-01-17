@@ -1,26 +1,7 @@
-pipeline {
-    agent any
-    environment {
-        // Using returnStdout
-        CC = """${sh(
-            returnStdout: true,
-            script: 'echo "clang"'
-        ).trim()}""" // Added .trim() to remove any trailing whitespace
-
-        // Using returnStatus
-        EXIT_STATUS = """${sh(
-            returnStatus: true,
-            script: 'exit 1'
-        )}"""
-    }
-    stages {
-        stage('Example') {
-            environment {
-                DEBUG_FLAGS = '-g'
-            }
-            steps {
-                sh 'printenv'
-            }
+node {
+    stage('Build') {
+        docker.image('maven:3.9.9-eclipse-temurin-21-alpine').inside {
+            sh 'mvn --version'
         }
     }
 }
