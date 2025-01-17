@@ -1,10 +1,40 @@
-/* Requires the Docker Pipeline plugin */
 pipeline {
-    agent { docker { image 'node:22.13.0-alpine3.21' } }
+    agent none
     stages {
-        stage('build') {
+        stage('Build') {
+            agent any
             steps {
-                sh 'node --version'
+                checkout scm
+                sh 'make'
+                stash includes: '**/target/*.jar', name: 'app'
+            }
+        }
+        stage('Test on Linux') {
+            agent {
+                label 'linux'
+            }
+            steps {
+                unstash 'app'
+                sh 'make check'
+            }
+            post {
+                always {
+                    junit '**/target/*.xml'
+                }
+            }
+        }
+        stage('Test on Windows') {
+            agent {
+                label 'windows'
+            }
+            steps {
+                unstash 'app'
+                bat 'make check'
+            }
+            post {
+                always {
+                    junit '**/target/*.xml'
+                }
             }
         }
     }
