@@ -3,14 +3,15 @@ pipeline {
     environment {
         // Using returnStdout
         CC = """${sh(
-                returnStdout.trim(): true,
-                script: 'echo "clang"'
-            )}"""
+            returnStdout: true,
+            script: 'echo "clang"'
+        ).trim()}""" // Added .trim() to remove any trailing whitespace
+
         // Using returnStatus
         EXIT_STATUS = """${sh(
-                returnStatus: true,
-                script: 'exit 1'
-            )}"""
+            returnStatus: true,
+            script: 'exit 1'
+        )}"""
     }
     stages {
         stage('Example') {
