@@ -1,7 +1,6 @@
+/* Requires the Docker Pipeline plugin */
 pipeline {
-    /* groovylint-disable-next-line SpaceAfterClosingBrace */
-    agent { kubernetes { yamlFile 'pod.yaml' } }
-
+    agent { docker { image 'node:22.13.0-alpine3.21' } }
     stages {
         stage('build') {
             steps {
