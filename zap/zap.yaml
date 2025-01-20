@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: zap
-  namespace: zap
+  namespace: devops-tools
 spec:
   replicas: 1
   selector:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: zap
-          image: owasp/zap2docker-stable
+          image: zaproxy/zap-stable
           ports:
             - containerPort: 8080  # Default port ZAP runs on
           env:
@@ -32,12 +32,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zap-service
-  namespace: zap
+  namespace: devops-tools
 spec:
+  type: NodePort
   selector:
     app: zap
   ports:
     - protocol: TCP
       port: 8080  # The port to expose ZAP on
       targetPort: 8080  # The container port
-  type: LoadBalancer  # Optionally, you can use ClusterIP or NodePort based on your use case
+      nodePort: 31003  # The port on the host
