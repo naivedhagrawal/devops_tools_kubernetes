@@ -13,7 +13,7 @@ nodes:
   - containerPort: 31002
     hostPort: 9000 #sonarqube port
   - containerPort: 31003
-    hostPort: 9090 
+    hostPort: 9090 #Zap Port
   - containerPort: 31004
     hostPort: 4444
   - containerPort: 31005
