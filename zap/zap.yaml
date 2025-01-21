@@ -21,6 +21,8 @@ spec:
           env:
             - name: ZAP_API_KEY
               value: "your_api_key"  # Set an API key if required
+          command:
+            - zap.sh
           args:
             - "-daemon"  # Run ZAP in daemon mode (headless)
             - "-host"
