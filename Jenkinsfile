@@ -7,7 +7,7 @@ podTemplate(
     containerTemplate(
         name: 'docker',
         image: 'docker:latest',
-        readinessProbe: execCommand: [sh, '-c', 'ls -S /var/run/docker.sock'],
+        readinessProbe: [execCommand: ['sh', '-c', 'ls -S /var/run/docker.sock']],
         initialDelaySeconds: 5,
         periodSeconds: 5,
         command: 'sleep',
@@ -41,7 +41,6 @@ podTemplate(
         stage('docker') {
             container('docker') {
                 sh 'docker --version'
-                sh 'echo $USER'
                 sh 'docker ps'
             }
         }
