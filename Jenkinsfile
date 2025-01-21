@@ -6,9 +6,7 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Docker Operations') {
-            sh 'docker --version'
-                }
+        stage('Docker Operations')
             steps {
                 sh 'docker --version'
                 sh 'docker ps'
