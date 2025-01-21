@@ -1,7 +1,7 @@
 podTemplate(
   agent { 
     Kubernetes{
-        inheritFrom 'all-in-one'
+        POD_LABEL  = 'all-in-one'
     }
 }
 )
