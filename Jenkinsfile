@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label 'all-in-one'
-    }
+    agent any
     stages {
         stage('Code Clone') {
             steps {
@@ -15,5 +13,4 @@ pipeline {
                 sh 'docker ps'
         }
     }
-}
 }
