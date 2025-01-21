@@ -1,21 +1,11 @@
-podTemplate(
-  agent { 
-    Kubernetes{
-        POD_LABEL  = 'all-in-one'
-    }
-}
-)
-
-{
-  node(POD_LABEL) {
+node(POD_LABEL) {
     stage('Code Clone') {
-      checkout scm
+        checkout scm
     }
     stage('Docker Operations') {
-      container('docker') {
-        sh 'docker --version'
-        sh 'docker ps'
-      }
+        container('docker') {
+            sh 'docker --version'
+            sh 'docker ps'
+        }
     }
-  }
-} 
+}
