@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent kubernetes {
+        label 'all-in-one'
+        defaultContainer 'jnlp'
     stages {
         stage('Build') {
             agent any
