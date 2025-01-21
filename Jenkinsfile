@@ -30,23 +30,17 @@ podTemplate(
     )
   ]
 ) {
-  pipeline {
+  node(POD_LABEL) {
     environment {
       DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
     }
-    stages {
-      stage('Code Clone') {
-        steps {
-          checkout scm
-        }
-      }
-      stage('Docker Operations') {
-        steps {
-          container('docker') {
-            sh 'docker --version'
-            sh 'docker ps'
-          }
-        }
+    stage('Code Clone') {
+      checkout scm
+    }
+    stage('Docker Operations') {
+      container('docker') {
+        sh 'docker --version'
+        sh 'docker ps'
       }
     }
   }
