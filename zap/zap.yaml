@@ -29,7 +29,8 @@ spec:
             - "0.0.0.0"
             - "-port"
             - "8080"
-            - "connection.requestTimeoutInMs=60000"  # 60 seconds
+            - "-config"
+            - "connection.requestTimeoutInMs=60000"  # 60 seconds timeout
 ---
 apiVersion: v1
 kind: Service
