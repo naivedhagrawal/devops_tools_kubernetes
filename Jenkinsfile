@@ -14,20 +14,23 @@ podTemplate(
       args: '99d',
       ttyEnabled: true,
       privileged: true,
+      readinessProbe: [
+        execCommand: ['sh', '-c', 'ls -S /var/run/docker.sock'],
+        initialDelaySeconds: 5,
+        periodSeconds: 5
+      ]
     ),
     containerTemplate(
       name: 'docker-daemon',
       image: 'docker:dind',
       command: 'dockerd',
       ttyEnabled: true,
-      privileged: true,
-      volumeMounts: [
-        hostPathVolume(mountPath: '/var/run', hostPath: '/var/run')
-      ]
+      privileged: true
     )
   ],
   volumes: [
-    hostPathVolume(mountPath: '/var/run', hostPath: '/var/run')
+    hostPathVolume(mountPath: '/var/run', hostPath: '/var/run'),
+    hostPathVolume(mountPath: '/var/lib/docker', hostPath: '/var/lib/docker')
   ]
 ) {
   node(POD_LABEL) {
