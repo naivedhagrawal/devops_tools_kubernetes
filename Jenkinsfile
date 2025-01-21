@@ -39,4 +39,3 @@ podTemplate(
             }
         }
     }
-}
