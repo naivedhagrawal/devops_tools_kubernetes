@@ -1,39 +1,25 @@
-pipeline {
-    agent {
-        kubernetes {
-            label 'all-in-one'
-            defaultContainer 'jnlp'
+podTemplate(
+  agentContainer: 'jnlp',
+  agentInjection: true,
+  showRawYaml: false,
+  containers: [
+    containerTemplate(name: 'jnlp', image: 'jenkins/inbound-agent', command: 'cat', ttyEnabled: true, runAsUser: '0'),
+    /* groovylint-disable-next-line DuplicateStringLiteral */
+    containerTemplate(name: 'docker', image: 'docker:latest', command: 'cat', ttyEnabled: true, runAsUser: '0')
+  ]) {
+    node(POD_LABEL) {
+        environment {
+            DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
         }
-    }
-    stages {
-        stage('Build') {
-            steps {
-                checkout scm
-                sh 'make'
-                stash includes: '**/target/*.jar', name: 'app'
-            }
+
+        stage('Code Clone') {
+            checkout scm
         }
-        stage('Test on Linux') {
-            steps {
-                unstash 'app'
-                sh 'make check'
-            }
-            post {
-                always {
-                    junit '**/target/*.xml'
-                }
-            }
-        }
-        stage('Test on Windows') {
-            steps {
-                unstash 'app'
-                bat 'make check'
-            }
-            post {
-                always {
-                    junit '**/target/*.xml'
-                }
+
+        stage('docker installation') {
+            container('docker') {
+                sh 'docker --version'
             }
         }
     }
-}
+  }

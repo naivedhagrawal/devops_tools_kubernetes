@@ -1,7 +1,0 @@
-metadata:
-  labels:
-    some-label: agent
-spec:
-  containers:
-  - name: image
-    image: node:lts-jod
