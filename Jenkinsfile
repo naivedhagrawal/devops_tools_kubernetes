@@ -18,6 +18,7 @@ podTemplate(
         stage('docker') {
             container('docker') {
                 sh 'docker --version'
+                sh 'echo $USER'
                 sh 'docker ps'
             }
         }
