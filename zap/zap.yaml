@@ -39,6 +39,6 @@ spec:
     app: zap
   ports:
     - protocol: TCP
-      port: 8080  # The port to expose ZAP on
+      port: 9090  # The port to expose ZAP on
       targetPort: 8080  # The container port
       nodePort: 31003  # The port on the host
