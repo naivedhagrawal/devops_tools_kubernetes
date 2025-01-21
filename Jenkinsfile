@@ -13,27 +13,21 @@ podTemplate(
       command: 'sleep',
       args: '99d',
       ttyEnabled: true,
-      privileged: true,
-      volumeMounts: [
-        hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
-      ]
+      privileged: true
     ),
     containerTemplate(
       name: 'docker-daemon',
       image: 'docker:dind',
       command: 'dockerd',
       ttyEnabled: true,
-      privileged: true,
-      volumeMounts: [
-        hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
-      ]
+      privileged: true
     )
+  ],
+  volumes: [
+    hostPathVolume(mountPath: '/var/run', hostPath: '/var/run')
   ]
 ) {
   node(POD_LABEL) {
-    environment {
-      DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
-    }
     stage('Code Clone') {
       checkout scm
     }
