@@ -4,7 +4,7 @@ podTemplate(
   showRawYaml: false,
   containers: [
     containerTemplate(name: 'jnlp', image: 'jenkins/inbound-agent', command: 'cat', ttyEnabled: true, runAsUser: '0'),
-    containerTemplate(name: 'docker', image: 'docker:latest', command: 'cat', ttyEnabled: true, runAsUser: '0')
+    containerTemplate(name: 'docker', image: 'docker:latest', command: 'cat', ttyEnabled: true, runAsUser: '1000')
   ]) {
     node(POD_LABEL) {
         environment {
