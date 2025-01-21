@@ -1,5 +1,7 @@
 pipeline {
-    agent all-in-one
+    agent {
+        label 'all-in-one'
+    }
     stages {
         stage('Code Clone') {
             steps {
@@ -9,10 +11,8 @@ pipeline {
         
         stage('Docker Operations') {
             steps {
-                sh 'maven --version'
                 sh 'docker --version'
                 sh 'docker ps'
-            }
         }
     }
 }
