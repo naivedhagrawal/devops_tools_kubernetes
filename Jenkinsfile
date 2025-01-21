@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'jnlp' }
+    agent any
     stages {
         stage('Code Clone') {
             steps {
