@@ -7,7 +7,6 @@ pipeline {
     }
     stages {
         stage('Build') {
-            agent any
             steps {
                 checkout scm
                 sh 'make'
@@ -15,9 +14,6 @@ pipeline {
             }
         }
         stage('Test on Linux') {
-            agent {
-                label 'linux'
-            }
             steps {
                 unstash 'app'
                 sh 'make check'
@@ -29,9 +25,6 @@ pipeline {
             }
         }
         stage('Test on Windows') {
-            agent {
-                label 'windows'
-            }
             steps {
                 unstash 'app'
                 bat 'make check'
