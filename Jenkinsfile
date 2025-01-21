@@ -1,7 +1,10 @@
 pipeline {
-    agent kubernetes {
-        label 'all-in-one'
-        defaultContainer 'jnlp'
+    agent {
+        kubernetes {
+            label 'all-in-one'
+            defaultContainer 'jnlp'
+        }
+    }
     stages {
         stage('Build') {
             agent any
@@ -39,6 +42,5 @@ pipeline {
                 }
             }
         }
-    }
     }
 }
