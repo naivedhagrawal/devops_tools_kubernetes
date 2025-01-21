@@ -3,8 +3,8 @@ podTemplate(
   agentInjection: true,
   showRawYaml: false,
   containers: [
-    containerTemplate(name: 'jnlp', image: 'jenkins/inbound-agent', command: 'cat', ttyEnabled: true, runAsUser: '0'),
-    containerTemplate(name: 'docker', image: 'docker:latest', command: 'cat', ttyEnabled: true, runAsUser: '1000')
+    containerTemplate(name: 'jnlp', image: 'jenkins/inbound-agent', command: 'cat', ttyEnabled: true,),
+    containerTemplate(name: 'docker', image: 'docker:latest', command: 'cat', ttyEnabled: true, privileged: true, volumeMounts: [hostPathVolume(mountPath: '/var/run', hostPath: '/var/run')]),
   ]) {
     node(POD_LABEL) {
         environment {
