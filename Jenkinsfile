@@ -16,9 +16,10 @@ podTemplate(
             checkout scm
         }
 
-        stage('docker installation') {
+        stage('docker') {
             container('docker') {
                 sh 'docker --version'
+                sh 'docker ps'
             }
         }
     }
