@@ -23,7 +23,8 @@ podTemplate(
     containerTemplate(
       name: 'docker-daemon',
       image: 'docker:dind',
-      command: 'dockerd',
+      command: 'sh',
+      args: '-c "rm -f /var/run/docker.pid && dockerd"',
       ttyEnabled: true,
       privileged: true
     )
