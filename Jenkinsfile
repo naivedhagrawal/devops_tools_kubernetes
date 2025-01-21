@@ -4,7 +4,6 @@ podTemplate(
   showRawYaml: false,
   containers: [
     containerTemplate(name: 'jnlp', image: 'jenkins/inbound-agent', command: 'cat', ttyEnabled: true, runAsUser: '0'),
-    /* groovylint-disable-next-line DuplicateStringLiteral */
     containerTemplate(name: 'docker', image: 'docker:latest', command: 'cat', ttyEnabled: true, runAsUser: '0')
   ]) {
     node(POD_LABEL) {
