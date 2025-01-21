@@ -14,11 +14,6 @@ podTemplate(
       args: '99d',
       ttyEnabled: true,
       privileged: true,
-      readinessProbe: [
-        execCommand: ['sh', '-c', 'ls -S /var/run/docker.sock'],
-        initialDelaySeconds: 5,
-        periodSeconds: 5
-      ]
     ),
     containerTemplate(
       name: 'docker-daemon',
