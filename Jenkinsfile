@@ -25,7 +25,10 @@ podTemplate(
       image: 'docker:dind',
       command: 'dockerd',
       ttyEnabled: true,
-      privileged: true
+      privileged: true,
+      volumeMounts: [
+        hostPathVolume(mountPath: '/var/run', hostPath: '/var/run')
+      ]
     )
   ],
   volumes: [
