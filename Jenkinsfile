@@ -9,6 +9,7 @@ pipeline {
         
         stage('Docker Operations') {
             steps {
+                sh 'maven --version'
                 sh 'docker --version'
                 sh 'docker ps'
             }
