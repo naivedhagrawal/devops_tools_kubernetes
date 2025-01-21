@@ -14,18 +14,14 @@ podTemplate(
         args: '99d',
         ttyEnabled: true,
         privileged: true,
-        volumeMounts: [
-            hostPathVolume(mountPath: '/var/run', hostPath: '/var/run')
-        ]
-        )
+        volumeMounts: [hostPathVolume(mountPath: '/var/run', hostPath: '/var/run')]),
     containerTemplate(
         name: 'docker-daemon',
         image: 'docker:dind',
         command: 'dockerd',
         ttyEnabled: true,
         privileged: true,
-        volumeMounts: [hostPathVolume(mountPath: '/var/run', hostPath: '/var/run')]
-        )
+        volumeMounts: [hostPathVolume(mountPath: '/var/run', hostPath: '/var/run')]),
   ]) {
                 sh 'whoami'
         environment {
