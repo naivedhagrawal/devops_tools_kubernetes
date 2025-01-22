@@ -179,12 +179,12 @@ metadata:
 spec:
   selector: 
     app: jenkins
-  type: NodePort  
+  #type: NodePort  
   ports:
     - name: httpport
       port: 8080
       targetPort: 8080
-      nodePort: 31001
+      #nodePort: 31001
     - name: jnlpport
       port: 50000
       targetPort: 50000
