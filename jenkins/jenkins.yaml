@@ -182,10 +182,12 @@ spec:
   #type: NodePort  
   ports:
     - name: httpport
+      protocol: TCP
       port: 8080
       targetPort: 8080
       #nodePort: 31001
     - name: jnlpport
+      protocol: TCP
       port: 50000
       targetPort: 50000
 
