@@ -9,7 +9,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: devsecops-apps.com
+  - host: my-apps.example.com
     http:
       paths:
       - path: /gitlab
