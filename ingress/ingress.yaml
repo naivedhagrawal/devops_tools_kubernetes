@@ -17,6 +17,7 @@ spec:
         backend:
           service:
             name: gitlab-service
+            namespace: devops-tools
             port:
               number: 80
       - path: /jenkins
@@ -24,5 +25,6 @@ spec:
         backend:
           service:
             name: jenkins-service
+            namespace: devops-tools
             port:
               number: 80
