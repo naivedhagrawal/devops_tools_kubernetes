@@ -1,0 +1,17 @@
+# Install metallb kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml
+
+addressPools:
+- name: default
+  addresses:
+  - 192.168.237.160-192.168.237.170 
+# Replace with your desired IP address range
+
+# For L3 mode (BGP):
+# - Uncomment the following lines
+# - Configure BGP parameters accordingly
+# l2InterfaceResyncInterval: 30s # Adjust as needed
+# bgp:
+#   asn: 64514 # Replace with your Autonomous System Number (ASN)
+#   routerId: 192.168.1.100 # Replace with your router's IP address
+#   neighborAddresses: 
+#   - 192.168.1.1 # Replace with the IP address of your BGP peer
