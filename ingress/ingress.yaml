@@ -16,13 +16,13 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: gitlab-service  # Just the service name
+            name: gitlab-service.devops-tools.svc.cluster.local  # Fully qualified service name
             port:
               number: 80
       - path: /jenkins
         pathType: Prefix
         backend:
           service:
-            name: jenkins-service  # Just the service name
+            name: jenkins-service.devops-tools.svc.cluster.local  # Fully qualified service name
             port:
               number: 80
