@@ -4,29 +4,22 @@ apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
 - role: control-plane
   extraPortMappings:
-      - containerPort: 80   # Expose HTTP
-        hostPort: 80
-        protocol: TCP
-      - containerPort: 443  # Expose HTTPS
-        hostPort: 443
-        protocol: TCP
-
-  # - containerPort: 31000
-  #   hostPort: 80 #gitlab port
-   # listenAddress: "0.0.0.0" # Optional, defaults to "0.0.0.0"
-   # protocol: tcp # Optional, defaults to tcp
-  # - containerPort: 31001
-  #   hostPort: 8080 #jenkins port
-  # - containerPort: 31002
-  #   hostPort: 9000 #sonarqube port
-  # - containerPort: 31003
-  #   hostPort: 9090 #Zap Port
-  # - containerPort: 31004
-  #   hostPort: 4444
-  # - containerPort: 31005
-  #   hostPort: 2222
-  # - containerPort: 31006
-  #   hostPort: 3000 #grafana port
+  - containerPort: 31000
+    hostPort: 80 #gitlab port
+   #listenAddress: "0.0.0.0" # Optional, defaults to "0.0.0.0"
+   #protocol: tcp # Optional, defaults to tcp
+  - containerPort: 31001
+    hostPort: 8080 #jenkins port
+  - containerPort: 31002
+    hostPort: 9000 #sonarqube port
+  - containerPort: 31003
+    hostPort: 9090 #Zap Port
+  - containerPort: 31004
+    hostPort: 4444
+  - containerPort: 31005
+    hostPort: 2222
+  - containerPort: 31006
+    hostPort: 3000 #grafana port
   #image: kindest/node:v1.32.0
 
 - role: worker
