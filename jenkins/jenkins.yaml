@@ -87,7 +87,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - minikube
+          - kind-worker
 
 #Persistent Volume Claim
 ---
