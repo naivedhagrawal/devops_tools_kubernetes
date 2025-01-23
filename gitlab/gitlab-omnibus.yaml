@@ -4,7 +4,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: gitlab-deployment
-  namespace: default
+  namespace: ingress-ns
 spec:
   replicas: 1
   selector:
@@ -40,7 +40,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: gitlab-service
-  namespace: default
+  namespace: ingress-ns
 spec:
   #type: NodePort
   type: ClusterIP
@@ -58,7 +58,7 @@ kind: PersistentVolume
 apiVersion: v1
 metadata:
   name: local-var
-  namespace: default
+  namespace: ingress-ns
   labels:
     app: gitlab
 spec:
@@ -75,7 +75,7 @@ kind: PersistentVolume
 apiVersion: v1
 metadata:
   name: local-etc
-  namespace: default
+  namespace: ingress-ns
   labels:
     app: gitlab
 spec:
@@ -93,7 +93,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: local-var
-  namespace: default
+  namespace: ingress-ns
 spec:
   accessModes:
     - ReadWriteMany
@@ -107,7 +107,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: local-etc
-  namespace: default
+  namespace: ingress-ns
 spec:
   accessModes:
     - ReadWriteMany
