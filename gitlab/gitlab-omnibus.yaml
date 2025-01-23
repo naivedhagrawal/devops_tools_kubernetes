@@ -42,13 +42,15 @@ metadata:
   name: gitlab-service
   namespace: default
 spec:
-  type: NodePort
+  #type: NodePort
+  type: ClusterIP
   selector:
     app: gitlab
   ports:
     - protocol: TCP
-      nodePort: 31000
+      #nodePort: 31000
       port: 80
+      targetPort: 80
 
 #Persistent Volume and Persistent Volume Claim
 ---
