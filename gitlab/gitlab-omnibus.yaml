@@ -4,7 +4,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: gitlab-deployment
-  namespace: devops-tools
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -40,7 +40,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: gitlab-service
-  namespace: devops-tools
+  namespace: default
 spec:
   type: NodePort
   selector:
@@ -56,7 +56,7 @@ kind: PersistentVolume
 apiVersion: v1
 metadata:
   name: local-var
-  namespace: devops-tools
+  namespace: default
   labels:
     app: gitlab
 spec:
@@ -73,7 +73,7 @@ kind: PersistentVolume
 apiVersion: v1
 metadata:
   name: local-etc
-  namespace: devops-tools
+  namespace: default
   labels:
     app: gitlab
 spec:
@@ -91,7 +91,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: local-var
-  namespace: devops-tools
+  namespace: default
 spec:
   accessModes:
     - ReadWriteMany
@@ -105,7 +105,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: local-etc
-  namespace: devops-tools
+  namespace: default
 spec:
   accessModes:
     - ReadWriteMany
