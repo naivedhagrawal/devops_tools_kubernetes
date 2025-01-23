@@ -1,26 +1,32 @@
-# install ingress controller kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+# Install the NGINX Ingress Controller to manage external access to the services in the Kubernetes cluster.
+# The Ingress Controller will route traffic to the appropriate services based on the defined rules.
+# Apply the following command to install the Ingress Controller:
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-resource
+  name: my-ingress
+  namespace: ingress-ns
 spec:
-  ingressClassName: nginx
   rules:
-  - host: devsecops-apps.com
+  - host: gitlab-service.ingress-ns.svc.cluster.local
     http:
       paths:
       - path: /gitlab
-        pathType: Prefix
+        pathType: Prefix 
         backend:
           service:
-            name: gitlab-service  # Just the service name
-            port:
-              number: 80
+            name: gitlab-service
+            port: 
+              number: 80 
+  - host: jenkins-service.ingress-ns.svc.cluster.local
+    http:
+      paths:
       - path: /jenkins
-        pathType: Prefix
+        pathType: Prefix 
         backend:
           service:
-            name: jenkins-service  # Just the service name
-            port:
-              number: 80
+            name: jenkins-service
+            port: 
+              number: 80 
