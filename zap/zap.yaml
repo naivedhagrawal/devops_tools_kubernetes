@@ -20,7 +20,7 @@ spec:
             - containerPort: 8080  # Default port ZAP runs on
           env:
             - name: ZAP_API_KEY
-              value: "your_api_key"  # Set an API key if required
+              value: "-5IrWmmH4xuGCAYjRI1CwOSoxNAHK1ErXfZ4KJ9vMv4"  # Set an API key if required
           command:
             - zap.sh
           args:
