@@ -20,10 +20,15 @@ spec:
         - name: zap
           image: zaproxy/zap-stable
           ports:
-            - containerPort: 8080  # ZAP's internal port (important: keep this as 8080)
+            - containerPort: 8080
           env:
             - name: ZAP_API_KEY
-              value: "-5IrWmmH4xuGCAYjRI1CwOSoxNAHK1ErXfZ4KJ9vMv4"  # Replace with your actual API key
+              valueFrom:
+                secretKeyRef:
+                  name: zap-api-key
+                  key: api_key
+            - name: JAVA_OPTS
+              value: "-Xms512m -Xmx2g -XX:MaxPermSize=512m -XX:+UseG1GC"
           command:
             - zap.sh
           args:
@@ -31,9 +36,10 @@ spec:
             - "-host"
             - "0.0.0.0"
             - "-port"
-            - "8080" # ZAP's internal port. Must match containerPort
+            - "8080"
             - "-config"
             - "connection.requestTimeoutInMs=60000"
+
 
 ---
 apiVersion: v1
