@@ -69,11 +69,9 @@ metadata:
   name: zap-service
   namespace: devops-tools
 spec:
-  type: NodePort
   selector:
     app: zap
   ports:
     - protocol: TCP
       port: 9090
       targetPort: 8080
-      nodePort: 31003
