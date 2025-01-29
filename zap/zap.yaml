@@ -17,19 +17,20 @@ spec:
         - name: zap
           image: zaproxy/zap-stable
           ports:
-            - containerPort: 8080  # Default port ZAP runs on
+            - containerPort: 8080  # ZAP's internal port (important: keep this as 8080)
           env:
             - name: ZAP_API_KEY
-              value: "-5IrWmmH4xuGCAYjRI1CwOSoxNAHK1ErXfZ4KJ9vMv4"  # Set an API key if required
+              value: "-5IrWmmH4xuGCAYjRI1CwOSoxNAHK1ErXfZ4KJ9vMv4"  # Replace with your actual API key
           command:
             - zap.sh
           args:
+            - "-daemon"
             - "-host"
-            - "0.0.0.0"  # Allow access from any IP
+            - "0.0.0.0"
             - "-port"
-            - "8080"  # Port ZAP listens on
+            - "8080" # ZAP's internal port. Must match containerPort
             - "-config"
-            - "connection.requestTimeoutInMs=60000"  # Optional: Set request timeout to 60 seconds
+            - "connection.requestTimeoutInMs=60000"
 
 ---
 apiVersion: v1
@@ -38,11 +39,11 @@ metadata:
   name: zap-service
   namespace: devops-tools
 spec:
-  type: NodePort
+  type: NodePort  # Important: Use NodePort for external access
   selector:
     app: zap
   ports:
     - protocol: TCP
-      port: 9090  # The port to expose ZAP UI (external port)
-      targetPort: 8080  # Container port (ZAP's port)
-      nodePort: 31003  # Port on the host machine (accessible externally)
+      port: 9090  # The port you'll access from outside the cluster
+      targetPort: 8080  # ZAP's internal port (matches containerPort)
+      nodePort: 31003  # Choose an available port on your nodes (30000-32767 range)
