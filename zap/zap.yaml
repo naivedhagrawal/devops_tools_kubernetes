@@ -1,3 +1,6 @@
+# ZAP Deployment and service
+# Service URL = http://zap-service.devops-tools.svc.cluster.local:9090
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
