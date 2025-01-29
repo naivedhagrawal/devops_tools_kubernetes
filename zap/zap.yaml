@@ -39,6 +39,13 @@ spec:
             - "8080"
             - "-config"
             - "connection.requestTimeoutInMs=60000"
+      resources:
+        requests:
+          cpu: "2"  # Increase CPU request
+          memory: "4Gi" # Increase memory request
+        limits:
+          cpu: "4"  # Increase CPU limit
+          memory: "8Gi" # Increase memory limit
 
 
 ---
