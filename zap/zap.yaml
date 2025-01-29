@@ -24,13 +24,12 @@ spec:
           command:
             - zap.sh
           args:
-            - "-daemon"  # Run ZAP in daemon mode (headless)
             - "-host"
             - "0.0.0.0"
             - "-port"
             - "8080"
             - "-config"
-            - "connection.requestTimeoutInMs=60000"  # 60 seconds timeout
+            - "connection.requestTimeoutInMs=60000"  # 60 seconds timeout (optional)
 ---
 apiVersion: v1
 kind: Service
@@ -43,6 +42,6 @@ spec:
     app: zap
   ports:
     - protocol: TCP
-      port: 9090  # The port to expose ZAP on
+      port: 9090  # The port to expose ZAP UI on
       targetPort: 8080  # The container port
-      nodePort: 31003  # The port on the host
+      nodePort: 31003  # The port on the host (accessible externally)
