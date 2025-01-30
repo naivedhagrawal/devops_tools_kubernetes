@@ -24,7 +24,7 @@ spec:
         - containerPort: 8080
         - containerPort: 8090
         securityContext:
-          runAsUser: 1001  # Assuming 'zap' user corresponds to UID 1001
+          runAsUser: 1000  # Assuming 'zap' user corresponds to UID 1001
         stdin: true
         tty: true
 
