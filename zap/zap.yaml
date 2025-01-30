@@ -1,77 +1,46 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: zap
-  namespace: devops-tools
+  name: zaproxy-deployment
+  namespace: devops-tools  # Specify the namespace here
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: zap
+      app: zaproxy
   template:
     metadata:
       labels:
-        app: zap
+        app: zaproxy
     spec:
       containers:
-        - name: zap
-          image: zaproxy/zap-stable
-          ports:
-            - containerPort: 8080
-          env:
-            - name: ZAP_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: zap-api-key
-                  key: api_key
-            - name: JAVA_OPTS
-              value: "-Xms512m -Xmx2g -XX:MaxPermSize=512m -XX:+UseG1GC"
-          command:
-            - zap.sh
-          args:
-            - "-daemon"
-            - "-host"
-            - "0.0.0.0"
-            - "-port"
-            - "8080"
-            - "-config"
-            - "connection.requestTimeoutInMs=60000"
-            - "-config"
-            - "api.addrs.addr.name=.*"  # Allow all IPs
-            - "-config"
-            - "api.addrs.addr.regex=true"
-          resources:
-            requests:
-              cpu: "2"
-              memory: "4Gi"
-            limits:
-              cpu: "4"
-              memory: "8Gi"
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 1000
+      - name: zaproxy
+        image: ghcr.io/zaproxy/zaproxy:weekly
+        command: ["zap-webswing.sh"]
+        ports:
+        - containerPort: 8080
+        - containerPort: 8090
+        securityContext:
+          runAsUser: 1001  # Assuming 'zap' user corresponds to UID 1001
+        stdin: true
+        tty: true
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: zap-service
-  namespace: devops-tools
+  name: zaproxy-service
+  namespace: devops-tools  # Specify the namespace here
 spec:
   selector:
-    app: zap
+    app: zaproxy
   ports:
     - protocol: TCP
       port: 9090
       targetPort: 8080
+      nodePort: 31003  # Specify the NodePort for port 8080
+    - protocol: TCP
+      port: 9000
+      targetPort: 8090
+      nodePort: 31002  # Specify the NodePort for port 8090
+  type: NodePort
