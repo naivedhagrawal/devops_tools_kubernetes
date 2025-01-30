@@ -35,11 +35,13 @@ spec:
   selector:
     app: zaproxy
   ports:
-    - protocol: TCP
+    - name: http-8080
+      protocol: TCP
       port: 9090
       targetPort: 8080
-      nodePort: 31003  # Specify the NodePort for port 8080
-    - protocol: TCP
+      nodePort: 31003
+    - name: http-8090  # Specify the NodePort for port 8080
+      protocol: TCP
       port: 9000
       targetPort: 8090
       nodePort: 31002  # Specify the NodePort for port 8090
