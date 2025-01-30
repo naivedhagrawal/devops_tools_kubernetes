@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: zaproxy
-        image: naivedh/owasp-zap:latest
+        image: ghcr.io/zaproxy/zaproxy:weekly
         command:
           - "sh"
           - "-c"
