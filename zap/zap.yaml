@@ -16,7 +16,10 @@ spec:
       containers:
       - name: zaproxy
         image: ghcr.io/zaproxy/zaproxy:weekly
-        command: ["zap-webswing.sh"]
+        command:
+          - "sh"
+          - "-c"
+          - "cd /zap && ./zap-webswing.sh && tail -f /dev/null"
         ports:
         - containerPort: 8080
         - containerPort: 8090
