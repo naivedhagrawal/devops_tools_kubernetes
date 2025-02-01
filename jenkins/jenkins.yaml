@@ -136,6 +136,9 @@ spec:
             requests:
               memory: "500Mi"
               cpu: "500m"
+          env:
+            - name: JAVA_ARGS
+              value: "-Duser.timezone=Asia/Kolkata"
           ports:
             - name: httpport
               containerPort: 8080
