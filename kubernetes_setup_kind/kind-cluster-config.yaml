@@ -10,14 +10,6 @@ nodes:
    #protocol: tcp # Optional, defaults to tcp
   - containerPort: 31001
     hostPort: 8080 #jenkins port
-  - containerPort: 31002
-    hostPort: 9000 #sonarqube port
-  - containerPort: 31003
-    hostPort: 9090 #Zap Port
-  - containerPort: 31004
-    hostPort: 4444
-  - containerPort: 31005
-    hostPort: 2222
   - containerPort: 31006
     hostPort: 3000 #grafana port
   #image: kindest/node:v1.32.0
@@ -28,10 +20,8 @@ nodes:
     containerPath: /home/data/gitlab
   - hostPath: /usr/appdata/jenkins
     containerPath: /home/data/jenkins
-  - hostPath: /usr/appdata/sonar-postgres
-    containerPath: /home/data/sonar-postgres
-  - hostPath: /usr/appdata/sonar
-    containerPath: /home/data/sonar
+  - hostPath: /usr/appdata/postgres
+    containerPath: /home/data/postgres
   - hostPath: /usr/appdata/grafana
     containerPath: /home/data/grafana
   #image: kindest/node:v1.32.0
