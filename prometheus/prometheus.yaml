@@ -83,5 +83,5 @@ spec:
     - protocol: TCP
       port: 9090
       targetPort: 9090
-      NodePort: 31007
+      nodePort: 31007
   type: NodePort  # Expose the service externally via NodePort
