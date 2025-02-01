@@ -6,12 +6,16 @@ metadata:
 data:
   prometheus.yml: |
     global:
-      scrape_interval: 15s
-      evaluation_interval: 15s
+      scrape_interval: 10s  # Scrape metrics every 10 seconds
+      evaluation_interval: 15s  # Evaluate rules every 15 seconds
     scrape_configs:
-      - job_name: 'prometheus'
+      - job_name: 'prometheus'  # Scrape Prometheus itself
         static_configs:
           - targets: ['localhost:9090']
+      - job_name: 'jenkins'  # Scrape Jenkins metrics
+        metrics_path: '/prometheus'  # Jenkins metrics endpoint
+        static_configs:
+          - targets: ['jenkins-service.devops-tools.svc.cluster.local:8080']  # Use Kubernetes service DNS
 
 ---
 apiVersion: apps/v1
@@ -19,6 +23,8 @@ kind: Deployment
 metadata:
   name: prometheus-server
   namespace: devops-tools
+  labels:
+    app: prometheus-server
 spec:
   replicas: 1
   selector:
@@ -31,24 +37,36 @@ spec:
     spec:
       containers:
         - name: prometheus
-          image: prom/prometheus
+          image: prom/prometheus:latest  # Use the latest stable version
           ports:
             - containerPort: 9090
           resources:
             requests:
-              cpu: 500m
-              memory: 512Mi
+              cpu: "500m"
+              memory: "512Mi"
             limits:
-              cpu: 1000m
-              memory: 1Gi
+              cpu: "1000m"
+              memory: "1Gi"
           volumeMounts:
             - name: config-volume
               mountPath: /etc/prometheus
+          livenessProbe:  # Ensure the container is healthy
+            httpGet:
+              path: /-/healthy
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:  # Ensure the container is ready to serve traffic
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 10
       volumes:
         - name: config-volume
           configMap:
             name: prometheus-server-conf
-            defaultMode: 420
+            defaultMode: 420  # Read-only permissions for the ConfigMap
 
 ---
 apiVersion: v1
@@ -56,6 +74,8 @@ kind: Service
 metadata:
   name: prometheus-service
   namespace: devops-tools
+  labels:
+    app: prometheus-server
 spec:
   selector:
     app: prometheus-server
@@ -63,4 +83,4 @@ spec:
     - protocol: TCP
       port: 9090
       targetPort: 9090
-  type: NodePort
+  type: NodePort  # Expose the service externally via NodePort
