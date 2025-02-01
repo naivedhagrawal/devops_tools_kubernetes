@@ -11,7 +11,7 @@ data:
     scrape_configs:
       - job_name: 'prometheus'  # Scrape Prometheus itself
         static_configs:
-          - targets: ['localhost:9090']
+          - targets: ['prometheus-service.devops-tools.svc.cluster.local:9090']
       - job_name: 'jenkins'  # Scrape Jenkins metrics
         metrics_path: '/prometheus'  # Jenkins metrics endpoint
         static_configs:
