@@ -12,6 +12,8 @@ nodes:
     hostPort: 8080 #jenkins port
   - containerPort: 31006
     hostPort: 3000 #grafana port
+  - containerPort: 31007
+    hostPort: 9090 #grafana port
   #image: kindest/node:v1.32.0
 
 - role: worker
