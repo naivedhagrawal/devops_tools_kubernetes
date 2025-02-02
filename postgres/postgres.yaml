@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:15 # Use a specific version
+          image: postgres:15
           envFrom:
             - secretRef:
                 name: postgres-secrets
@@ -56,11 +56,11 @@ spec:
                   - /bin/sh
                   - -c
                   - |
-                    psql -U postgres -d postgres -c "CREATE DATABASE gitleak;" 2>/dev/null || true
-                    psql -U postgres -d postgres -c "CREATE DATABASE owaspdependency;" 2>/dev/null || true
-                    psql -U postgres -d postgres -c "CREATE DATABASE zap;" 2>/dev/null || true
-                    psql -U postgres -d postgres -c "CREATE DATABASE trivy;" 2>/dev/null || true
-                    psql -U postgres -d postgres -c "CREATE DATABASE semgrep;" 2>/dev/null || true
+                    psql -U postgres -d template1 -c "CREATE DATABASE gitleak;" 2>/dev/null || echo "Error creating gitleak"
+                    psql -U postgres -d template1 -c "CREATE DATABASE owaspdependency;" 2>/dev/null || echo "Error creating owaspdependency"
+                    psql -U postgres -d template1 -c "CREATE DATABASE zap;" 2>/dev/null || echo "Error creating zap"
+                    psql -U postgres -d template1 -c "CREATE DATABASE trivy;" 2>/dev/null || echo "Error creating trivy"
+                    psql -U postgres -d template1 -c "CREATE DATABASE semgrep;" 2>/dev/null || echo "Error creating semgrep"
           volumeMounts:
             - name: data-disk
               mountPath: /var/lib/postgresql/data
