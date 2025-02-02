@@ -14,27 +14,6 @@ spec:
       labels:
         app: postgres
     spec:
-      securityContext:
-        fsGroup: 999
-      initContainers:
-        - name: init-db
-          image: postgres:15
-          envFrom:
-            - secretRef:
-                name: postgres-secrets
-          command:
-            - /bin/sh
-            - -c
-            - |
-              until pg_isready -h postgres -p 5432 -U postgres; do
-                echo "Waiting for PostgreSQL...";
-                sleep 5;
-              done
-              psql -U postgres -d template1 -c "CREATE DATABASE gitleak;" || echo "Error creating gitleak"
-              psql -U postgres -d template1 -c "CREATE DATABASE owaspdependency;" || echo "Error creating owaspdependency"
-              psql -U postgres -d template1 -c "CREATE DATABASE zap;" || echo "Error creating zap"
-              psql -U postgres -d template1 -c "CREATE DATABASE trivy;" || echo "Error creating trivy"
-              psql -U postgres -d template1 -c "CREATE DATABASE semgrep;" || echo "Error creating semgrep"
       containers:
         - name: postgres
           image: postgres:15
@@ -44,16 +23,22 @@ spec:
           ports:
             - containerPort: 5432
           livenessProbe:
-            tcpSocket:
-              port: 5432
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 6
             successThreshold: 1
           readinessProbe:
-            tcpSocket:
-              port: 5432
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
             initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 5
@@ -64,8 +49,20 @@ spec:
             limits:
               cpu: 2
               memory: 4Gi
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    psql -U postgres -d template1 -c "CREATE DATABASE gitleak;" 2>/dev/null || echo "Error creating gitleak"
+                    psql -U postgres -d template1 -c "CREATE DATABASE owaspdependency;" 2>/dev/null || echo "Error creating owaspdependency"
+                    psql -U postgres -d template1 -c "CREATE DATABASE zap;" 2>/dev/null || echo "Error creating zap"
+                    psql -U postgres -d template1 -c "CREATE DATABASE trivy;" 2>/dev/null || echo "Error creating trivy"
+                    psql -U postgres -d template1 -c "CREATE DATABASE semgrep;" 2>/dev/null || echo "Error creating semgrep"
           securityContext:
-            runAsUser: 999
+            runAsUser: 0
           volumeMounts:
             - name: data-disk
               mountPath: /var/lib/postgresql/data
@@ -82,7 +79,7 @@ metadata:
   name: postgres
   namespace: devops-tools
 spec:
-  type: ClusterIP
+  type: ClusterIP # For internal cluster access
   selector:
     app: postgres
   ports:
@@ -99,18 +96,22 @@ volumeBindingMode: WaitForFirstConsumer
 kind: PersistentVolume
 apiVersion: v1
 metadata:
+  namespace: devops-tools
   name: postgres-pv
   labels:
     type: local
     app: postgres
 spec:
   storageClassName: local-postgres
+  claimRef:
+    name: postgres-pvc
+    namespace: devops-tools
   capacity:
     storage: 20Gi
   accessModes:
     - ReadWriteOnce
   local:
-    path: /home/data/postgres
+    path: /home/data/postgres # Ensure this path exists on the node
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -118,13 +119,13 @@ spec:
             - key: kubernetes.io/hostname
               operator: In
               values:
-                - kind-worker
+                - kind-worker # Ensure this matches your node label
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: postgres-pvc
   namespace: devops-tools
+  name: postgres-pvc
 spec:
   accessModes:
     - ReadWriteOnce
@@ -141,4 +142,4 @@ metadata:
 type: Opaque
 stringData:
   POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: "postgres"
+  POSTGRES_PASSWORD: postgres # REPLACE with a real password using kubectl create secret
