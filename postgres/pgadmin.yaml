@@ -25,7 +25,7 @@ spec:
             memory: "512Mi"
             cpu: "500m"
         ports:
-        - containerPort: 9090  # pgAdmin listens on port 9090 inside the container
+        - containerPort: 80  # pgAdmin listens on port 9090 inside the container
         env:
         - name: PGADMIN_DEFAULT_EMAIL
           value: "naivedh@gmail.com"  # Set your pgAdmin admin email
@@ -42,7 +42,7 @@ spec:
     app: pgadmin  # Selector to link the service to the correct pods
   ports:
     - protocol: TCP
-      port: 9090      # Internal port that pgAdmin is listening on
+      port: 80     # Internal port that pgAdmin is listening on
       targetPort: 9090 # Internal port inside the container (pgAdmin listens on 9090)
       nodePort: 31007  # The external port on the node to expose the service
   type: NodePort
