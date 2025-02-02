@@ -14,6 +14,25 @@ spec:
       labels:
         app: postgres
     spec:
+      initContainers:
+        - name: init-databases
+          image: postgres:15
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until pg_isready -U postgres -h 127.0.0.1 -p 5432; do
+                echo "Waiting for PostgreSQL to be ready..."
+                sleep 2
+              done
+              psql -U postgres -d template1 -c "CREATE DATABASE gitleak;"
+              psql -U postgres -d template1 -c "CREATE DATABASE owaspdependency;"
+              psql -U postgres -d template1 -c "CREATE DATABASE zap;"
+              psql -U postgres -d template1 -c "CREATE DATABASE trivy;"
+              psql -U postgres -d template1 -c "CREATE DATABASE semgrep;"
+          envFrom:
+            - secretRef:
+                name: postgres-secrets
       containers:
         - name: postgres
           image: postgres:15
@@ -49,18 +68,6 @@ spec:
             limits:
               cpu: 2
               memory: 4Gi
-          lifecycle:
-            postStart:
-              exec:
-                command:
-                  - /bin/sh
-                  - -c
-                  - |
-                    psql -U postgres -d template1 -c "CREATE DATABASE gitleak;" 2>/dev/null || echo "Error creating gitleak"
-                    psql -U postgres -d template1 -c "CREATE DATABASE owaspdependency;" 2>/dev/null || echo "Error creating owaspdependency"
-                    psql -U postgres -d template1 -c "CREATE DATABASE zap;" 2>/dev/null || echo "Error creating zap"
-                    psql -U postgres -d template1 -c "CREATE DATABASE trivy;" 2>/dev/null || echo "Error creating trivy"
-                    psql -U postgres -d template1 -c "CREATE DATABASE semgrep;" 2>/dev/null || echo "Error creating semgrep"
           securityContext:
             runAsUser: 0
           volumeMounts:
