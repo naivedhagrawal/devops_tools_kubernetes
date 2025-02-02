@@ -42,9 +42,6 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 5
-          securityContext:
-            runAsNonRoot: true
-            readOnlyRootFilesystem: false # Review if this can be true in your case
           lifecycle:
             postStart:
               exec:
