@@ -62,9 +62,7 @@ spec:
                     psql -U postgres -d template1 -c "CREATE DATABASE trivy;" 2>/dev/null || echo "Error creating trivy"
                     psql -U postgres -d template1 -c "CREATE DATABASE semgrep;" 2>/dev/null || echo "Error creating semgrep"
           securityContext:
-            runAsUser: 999
-            runAsGroup: 999
-            fsGroup: 999
+            runAsUser: 0
           volumeMounts:
             - name: data-disk
               mountPath: /var/lib/postgresql/data
