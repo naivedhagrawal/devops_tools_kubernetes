@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:15 # Pin a specific version
+          image: postgres:latest
           envFrom:
             - secretRef:
                 name: postgres-secrets
@@ -42,13 +42,6 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 5
-          resources:
-            requests:
-              cpu: 1
-              memory: 2Gi
-            limits:
-              cpu: 2
-              memory: 4Gi
           securityContext:
             runAsNonRoot: true
             readOnlyRootFilesystem: false # Review if this can be true in your case
