@@ -72,7 +72,7 @@ metadata:
   name: postgres
   namespace: devops-tools
 spec:
-  type: ClusterIP # For internal cluster access only
+  type: ClusterIP
   selector:
     app: postgres
   ports:
@@ -135,4 +135,4 @@ metadata:
 type: Opaque
 stringData:
   POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres  # REPLACE with a real strong password!
+  POSTGRES_PASSWORD: postgres
