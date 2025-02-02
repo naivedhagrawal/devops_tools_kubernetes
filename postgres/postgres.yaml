@@ -25,11 +25,11 @@ spec:
                 echo "Waiting for PostgreSQL to be ready..."
                 sleep 2
               done
-              psql -U postgres -d template1 -c "CREATE DATABASE gitleak;"
-              psql -U postgres -d template1 -c "CREATE DATABASE owaspdependency;"
-              psql -U postgres -d template1 -c "CREATE DATABASE zap;"
-              psql -U postgres -d template1 -c "CREATE DATABASE trivy;"
-              psql -U postgres -d template1 -c "CREATE DATABASE semgrep;"
+              psql -U postgres -d postgres -c "CREATE DATABASE gitleak;"
+              psql -U postgres -d postgres -c "CREATE DATABASE owaspdependency;"
+              psql -U postgres -d postgres -c "CREATE DATABASE zap;"
+              psql -U postgres -d postgres -c "CREATE DATABASE trivy;"
+              psql -U postgres -d postgres -c "CREATE DATABASE semgrep;"
           envFrom:
             - secretRef:
                 name: postgres-secrets
