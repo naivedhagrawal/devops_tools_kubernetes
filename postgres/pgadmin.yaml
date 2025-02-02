@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgadmin-deployment
+  namespace: devops-tools  # Namespace for the deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pgadmin  # Label for the deployment
+  template:
+    metadata:
+      labels:
+        app: pgadmin  # Ensure the label matches the service selector
+    spec:
+      containers:
+      - name: pgadmin
+        image: dpage/pgadmin4:latest  # Official pgAdmin image
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 9090  # pgAdmin listens on port 9090 inside the container
+        env:
+        - name: PGADMIN_DEFAULT_EMAIL
+          value: "naivedh@gmail.com"  # Set your pgAdmin admin email
+        - name: PGADMIN_DEFAULT_PASSWORD
+          value: "231000"  # Set your pgAdmin admin password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgadmin-service
+  namespace: devops-tools  # The namespace where your service is running
+spec:
+  selector:
+    app: pgadmin  # Selector to link the service to the correct pods
+  ports:
+    - protocol: TCP
+      port: 9090      # Internal port that pgAdmin is listening on
+      targetPort: 9090 # Internal port inside the container (pgAdmin listens on 9090)
+      nodePort: 31007  # The external port on the node to expose the service
+  type: NodePort
