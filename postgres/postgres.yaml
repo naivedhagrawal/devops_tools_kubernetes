@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:15 # Use a specific version
+          image: postgres:latest # Use a specific version
           envFrom:
             - secretRef:
                 name: postgres-secrets
