@@ -14,25 +14,6 @@ spec:
       labels:
         app: postgres
     spec:
-      initContainers:
-        - name: init-databases
-          image: postgres:15
-          command:
-            - /bin/sh
-            - -c
-            - |
-              until pg_isready -U postgres -h 127.0.0.1 -p 5432; do
-                echo "Waiting for PostgreSQL to be ready..."
-                sleep 2
-              done
-              psql -U postgres -d postgres -c "CREATE DATABASE gitleak;"
-              psql -U postgres -d postgres -c "CREATE DATABASE owaspdependency;"
-              psql -U postgres -d postgres -c "CREATE DATABASE zap;"
-              psql -U postgres -d postgres -c "CREATE DATABASE trivy;"
-              psql -U postgres -d postgres -c "CREATE DATABASE semgrep;"
-          envFrom:
-            - secretRef:
-                name: postgres-secrets
       containers:
         - name: postgres
           image: postgres:15
@@ -86,7 +67,7 @@ metadata:
   name: postgres
   namespace: devops-tools
 spec:
-  type: ClusterIP # For internal cluster access
+  type: ClusterIP
   selector:
     app: postgres
   ports:
@@ -118,7 +99,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   local:
-    path: /home/data/postgres # Ensure this path exists on the node
+    path: /home/data/postgres
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -126,7 +107,7 @@ spec:
             - key: kubernetes.io/hostname
               operator: In
               values:
-                - kind-worker # Ensure this matches your node label
+                - kind-worker
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -149,4 +130,4 @@ metadata:
 type: Opaque
 stringData:
   POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres # REPLACE with a real password using kubectl create secret
+  POSTGRES_PASSWORD: postgres
