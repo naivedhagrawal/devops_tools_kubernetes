@@ -1,3 +1,0 @@
-recordIssues(
-                        enabledForFailure: true,
-                        tool: zapReport(pattern: "${env.ZAP_REPORT}", id: "ZAP-SARIF", name: "ZAP-Report" ))
