@@ -62,6 +62,11 @@ spec:
         - name: grafana-data
           persistentVolumeClaim:
             claimName: grafana-pvc
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1 
+      maxSurge: 1
 
 #Service Grafana
 ---
