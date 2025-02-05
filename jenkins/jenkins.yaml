@@ -123,8 +123,8 @@ spec:
     spec:
       serviceAccountName: jenkins-admin
       securityContext:
-            fsGroup: 1000 
-            runAsUser: 1000
+        fsGroup: 1000
+        runAsUser: 1000
       containers:
         - name: jenkins
           image: jenkins/jenkins:lts
@@ -152,16 +152,16 @@ spec:
             failureThreshold: 3
           volumeMounts:
             - name: jenkins-data
-              mountPath: /var/jenkins_home         
-    volumes:
-      - name: jenkins-data
-        persistentVolumeClaim:
+              mountPath: /var/jenkins_home
+      volumes:
+        - name: jenkins-data
+          persistentVolumeClaim:
             claimName: jenkins-pv-claim
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1 # Allow one pod to be unavailable during the update
-      maxSurge: 1 # Allow one extra pod during the update
+      maxUnavailable: 1 
+      maxSurge: 1
 
 #Service
 ---
