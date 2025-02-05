@@ -153,10 +153,15 @@ spec:
           volumeMounts:
             - name: jenkins-data
               mountPath: /var/jenkins_home         
-      volumes:
-        - name: jenkins-data
-          persistentVolumeClaim:
-              claimName: jenkins-pv-claim
+    volumes:
+      - name: jenkins-data
+        persistentVolumeClaim:
+            claimName: jenkins-pv-claim
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1 # Allow one pod to be unavailable during the update
+      maxSurge: 1 # Allow one extra pod during the update
 
 #Service
 ---
