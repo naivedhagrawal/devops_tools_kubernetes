@@ -112,7 +112,12 @@ metadata:
   name: jenkins-deployment
   namespace: devops-tools
 spec:
-  replicas: 1
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1 
+      maxSurge: 1
   selector:
     matchLabels:
       app: jenkins
@@ -157,11 +162,6 @@ spec:
         - name: jenkins-data
           persistentVolumeClaim:
             claimName: jenkins-pv-claim
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1 
-      maxSurge: 1
 
 #Service
 ---
