@@ -16,6 +16,7 @@ spec:
       containers:
       - name: zaproxy
         image: ghcr.io/zaproxy/zaproxy:weekly
+        imagePullPolicy: Always
         command:
           - "sh"
           - "-c"

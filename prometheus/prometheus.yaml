@@ -43,6 +43,7 @@ spec:
       containers:
         - name: prometheus
           image: prom/prometheus:latest  # Use the latest stable version
+          imagePullPolicy: Always
           ports:
             - containerPort: 9090
           resources:

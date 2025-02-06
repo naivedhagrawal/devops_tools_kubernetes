@@ -23,6 +23,7 @@ spec:
     spec:
       containers:
         - image: sonarqube:community
+          imagePullPolicy: Always
           name: sonarqube
           #args:
             #- -Dsonar.web.context=/sonar # With this argument, the URL will be http://localhost:9000/sonar but not able to set admin password during first login
