@@ -133,7 +133,7 @@ spec:
       containers:
         - name: jenkins
           image: jenkins/jenkins:lts
-          imagePullPolicy: always
+          imagePullPolicy: Always
           ports:
             - name: httpport
               containerPort: 8080
