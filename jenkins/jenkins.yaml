@@ -112,7 +112,7 @@ metadata:
   name: jenkins-deployment
   namespace: devops-tools
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -133,7 +133,7 @@ spec:
       containers:
         - name: jenkins
           image: jenkins/jenkins:lts
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: always
           ports:
             - name: httpport
               containerPort: 8080
