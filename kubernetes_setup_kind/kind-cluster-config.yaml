@@ -6,8 +6,8 @@ nodes:
   extraPortMappings:
   - containerPort: 31000
     hostPort: 80 #gitlab port
-   #listenAddress: "0.0.0.0" # Optional, defaults to "0.0.0.0"
-   #protocol: tcp # Optional, defaults to tcp
+    #listenAddress: "0.0.0.0" # Optional, defaults to "0.0.0.0"
+    #protocol: tcp # Optional, defaults to tcp
   - containerPort: 31001
     hostPort: 8080 #jenkins port
   - containerPort: 31006
@@ -28,7 +28,6 @@ nodes:
     containerPath: /home/data/grafana
   #image: kindest/node:v1.32.0
 
-
-  # kind create cluster --config kind-cluster-config.yaml --name kind
-  # kubectl apply -f namespace.yaml
-  # kubectl config set-context --current --namespace=devops-tools
+# kind create cluster --config kind-cluster-config.yaml --name kind
+# kubectl apply -f namespace.yaml
+# kubectl config set-context --current --namespace=devops-tools
