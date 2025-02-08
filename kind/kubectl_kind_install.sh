@@ -24,4 +24,34 @@ sudo mv ./kind /usr/local/bin/kind
 echo "Verifying Kind installation..."
 kind version
 
+# Install Docker
+echo "Installing Docker..."
+sudo dnf install -y dnf-plugins-core
+
+# Manually add Docker repository
+echo "Adding Docker repository..."
+sudo tee /etc/yum.repos.d/docker-ce.repo <<EOF
+[docker-ce-stable]
+name=Docker CE Stable
+baseurl=https://download.docker.com/linux/fedora/\$releasever/\$basearch/stable
+enabled=1
+gpgcheck=1
+gpgkey=https://download.docker.com/linux/fedora/gpg
+EOF
+
+sudo dnf install -y docker-ce docker-ce-cli containerd.io
+
+# Start and enable Docker
+echo "Starting and enabling Docker..."
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Add user to Docker group
+echo "Adding user to Docker group..."
+sudo usermod -aG docker $USER
+
+# Verify Docker installation
+echo "Verifying Docker installation..."
+docker --version
+
 echo "Installation completed successfully!"

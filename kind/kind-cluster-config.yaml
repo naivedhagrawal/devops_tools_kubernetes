@@ -3,23 +3,29 @@ apiVersion: kind.x-k8s.io/v1alpha4
 
 nodes:
 - role: control-plane
-  #extraPortMappings:
- # - containerPort: 31000
- #   hostPort: 80 #gitlab port
+  extraPortMappings:
+  - containerPort: 31000
+    hostPort: 80 #gitlab port
     #listenAddress: "0.0.0.0" # Optional, defaults to "0.0.0.0"
     #protocol: tcp # Optional, defaults to tcp
- # - containerPort: 31001
- #   hostPort: 8080 #jenkins port
- # - containerPort: 31006
- #   hostPort: 3000 #grafana port
- # - containerPort: 31007
- #   hostPort: 9090 
+  - containerPort: 31001
+    hostPort: 8080 #jenkins port
+  - containerPort: 31006
+    hostPort: 3000 #grafana port
+  - containerPort: 31007
+    hostPort: 9090 
   #image: kindest/node:v1.32.0
 
 - role: worker
   extraMounts:
-  - hostPath: /home/naivedh/appdata/
-    containerPath: /home/data/
+  - hostPath: /home/appdata/gitlab
+    containerPath: /home/data/gitlab
+  - hostPath: /home/appdata/jenkins
+    containerPath: /home/data/jenkins
+  - hostPath: /home/appdata/postgres
+    containerPath: /home/data/postgres
+  - hostPath: /home/appdata/grafana
+    containerPath: /home/data/grafana
   #image: kindest/node:v1.32.0
 
 # kind create cluster --config kind-cluster-config.yaml --name kind
