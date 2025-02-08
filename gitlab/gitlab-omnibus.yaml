@@ -27,6 +27,9 @@ spec:
             name: data
           - mountPath: /etc/gitlab
             name: config
+        env:
+        - name: EXTERNAL_URL
+          value: "http://devops.local/"
       volumes:
         - name: data
           persistentVolumeClaim:

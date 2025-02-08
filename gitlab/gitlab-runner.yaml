@@ -41,7 +41,7 @@ data:
     [[runners]]
       name = "Kubernetes gitlab Runner"
       url = "http://gitlab-service.devops-tools.svc.cluster.local:80"
-      token = "glrt-t1_tt43Cf4nMa6Vnjz_-DPe"
+      token = "glrt-t1_-vKZJWVRtykRHvC_jSLs"
       executor = "kubernetes"
       [runners.kubernetes]
         namespace = "gitlab-runner"
