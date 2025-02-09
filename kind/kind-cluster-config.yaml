@@ -30,6 +30,7 @@ nodes:
     containerPath: /home/data/prometheus
   - hostPath: /home/appdata/kubelet/worker-1
     containerPath: /etc/kubernetes/kubelet
+
   #image: kindest/node:v1.32.0
 
 # kind create cluster --config kind-cluster-config.yaml --name kind
