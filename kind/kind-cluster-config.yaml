@@ -28,8 +28,6 @@ nodes:
     containerPath: /home/data/grafana
   - hostPath: /home/appdata/prometheus
     containerPath: /home/data/prometheus
-  - hostPath: /home/appdata/kubelet/worker-1
-    containerPath: /var/lib/kubelet
 
   #image: kindest/node:v1.32.0
 
