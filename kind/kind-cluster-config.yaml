@@ -17,6 +17,11 @@ nodes:
   #image: kindest/node:v1.32.0
 
 - role: worker
+  KubeadmConfigPatches:
+      - |
+        kind: KubeletConfiguration
+        apiVersion: kubelet.config.k8s.io/v1beta1
+        maxPods: 5
   extraMounts:
   - hostPath: /home/appdata/gitlab
     containerPath: /home/data/gitlab
