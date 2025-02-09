@@ -28,8 +28,8 @@ nodes:
     containerPath: /home/data/grafana
   - hostPath: /home/appdata/prometheus
     containerPath: /home/data/prometheus
-  - hostPath: /home/appdata/kubelet/worker-1/config.yaml
-    containerPath: /etc/kubernetes/kubelet/config.yaml
+  - hostPath: /home/appdata/kubelet/worker-1
+    containerPath: /etc/kubernetes/kubelet
   #image: kindest/node:v1.32.0
 
 # kind create cluster --config kind-cluster-config.yaml --name kind
