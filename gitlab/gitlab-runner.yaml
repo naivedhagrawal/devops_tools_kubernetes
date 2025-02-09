@@ -17,6 +17,23 @@ metadata:
   namespace: devops-tools
 
 ---
+# ClusterRole for GitLab Runner (RBAC Fix)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gitlab-runner
+rules:
+  - apiGroups: [""]
+    resources: ["secrets", "pods", "pods/log", "configmaps"]
+    verbs: ["create", "get", "update", "delete", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["create", "get", "update", "delete", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list"]
+
+---
 # ClusterRoleBinding for GitLab Runner
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -44,6 +61,20 @@ data:
     check_interval = 30
 
 ---
+# PersistentVolumeClaim for GitLab Runner (Optional but recommended)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gitlab-runner-pvc
+  namespace: devops-tools
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+
+---
 # Deployment for GitLab Runner
 apiVersion: apps/v1
 kind: Deployment
@@ -69,6 +100,8 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/gitlab-runner
+            - name: runner-data
+              mountPath: /home/gitlab-runner
           env:
             - name: CI_SERVER_URL
               value: "http://gitlab-service.devops-tools.svc.cluster.local:80"
@@ -79,7 +112,7 @@ spec:
                   key: runner-registration-token
             - name: KUBERNETES_NAMESPACE
               value: "devops-tools"
-          command: ["/bin/bash", "-c"]
+          entrypoint: ["/bin/bash", "-c"]
           args:
             - |
               if [[ ! -f /etc/gitlab-runner/registered ]]; then
@@ -97,3 +130,6 @@ spec:
       volumes:
         - name: config-volume
           emptyDir: {}
+        - name: runner-data
+          persistentVolumeClaim:
+            claimName: gitlab-runner-pvc
