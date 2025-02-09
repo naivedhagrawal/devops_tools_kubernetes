@@ -17,11 +17,6 @@ nodes:
   #image: kindest/node:v1.32.0
 
 - role: worker
-  KubeadmConfigPatches:
-      - |
-        kind: KubeletConfiguration
-        apiVersion: kubelet.config.k8s.io/v1beta1
-        maxPods: 5
   extraMounts:
   - hostPath: /home/appdata/gitlab
     containerPath: /home/data/gitlab
@@ -31,6 +26,10 @@ nodes:
     containerPath: /home/data/postgres
   - hostPath: /home/appdata/grafana
     containerPath: /home/data/grafana
+  - hostPath: /home/appdata/prometheus
+    containerPath: /home/data/prometheus
+  - hostPath: /home/appdata/kubelet/worker-1/config.yaml
+    containerPath: /etc/kubernetes/kubelet/config.yaml
   #image: kindest/node:v1.32.0
 
 # kind create cluster --config kind-cluster-config.yaml --name kind
