@@ -39,31 +39,33 @@ spec:
             httpGet:
               path: /
               port: 80
-            initialDelaySeconds: 30
+            initialDelaySeconds: 120
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /
               port: 80
-            initialDelaySeconds: 60
+            initialDelaySeconds: 120
             periodSeconds: 20
   volumeClaimTemplates:
     - metadata:
         name: data
       spec:
-        accessModes: ["ReadWriteOnce"]
+        accessModes: ["ReadWriteMany"]
         storageClassName: local-path
         resources:
           requests:
             storage: 20Gi
+        volumeName: local-var
     - metadata:
         name: config
       spec:
-        accessModes: ["ReadWriteOnce"]
+        accessModes: ["ReadWriteMany"]
         storageClassName: local-path
         resources:
           requests:
             storage: 1Gi
+        volumeName: local-etc
 
 ---
 # GitLab Service
@@ -99,6 +101,9 @@ spec:
   storageClassName: local-path
   hostPath:
     path: /home/data/gitlab/var
+  claimRef:
+    name: data-gitlab-0
+    namespace: devops-tools
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -116,6 +121,9 @@ spec:
   storageClassName: local-path
   hostPath:
     path: /home/data/gitlab/etc
+  claimRef:
+    name: config-gitlab-0
+    namespace: devops-tools
 
 ---
 # Persistent Volume Claims
