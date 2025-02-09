@@ -72,7 +72,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 50Gi
+      storage: 1Gi
 
 ---
 # Deployment for GitLab Runner
@@ -112,7 +112,7 @@ spec:
                   key: runner-registration-token
             - name: KUBERNETES_NAMESPACE
               value: "devops-tools"
-          entrypoint: ["/bin/bash", "-c"]
+          command: ["/bin/bash", "-c"]  # ✅ FIXED
           args:
             - |
               if [[ ! -f /etc/gitlab-runner/registered ]]; then
@@ -121,6 +121,7 @@ spec:
                   --url "$CI_SERVER_URL" \
                   --registration-token "$REGISTRATION_TOKEN" \
                   --executor "kubernetes" \
+                  --shell = "bash"
                   --kubernetes-namespace "$KUBERNETES_NAMESPACE" \
                   --name "kubernetes-runner" \
                   --output-limit 20480 && \
