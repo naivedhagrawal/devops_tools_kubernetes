@@ -15,7 +15,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: cluster-admin
+  name: gitlab-runner
 subjects:
   - kind: ServiceAccount
     name: gitlab-runner
@@ -28,7 +28,7 @@ metadata:
   namespace: devops-tools
 data:
   config.toml: |
-    concurrent = 3
+    concurrent = 1
     check_interval = 30
 ---
 apiVersion: apps/v1

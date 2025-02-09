@@ -29,13 +29,6 @@ spec:
         env:
         - name: EXTERNAL_URL
           value: "http://devops.local/"
-        resources:
-          limits:
-            memory: "4Gi"
-            cpu: "8"
-          requests:
-            memory: "2Gi"
-            cpu: "4"
       volumes:
         - name: data
           persistentVolumeClaim:
