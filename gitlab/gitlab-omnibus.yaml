@@ -28,13 +28,6 @@ spec:
           env:
             - name: EXTERNAL_URL
               value: "http://devops.local/"
-          resources:
-            requests:
-              memory: "4Gi"
-              cpu: "2"
-            limits:
-              memory: "8Gi"
-              cpu: "4"
           readinessProbe:
             httpGet:
               path: /
