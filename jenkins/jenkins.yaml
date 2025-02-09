@@ -71,6 +71,9 @@ metadata:
     type: local
 spec:
   storageClassName: local-storage-jenkins
+  claimRef:
+    name: jenkins-pv-claim
+    namespace: devops-tools
   capacity:
     storage: 10Gi
   accessModes:
@@ -101,16 +104,20 @@ spec:
     requests:
       storage: 10Gi
 
-#StatefulSet
+#Deployment
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: jenkins
+  name: jenkins-deployment
   namespace: devops-tools
 spec:
-  serviceName: jenkins-service
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1 
+      maxSurge: 1
   selector:
     matchLabels:
       app: jenkins
@@ -139,6 +146,7 @@ spec:
             initialDelaySeconds: 90
             periodSeconds: 10
             timeoutSeconds: 5
+          livenessProbe:
           readinessProbe:
             httpGet:
               path: "/login"
@@ -150,16 +158,10 @@ spec:
           volumeMounts:
             - name: jenkins-data
               mountPath: /var/jenkins_home
-  volumeClaimTemplates:
-    - metadata:
-        name: jenkins-data
-      spec:
-        storageClassName: local-storage-jenkins
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 10Gi
+      volumes:
+        - name: jenkins-data
+          persistentVolumeClaim:
+            claimName: jenkins-pv-claim
 
 #Service
 ---
