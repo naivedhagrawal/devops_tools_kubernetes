@@ -104,20 +104,16 @@ spec:
     requests:
       storage: 10Gi
 
-#Deployment
+#StatefulSet
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: jenkins-deployment
+  name: jenkins
   namespace: devops-tools
 spec:
+  serviceName: jenkins-service
   replicas: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1 
-      maxSurge: 1
   selector:
     matchLabels:
       app: jenkins
@@ -146,7 +142,6 @@ spec:
             initialDelaySeconds: 90
             periodSeconds: 10
             timeoutSeconds: 5
-          livenessProbe:
           readinessProbe:
             httpGet:
               path: "/login"
@@ -158,10 +153,16 @@ spec:
           volumeMounts:
             - name: jenkins-data
               mountPath: /var/jenkins_home
-      volumes:
-        - name: jenkins-data
-          persistentVolumeClaim:
-            claimName: jenkins-pv-claim
+  volumeClaimTemplates:
+    - metadata:
+        name: jenkins-data
+      spec:
+        storageClassName: local-storage-jenkins
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
 
 #Service
 ---
