@@ -1,51 +1,74 @@
-#Deploying Gitlab on Kubernetes
-kind: Deployment
 apiVersion: apps/v1
+kind: StatefulSet
 metadata:
-  name: gitlab-deployment
+  name: gitlab
   namespace: devops-tools
 spec:
+  serviceName: "gitlab"
   replicas: 1
   selector:
     matchLabels:
       app: gitlab
   template:
     metadata:
-      name: gitlab-dep-pod
       labels:
         app: gitlab
     spec:
       containers:
-      - name: gitlab
-        image: gitlab/gitlab-ee:latest
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 80
-        volumeMounts:
-          - mountPath: /var/opt/gitlab
-            name: data
-          - mountPath: /etc/gitlab
-            name: config
-        env:
-        - name: EXTERNAL_URL
-          value: "http://devops.local/"
-      volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: local-var
-        - name: config
-          persistentVolumeClaim:
-            claimName: local-etc
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1 
-      maxSurge: 1
-          
-#Service
+        - name: gitlab
+          image: gitlab/gitlab-ee:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: data
+              mountPath: /var/opt/gitlab
+            - name: config
+              mountPath: /etc/gitlab
+          env:
+            - name: EXTERNAL_URL
+              value: "http://devops.local/"
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "2"
+            limits:
+              memory: "8Gi"
+              cpu: "4"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 20
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 20Gi
+    - metadata:
+        name: config
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 1Gi
+
 ---
-kind: Service
+# GitLab Service
 apiVersion: v1
+kind: Service
 metadata:
   name: gitlab-service
   namespace: devops-tools
@@ -58,10 +81,10 @@ spec:
       nodePort: 31000
       port: 80
 
-#Persistent Volume and Persistent Volume Claim
 ---
-kind: PersistentVolume
+# Persistent Volumes
 apiVersion: v1
+kind: PersistentVolume
 metadata:
   name: local-var
   namespace: devops-tools
@@ -77,8 +100,8 @@ spec:
   hostPath:
     path: /home/data/gitlab/var
 ---
-kind: PersistentVolume
 apiVersion: v1
+kind: PersistentVolume
 metadata:
   name: local-etc
   namespace: devops-tools
@@ -95,8 +118,9 @@ spec:
     path: /home/data/gitlab/etc
 
 ---
-kind: PersistentVolumeClaim
+# Persistent Volume Claims
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
   name: local-var
   namespace: devops-tools
@@ -109,8 +133,8 @@ spec:
       storage: 20Gi
 
 ---
-kind: PersistentVolumeClaim
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
   name: local-etc
   namespace: devops-tools
