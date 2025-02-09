@@ -29,7 +29,7 @@ nodes:
   - hostPath: /home/appdata/prometheus
     containerPath: /home/data/prometheus
   - hostPath: /home/appdata/kubelet/worker-1
-    containerPath: /etc/kubernetes/kubelet
+    containerPath: /var/lib/kubelet
 
   #image: kindest/node:v1.32.0
 
