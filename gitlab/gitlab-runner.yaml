@@ -1,13 +1,23 @@
-# kubectl create secret generic gitlab-runner-secret \
-#   --from-literal=runner-registration-token='<YOUR_REGISTRATION_TOKEN>' \
-#   -n devops-tools
+# Secret for GitLab Runner Registration Token
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gitlab-runner-secret
+  namespace: devops-tools
+type: Opaque
+data:
+  runner-registration-token: Z2xydC10MV9ra2ppTXZiWFdreWJLeUhIZTJOMw==
 
+---
+# ServiceAccount for GitLab Runner
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: gitlab-runner
   namespace: devops-tools
+
 ---
+# ClusterRoleBinding for GitLab Runner
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -20,7 +30,9 @@ subjects:
   - kind: ServiceAccount
     name: gitlab-runner
     namespace: devops-tools
+
 ---
+# ConfigMap for GitLab Runner Configuration
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -28,9 +40,11 @@ metadata:
   namespace: devops-tools
 data:
   config.toml: |
-    concurrent = 1
+    concurrent = 4
     check_interval = 30
+
 ---
+# Deployment for GitLab Runner
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -68,18 +82,18 @@ spec:
           command: ["/bin/bash", "-c"]
           args:
             - |
-              if [[ ! -f /etc/gitlab-runner/config.toml ]]; then
+              if [[ ! -f /etc/gitlab-runner/registered ]]; then
                 gitlab-runner register \
                   --non-interactive \
-                  --url "http://gitlab-service.devops-tools.svc.cluster.local:80" \
+                  --url "$CI_SERVER_URL" \
                   --registration-token "$REGISTRATION_TOKEN" \
                   --executor "kubernetes" \
-                  --kubernetes-namespace "devops-tools" \
+                  --kubernetes-namespace "$KUBERNETES_NAMESPACE" \
                   --name "kubernetes-runner" \
-                  --output-limit 20480
+                  --output-limit 20480 && \
+                touch /etc/gitlab-runner/registered
               fi
               gitlab-runner run
       volumes:
         - name: config-volume
-          configMap:
-            name: gitlab-runner-config
+          emptyDir: {}
