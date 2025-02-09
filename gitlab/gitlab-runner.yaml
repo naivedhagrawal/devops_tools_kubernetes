@@ -1,95 +1,75 @@
+# kubectl create secret generic gitlab-runner-secret \
+#   --from-literal=runner-registration-token='<YOUR_REGISTRATION_TOKEN>' \
+#   -n devops-tools
+
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: gitlab-admin
+  name: gitlab-runner
   namespace: devops-tools
 ---
-kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
 metadata:
-  namespace: devops-tools
-  name: gitlab-admin
-rules:
-  - apiGroups: ['']
-    resources: ['*']
-    verbs: ['*']
-
----
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: gitlab-admin
-  namespace: devops-tools
+  name: gitlab-runner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
 subjects:
   - kind: ServiceAccount
-    name: gitlab-admin
+    name: gitlab-runner
     namespace: devops-tools
-roleRef:
-  kind: Role
-  name: gitlab-admin
-  apiGroup: rbac.authorization.k8s.io
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: gitlab-runner-config
-  namespace: devops-tools
-data:
-  config.toml: |-
-    concurrent = 4
-    [[runners]]
-      name = "Kubernetes gitlab Runner"
-      url = "http://gitlab-service.devops-tools.svc.cluster.local:80"
-      token = "glrt-t1_-vKZJWVRtykRHvC_jSLs"
-      executor = "kubernetes"
-      [runners.kubernetes]
-        namespace = "gitlab-runner"
-        poll_timeout = 600
-        cpu_request = "1"
-        service_cpu_request = "200m"
-        [[runners.kubernetes.volumes.host_path]]
-            name = "docker"
-            mount_path = "/var/run/docker.sock"
-            host_path = "/var/run/docker.sock"
-
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gitlab-runner
   namespace: devops-tools
+  labels:
+    app: gitlab-runner
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: gitlab-runner
+      app: gitlab-runner
   template:
     metadata:
       labels:
-        name: gitlab-runner
+        app: gitlab-runner
     spec:
-      serviceAccountName: gitlab-admin
+      serviceAccountName: gitlab-runner
       containers:
-        - args:
-            - run
+        - name: gitlab-runner
           image: gitlab/gitlab-runner:latest
-          imagePullPolicy: Always
-          name: gitlab-runner
-          resources:
-            requests:
-              cpu: '100m'
-            limits:
-              cpu: '100m'
           volumeMounts:
-            - name: config
-              mountPath: /etc/gitlab-runner/config.toml
-              readOnly: true
-              subPath: config.toml
+            - name: config-volume
+              mountPath: /etc/gitlab-runner
+          env:
+            - name: CI_SERVER_URL
+              value: "http://gitlab-service.devops-tools.svc.cluster.local:80"
+            - name: REGISTRATION_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: gitlab-runner-secret
+                  key: runner-registration-token
+            - name: KUBERNETES_NAMESPACE
+              value: "devops-tools"
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              if [[ ! -f /etc/gitlab-runner/config.toml ]]; then
+                gitlab-runner register \
+                  --non-interactive \
+                  --url "http://gitlab-service.devops-tools.svc.cluster.local:80" \
+                  --registration-token "$REGISTRATION_TOKEN" \
+                  --executor "kubernetes" \
+                  --kubernetes-namespace "devops-tools" \
+                  --name "kubernetes-runner" \
+                  --output-limit 20480
+              fi
+              gitlab-runner run
       volumes:
-        - name: config
+        - name: config-volume
           configMap:
             name: gitlab-runner-config
-      restartPolicy: Always
-
----

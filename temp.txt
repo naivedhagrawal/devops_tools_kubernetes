@@ -1,0 +1,3 @@
+kubectl create secret generic gitlab-runner-secret \
+   --from-literal=runner-registration-token='glrt-t1_62BR1xXKmK1TyCksYJRP' \
+   -n gitlab-runner
