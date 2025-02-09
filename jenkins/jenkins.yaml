@@ -112,6 +112,13 @@ metadata:
   name: jenkins-deployment
   namespace: devops-tools
 spec:
+  resources:
+    limits:
+      cpu: "2"
+      memory: "4Gi"
+    requests:
+      cpu: "1"
+      memory: "2Gi"
   replicas: 1
   strategy:
     type: RollingUpdate
