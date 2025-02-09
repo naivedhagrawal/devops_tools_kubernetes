@@ -31,11 +31,11 @@ spec:
           value: "http://devops.local/"
         resources:
           limits:
-            memory: "2Gi"
-            cpu: "1"
+            memory: "4Gi"
+            cpu: "4"
           requests:
-            memory: "1Gi"
-            cpu: "500m"
+            memory: "2Gi"
+            cpu: "2"
       volumes:
         - name: data
           persistentVolumeClaim:
