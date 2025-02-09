@@ -21,6 +21,16 @@ subjects:
     name: gitlab-runner
     namespace: devops-tools
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitlab-runner-config
+  namespace: devops-tools
+data:
+  config.toml: |
+    concurrent = 1
+    check_interval = 30
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
