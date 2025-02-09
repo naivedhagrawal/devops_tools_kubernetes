@@ -28,7 +28,7 @@ metadata:
   namespace: devops-tools
 data:
   config.toml: |
-    concurrent = 1
+    concurrent = 3
     check_interval = 30
 ---
 apiVersion: apps/v1
