@@ -18,15 +18,15 @@ nodes:
 
 - role: worker
   extraMounts:
-  - hostPath: /home/appdata/gitlab
+  - hostPath: /home/naivedh/appdata/gitlab
     containerPath: /home/data/gitlab
-  - hostPath: /home/appdata/jenkins
+  - hostPath: /home/naivedh/appdata/jenkins
     containerPath: /home/data/jenkins
-  - hostPath: /home/appdata/postgres
+  - hostPath: /home/naivedh/appdata/postgres
     containerPath: /home/data/postgres
-  - hostPath: /home/appdata/grafana
+  - hostPath: /home/naivedh/appdata/grafana
     containerPath: /home/data/grafana
-  - hostPath: /home/appdata/prometheus
+  - hostPath: /home/naivedh/appdata/prometheus
     containerPath: /home/data/prometheus
 
   #image: kindest/node:v1.32.0
