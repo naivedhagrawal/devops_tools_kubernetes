@@ -51,6 +51,13 @@ spec:
             readOnlyRootFilesystem: true
             runAsUser: 1001
             runAsGroup: 2001
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
 ---
 apiVersion: v1
 kind: Service
@@ -58,10 +65,11 @@ metadata:
   name: kubernetes-dashboard
   namespace: kubernetes-dashboard
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 443
       targetPort: 8443
+      nodePort: 30008
   selector:
     k8s-app: kubernetes-dashboard
 ---
@@ -109,6 +117,18 @@ spec:
           env:
             - name: SYNAPSE_SERVER_NAME
               value: "matrix.local"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsUser: 1002
+            runAsGroup: 2002
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
 ---
 apiVersion: v1
 kind: Service
@@ -116,10 +136,11 @@ metadata:
   name: matrix-api
   namespace: kubernetes-dashboard
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 80
       targetPort: 8008
+      nodePort: 30009
   selector:
     app: matrix-api
 ---
