@@ -55,4 +55,4 @@ spec:
     - protocol: TCP
       port: 8090
       targetPort: 8090
-  # clusterIP: None  # Headless Service
+  clusterIP: None  # Headless Service
