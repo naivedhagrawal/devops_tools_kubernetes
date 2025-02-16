@@ -32,13 +32,6 @@ spec:
           env:
             - name: EXTERNAL_URL
               value: "http://devops.local:80"
-          resources:
-            requests:
-              memory: "4Gi"  # Minimum memory required
-              cpu: "2"       # Minimum CPU reserved
-            limits:
-              memory: "8Gi"  # Maximum memory allowed (to avoid system overuse)
-              cpu: "8"       # Maximum CPU usage
           readinessProbe:
             httpGet:
               path: /
