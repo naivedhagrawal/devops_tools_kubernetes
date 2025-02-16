@@ -37,8 +37,8 @@ spec:
               memory: "4Gi"  # Minimum memory required
               cpu: "2"       # Minimum CPU reserved
             limits:
-              memory: "6Gi"  # Maximum memory allowed (to avoid system overuse)
-              cpu: "4"       # Maximum CPU usage
+              memory: "8Gi"  # Maximum memory allowed (to avoid system overuse)
+              cpu: "8"       # Maximum CPU usage
           readinessProbe:
             httpGet:
               path: /
