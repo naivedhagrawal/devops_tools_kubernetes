@@ -1,4 +1,7 @@
-# Secret for GitLab Runner Registration Token (Removed as it will be created via kubectl)
+# kubectl create secret generic gitlab-runner-secret \
+#  --namespace=devops-tools \
+#  --from-literal=runner-registration-token=<NEW_TOKEN>
+
 
 ---
 # ServiceAccount for GitLab Runner
