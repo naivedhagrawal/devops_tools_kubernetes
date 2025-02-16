@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # GitLab Configuration
-GITLAB_URL="http://gitlab-service.devops-tools.svc.cluster.local:8081"  # GitLab internal service URL
+GITLAB_URL="http://devops.local:8081"  # GitLab internal service URL
 NAMESPACE="devops-tools"
 
 # Prompt user to enter GitLab PAT securely
@@ -47,6 +47,13 @@ kubectl create secret generic gitlab-pat-secret -n $NAMESPACE --from-literal=GIT
 echo "🔹 Fetching dynamic GitLab Runner token..."
 RUNNER_TOKEN=$(kubectl get secret gitlab-pat-secret -n $NAMESPACE -o jsonpath="{.data.GITLAB_PAT}" | base64 --decode | \
     xargs -I {} curl --silent --header "PRIVATE-TOKEN: {}" "$GITLAB_URL/api/v4/runners" | jq -r '.token')
+
+echo "🔹 Debugging GitLab API response..."
+API_RESPONSE=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_PAT" "$GITLAB_URL/api/v4/runners")
+echo "API Response: $API_RESPONSE"
+
+RUNNER_TOKEN=$(echo "$API_RESPONSE" | jq -r '.token')
+
 
 # Check if token was retrieved
 if [ -z "$RUNNER_TOKEN" ] || [ "$RUNNER_TOKEN" == "null" ]; then
