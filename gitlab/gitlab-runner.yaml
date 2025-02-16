@@ -1,12 +1,6 @@
-# Secret for GitLab Runner Registration Token
-apiVersion: v1
-kind: Secret
-metadata:
-  name: gitlab-runner-secret
-  namespace: devops-tools
-type: Opaque
-data:
-  runner-registration-token: Z2xydC10MV9ra2ppTXZiWFdreWJLeUhIZTJOMw==
+# kubectl create secret generic gitlab-runner-secret \
+#  --namespace=devops-tools \
+#  --from-literal=runner-registration-token=<YOUR_TOKEN>
 
 ---
 # ServiceAccount for GitLab Runner
@@ -59,6 +53,20 @@ data:
   config.toml: |
     concurrent = 4
     check_interval = 30
+
+---
+# PersistentVolumeClaim for GitLab Runner (Optional but recommended)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gitlab-runner-pvc
+  namespace: devops-tools
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
 
 ---
 # Deployment for GitLab Runner
