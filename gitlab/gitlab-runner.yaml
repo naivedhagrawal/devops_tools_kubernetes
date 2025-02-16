@@ -1,6 +1,4 @@
-# kubectl create secret generic gitlab-runner-secret \
-#  --namespace=devops-tools \
-#  --from-literal=runner-registration-token=<YOUR_TOKEN>
+# Secret for GitLab Runner Registration Token (Removed as it will be created via kubectl)
 
 ---
 # ServiceAccount for GitLab Runner
@@ -105,7 +103,7 @@ spec:
               mountPath: /home/gitlab-runner
           env:
             - name: CI_SERVER_URL
-              value: "http://gitlab-service.devops-tools.svc.cluster.local:80"
+              value: "http://gitlab-service.devops-tools.svc.cluster.local:8081"
             - name: REGISTRATION_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -113,7 +111,7 @@ spec:
                   key: runner-registration-token
             - name: KUBERNETES_NAMESPACE
               value: "devops-tools"
-          command: ["/bin/bash", "-c"]  # ✅ FIXED
+          command: ["/bin/bash", "-c"]
           args:
             - |
               if [[ ! -f /etc/gitlab-runner/registered ]]; then
@@ -122,7 +120,7 @@ spec:
                   --url "$CI_SERVER_URL" \
                   --registration-token "$REGISTRATION_TOKEN" \
                   --executor "kubernetes" \
-                  --shell = "bash"
+                  --shell "bash" \
                   --kubernetes-namespace "$KUBERNETES_NAMESPACE" \
                   --name "kubernetes-runner" \
                   --output-limit 20480 && \
