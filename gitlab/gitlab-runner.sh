@@ -1,18 +1,9 @@
 #!/bin/bash
 
 # GitLab Configuration
-GITLAB_URL="http://devops.local:8081"  # GitLab internal service URL
+GITLAB_URL="http://devops.local:8081"  # Updated GitLab URL
 NAMESPACE="devops-tools"
-
-# Prompt user to enter GitLab PAT securely
-echo "🔹 Enter your GitLab Personal Access Token (PAT):"
-read -s GITLAB_PAT  # Read token securely without displaying it
-
-# Check if PAT is entered
-if [[ -z "$GITLAB_PAT" ]]; then
-    echo "❌ No GitLab PAT provided. Exiting."
-    exit 1
-fi
+GITLAB_PAT="your_hardcoded_token_here"  # Hardcoded GitLab Personal Access Token
 
 # Install required dependencies
 if ! command -v helm &> /dev/null; then
@@ -43,28 +34,20 @@ kubectl apply -f rbac.yaml
 # Store the PAT in a Kubernetes Secret (so it's not exposed)
 kubectl create secret generic gitlab-pat-secret -n $NAMESPACE --from-literal=GITLAB_PAT="$GITLAB_PAT" --dry-run=client -o yaml | kubectl apply -f -
 
-# Get Runner Registration Token dynamically using the stored secret
-echo "🔹 Fetching dynamic GitLab Runner token..."
-RUNNER_TOKEN=$(kubectl get secret gitlab-pat-secret -n $NAMESPACE -o jsonpath="{.data.GITLAB_PAT}" | base64 --decode | \
-    xargs -I {} curl --silent --header "PRIVATE-TOKEN: {}" "$GITLAB_URL/api/v4/runners" | jq -r '.token')
-
-echo "🔹 Debugging GitLab API response..."
-API_RESPONSE=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_PAT" "$GITLAB_URL/api/v4/runners")
-echo "API Response: $API_RESPONSE"
-
-RUNNER_TOKEN=$(echo "$API_RESPONSE" | jq -r '.token')
-
+# Get Shared Runner Registration Token dynamically using the correct API endpoint
+echo "🔹 Fetching dynamic GitLab Shared Runner token..."
+RUNNER_TOKEN=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_PAT" "$GITLAB_URL/api/v4/application/settings" | jq -r '.runner_registration_token')
 
 # Check if token was retrieved
 if [ -z "$RUNNER_TOKEN" ] || [ "$RUNNER_TOKEN" == "null" ]; then
-    echo "❌ Failed to fetch GitLab Runner token. Check your Personal Access Token permissions."
+    echo "❌ Failed to fetch GitLab Shared Runner token. Check your Personal Access Token permissions."
     exit 1
 fi
 
-echo "✅ Successfully retrieved runner token."
+echo "✅ Successfully retrieved shared runner token."
 
 # Deploy GitLab Runner using Helm (Token is never stored in plaintext)
-echo "🚀 Deploying GitLab Runner in Kubernetes..."
+echo "🚀 Deploying GitLab Shared Runner in Kubernetes..."
 helm install gitlab-runner gitlab/gitlab-runner --namespace $NAMESPACE \
   --set gitlabUrl="$GITLAB_URL" \
   --set runnerRegistrationToken="$RUNNER_TOKEN" \
@@ -81,12 +64,12 @@ kubectl apply -f autoscaling.yaml
 echo "🔹 Checking deployment status..."
 kubectl get pods -n $NAMESPACE
 
-# Check if the runner is registered in GitLab
-echo "🔹 Checking GitLab Runner registration..."
-RUNNER_STATUS=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_PAT" "$GITLAB_URL/api/v4/runners/all" | jq -r '.[] | select(.token=="'$RUNNER_TOKEN'") | .status')
+# Check if the shared runner is registered in GitLab
+echo "🔹 Checking GitLab Shared Runner registration..."
+RUNNER_STATUS=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_PAT" "$GITLAB_URL/api/v4/runners/all" | jq -r '.[0].status')
 
 if [ "$RUNNER_STATUS" == "active" ]; then
-    echo "✅ GitLab Runner successfully registered and active!"
+    echo "✅ GitLab Shared Runner successfully registered and active!"
 else
-    echo "❌ GitLab Runner registration failed. Check the GitLab UI."
+    echo "❌ GitLab Shared Runner registration failed. Check the GitLab UI."
 fi
