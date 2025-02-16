@@ -9,7 +9,7 @@ spec:
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
-      partition: 0  # ✅ Valid for StatefulSet
+      partition: 0
   selector:
     matchLabels:
       app: gitlab
@@ -32,6 +32,13 @@ spec:
           env:
             - name: EXTERNAL_URL
               value: "http://devops.local:80"
+          resources:
+            requests:
+              memory: "4Gi"  # Minimum memory required
+              cpu: "2"       # Minimum CPU reserved
+            limits:
+              memory: "6Gi"  # Maximum memory allowed (to avoid system overuse)
+              cpu: "4"       # Maximum CPU usage
           readinessProbe:
             httpGet:
               path: /
@@ -53,6 +60,8 @@ spec:
         resources:
           requests:
             storage: 20Gi
+          limits:
+            storage: 30Gi
         volumeName: local-var
     - metadata:
         name: config
@@ -62,6 +71,8 @@ spec:
         resources:
           requests:
             storage: 1Gi
+          limits:
+            storage: 2Gi
         volumeName: local-etc
 
 ---
