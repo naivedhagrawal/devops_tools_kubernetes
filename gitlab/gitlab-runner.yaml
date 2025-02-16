@@ -1,0 +1,129 @@
+# Secret for GitLab Runner Registration Token
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gitlab-runner-secret
+  namespace: devops-tools
+type: Opaque
+data:
+  runner-registration-token: Z2xydC10MV9ra2ppTXZiWFdreWJLeUhIZTJOMw==
+
+---
+# ServiceAccount for GitLab Runner
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gitlab-runner
+  namespace: devops-tools
+
+---
+# ClusterRole for GitLab Runner (RBAC Fix)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gitlab-runner
+rules:
+  - apiGroups: [""]
+    resources: ["secrets", "pods", "pods/log", "configmaps"]
+    verbs: ["create", "get", "update", "delete", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["create", "get", "update", "delete", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list"]
+
+---
+# ClusterRoleBinding for GitLab Runner
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: gitlab-runner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: gitlab-runner
+subjects:
+  - kind: ServiceAccount
+    name: gitlab-runner
+    namespace: devops-tools
+
+---
+# ConfigMap for GitLab Runner Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitlab-runner-config
+  namespace: devops-tools
+data:
+  config.toml: |
+    concurrent = 4
+    check_interval = 30
+
+---
+# Deployment for GitLab Runner
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab-runner
+  namespace: devops-tools
+  labels:
+    app: gitlab-runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab-runner
+  template:
+    metadata:
+      labels:
+        app: gitlab-runner
+    spec:
+      serviceAccountName: gitlab-runner
+      containers:
+        - name: gitlab-runner
+          image: gitlab/gitlab-runner:latest
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/gitlab-runner
+            - name: runner-data
+              mountPath: /home/gitlab-runner
+          env:
+            - name: CI_SERVER_URL
+              value: "http://gitlab-service.devops-tools.svc.cluster.local:80"
+            - name: REGISTRATION_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: gitlab-runner-secret
+                  key: runner-registration-token
+            - name: KUBERNETES_NAMESPACE
+              value: "devops-tools"
+          command: ["/bin/bash", "-c"]  # ✅ FIXED
+          args:
+            - |
+              if [[ ! -f /etc/gitlab-runner/registered ]]; then
+                gitlab-runner register \
+                  --non-interactive \
+                  --url "$CI_SERVER_URL" \
+                  --registration-token "$REGISTRATION_TOKEN" \
+                  --executor "kubernetes" \
+                  --shell = "bash"
+                  --kubernetes-namespace "$KUBERNETES_NAMESPACE" \
+                  --name "kubernetes-runner" \
+                  --output-limit 20480 && \
+                touch /etc/gitlab-runner/registered
+              fi
+              gitlab-runner run
+      volumes:
+        - name: config-volume
+          emptyDir: {}
+        - name: runner-data
+          persistentVolumeClaim:
+            claimName: gitlab-runner-pvc
