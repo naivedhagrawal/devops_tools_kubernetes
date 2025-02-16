@@ -3,7 +3,7 @@
 # GitLab Configuration
 GITLAB_URL="http://devops.local:8081"  # Updated GitLab URL
 NAMESPACE="devops-tools"
-GITLAB_PAT="your_hardcoded_token_here"  # Hardcoded GitLab Personal Access Token
+GITLAB_PAT="glpat-jvxQ3Tevs4mSwkLYBZN2"  # Hardcoded GitLab Personal Access Token
 
 # Install required dependencies
 if ! command -v helm &> /dev/null; then
