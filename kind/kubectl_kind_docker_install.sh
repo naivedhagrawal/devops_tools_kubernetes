@@ -55,3 +55,14 @@ echo "Verifying Docker installation..."
 docker --version
 
 echo "Installation completed successfully!"
+
+kubectl version
+kind version
+
+kind create cluster --config kind-cluster-config.yaml --name kind
+kubectl apply -f namespace.yaml
+kubectl config set-context --current --namespace=devops-tools
+
+kind get nodes
+kubectl get nodes
+kubectl cluster-info --context kind-kind
