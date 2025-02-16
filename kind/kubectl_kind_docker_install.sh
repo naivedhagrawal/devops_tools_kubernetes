@@ -59,7 +59,14 @@ echo "Installation completed successfully!"
 kubectl version
 kind version
 
-kind create cluster --config kind-cluster-config.yaml --name kind
+# Check if a Kind cluster already exists
+if kind get clusters | grep -q "^kind$"; then
+    echo "Kind cluster 'kind' already exists. Skipping creation."
+else
+    echo "Creating Kind cluster..."
+    kind create cluster --config kind-cluster-config.yaml --name kind
+fi
+
 kubectl apply -f namespace.yaml
 kubectl config set-context --current --namespace=devops-tools
 
