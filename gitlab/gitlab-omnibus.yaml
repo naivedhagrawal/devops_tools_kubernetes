@@ -9,8 +9,7 @@ spec:
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1 
-      maxSurge: 1
+      partition: 0  # ✅ Valid for StatefulSet
   selector:
     matchLabels:
       app: gitlab
