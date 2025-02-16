@@ -67,9 +67,24 @@ echo "Installation completed successfully!"
 kubectl version
 kind version
 
+# Set Kind to use Docker explicitly
+export KIND_EXPERIMENTAL_PROVIDER=docker
+
 # Check if a Kind cluster already exists
 if kind get clusters | grep -q "^kind$"; then
-    echo "Kind cluster 'kind' already exists. Skipping creation."
+    if [ "$(kind get nodes 2>/dev/null | wc -l)" -eq 0 ]; then
+        echo "Kind cluster 'kind' exists but has no nodes. Do you want to delete and recreate it? (y/n)"
+        read -r answer
+        if [[ "$answer" =~ ^[Yy]$ ]]; then
+            kind delete cluster --name kind
+            echo "Creating Kind cluster..."
+            kind create cluster --config kind-cluster-config.yaml --name kind
+        else
+            echo "Skipping cluster creation."
+        fi
+    else
+        echo "Kind cluster 'kind' already exists. Skipping creation."
+    fi
 else
     echo "Creating Kind cluster..."
     kind create cluster --config kind-cluster-config.yaml --name kind
