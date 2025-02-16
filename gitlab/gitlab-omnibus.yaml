@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: gitlab
-          image: gitlab/gitlab-ce:latest
+          image: gitlab/gitlab-ee:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
