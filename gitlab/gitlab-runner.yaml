@@ -103,7 +103,7 @@ spec:
               mountPath: /home/gitlab-runner
           env:
             - name: CI_SERVER_URL
-              value: "http://gitlab-service.devops-tools.svc.cluster.local:8081"
+              value: "http://gitlab-service.devops-tools.svc.cluster.local:80"
             - name: REGISTRATION_TOKEN
               valueFrom:
                 secretKeyRef:
