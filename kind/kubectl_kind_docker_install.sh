@@ -6,20 +6,28 @@ set -e  # Exit immediately if a command exits with a non-zero status
 echo "Updating system and installing dependencies..."
 sudo dnf install -y curl git bash-completion
 
-# Install kubectl
-echo "Installing kubectl..."
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-rm kubectl
+# Check if kubectl is already installed
+if command -v kubectl &> /dev/null; then
+    echo "kubectl is already installed. Skipping installation."
+else
+    echo "Installing kubectl..."
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+    rm kubectl
+fi
 
 echo "Verifying kubectl installation..."
 kubectl version --client
 
-# Install Kind
-echo "Installing Kind..."
-curl -Lo ./kind "https://kind.sigs.k8s.io/dl/latest/kind-linux-amd64"
-chmod +x ./kind
-sudo mv ./kind /usr/local/bin/kind
+# Check if Kind is already installed
+if command -v kind &> /dev/null; then
+    echo "Kind is already installed. Skipping installation."
+else
+    echo "Installing Kind..."
+    curl -Lo ./kind "https://kind.sigs.k8s.io/dl/latest/kind-linux-amd64"
+    chmod +x ./kind
+    sudo mv ./kind /usr/local/bin/kind
+fi
 
 echo "Verifying Kind installation..."
 kind version
