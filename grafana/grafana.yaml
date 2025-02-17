@@ -1,5 +1,3 @@
-# kubectl get namespace my-grafana
-
 #Deployment Grafana
 ---
 apiVersion: apps/v1
