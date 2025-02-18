@@ -1,0 +1,31 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 31000
+    hostPort: 80 # GitLab port
+  - containerPort: 31001
+    hostPort: 8080 # Jenkins port
+  - containerPort: 31006
+    hostPort: 3000 # Grafana port
+  - containerPort: 31007
+    hostPort: 9090 # Prometheus port
+
+- role: worker
+  extraMounts:
+  - hostPath: C:\\appdata\\gitlab
+    containerPath: /home/data/gitlab
+  - hostPath: C:\\appdata\\jenkins
+    containerPath: /home/data/jenkins
+  - hostPath: C:\\appdata\\postgres
+    containerPath: /home/data/postgres
+  - hostPath: C:\\appdata\\grafana
+    containerPath: /home/data/grafana
+  - hostPath: C:\\appdata\\prometheus
+    containerPath: /home/data/prometheus
+
+# kind create cluster --config kind-cluster-config.yaml --name kind
+# kubectl apply -f namespace.yaml
+# kubectl config set-context --current --namespace=devops-tools
