@@ -137,6 +137,8 @@ spec:
           env:
             - name: JENKINS_OPTS
               value: "--prefix=/jenkins"
+            - name: JAVA_OPTS
+              value: "-Dhudson.security.csrf.GlobalCrumbIssuerConfiguration.DISABLE_CSRF_PROTECTION=true"
           ports:
             - name: httpport
               containerPort: 8080
