@@ -21,7 +21,7 @@ spec:
           image: openproject/openproject:15
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 80
           volumeMounts:
             - name: pgdata
               mountPath: /var/openproject/pgdata
@@ -63,7 +63,7 @@ spec:
     - protocol: TCP
       nodePort: 32000
       port: 80
-      targetPort: 8080
+      targetPort: 80
 ---
 apiVersion: v1
 kind: PersistentVolume
