@@ -144,14 +144,14 @@ spec:
               containerPort: 50000
           livenessProbe:
             httpGet:
-              path: "/login"
+              path: "/jenkins/login"
               port: 8080
             initialDelaySeconds: 90
             periodSeconds: 10
             timeoutSeconds: 5
           readinessProbe:
             httpGet:
-              path: "/login"
+              path: "/jenkins/login"
               port: 8080
             initialDelaySeconds: 60
             periodSeconds: 10
