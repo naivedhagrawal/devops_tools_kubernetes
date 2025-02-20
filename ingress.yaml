@@ -5,6 +5,8 @@ metadata:
   namespace: devops-tools
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: "/jenkins"
 spec:
   ingressClassName: nginx
   rules:
