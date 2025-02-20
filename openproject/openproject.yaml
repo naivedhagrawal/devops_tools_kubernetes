@@ -32,18 +32,6 @@ spec:
               value: "devops.local"
             - name: OPENPROJECT_HTTPS
               value: "false"
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 120
-            periodSeconds: 10
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 120
-            periodSeconds: 20
   volumeClaimTemplates:
     - metadata:
         name: pgdata
