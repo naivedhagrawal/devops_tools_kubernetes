@@ -15,7 +15,7 @@ spec:
     - host: devops.local
       http:
         paths:
-          - path: /jenkins(/|$)(.*)
+          - path: /jenkins
             pathType: Prefix
             backend:
               service:
