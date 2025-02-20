@@ -28,8 +28,6 @@ spec:
             - name: assets
               mountPath: /var/openproject/assets
           env:
-            - name: OPENPROJECT_HOST__NAME
-              value: "devops.local"
             - name: OPENPROJECT_HTTPS
               value: "false"
   volumeClaimTemplates:
