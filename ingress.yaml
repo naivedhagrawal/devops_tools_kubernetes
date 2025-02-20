@@ -5,6 +5,10 @@ metadata:
   namespace: devops-tools
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /jenkins/$1
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Prefix /jenkins;
 spec:
   ingressClassName: nginx
   rules:
