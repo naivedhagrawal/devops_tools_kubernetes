@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: openproject
-          image: openproject/community:latest
+          image: openproject/openproject
           imagePullPolicy: Always
           ports:
             - containerPort: 80
