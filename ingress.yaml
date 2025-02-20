@@ -4,14 +4,14 @@ metadata:
   name: ingress-rules
   namespace: devops-tools
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /jenkins/$1
 spec:
   ingressClassName: nginx
   rules:
   - host: devops.local
     http:
       paths:
-      - path: /jenkins/
+      - path: /jenkins(/|$)(.*)
         pathType: Prefix
         backend:
           service:
