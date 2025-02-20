@@ -1,0 +1,33 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 80
+        hostPort: 80
+        protocol: TCP
+      - containerPort: 443
+        hostPort: 443
+        protocol: TCP
+
+
+  - role: worker
+    extraMounts:
+    - hostPath: /home/appdata/gitlab
+      containerPath: /home/data/gitlab
+    - hostPath: /home/appdata/jenkins
+      containerPath: /home/data/jenkins
+    - hostPath: /home/appdata/postgres
+      containerPath: /home/data/postgres
+    - hostPath: /home/appdata/grafana
+      containerPath: /home/data/grafana
+    - hostPath: /home/appdata/prometheus
+      containerPath: /home/data/prometheus
+    - hostPath: /home/appdata/other
+      containerPath: /home/data/other
+
+  #image: kindest/node:v1.32.0
+
+# kind create cluster --config kind-cluster-config.yaml --name kind
+# kubectl apply -f namespace.yaml
+# kubectl config set-context --current --namespace=devops-tools
