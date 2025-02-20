@@ -61,8 +61,8 @@ spec:
     app: openproject
   ports:
     - protocol: TCP
-      nodePort: 32001
-      port: 8080
+      nodePort: 32000
+      port: 80
       targetPort: 8080
 ---
 apiVersion: v1
