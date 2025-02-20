@@ -134,6 +134,9 @@ spec:
         - name: jenkins
           image: jenkins/jenkins:lts
           imagePullPolicy: Always
+          env:
+            - name: JENKINS_OPTS
+              value: "--prefix=/jenkins"
           ports:
             - name: httpport
               containerPort: 8080
