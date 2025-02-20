@@ -5,13 +5,17 @@ metadata:
   namespace: devops-tools
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header X-Forwarded-Prefix /jenkins;
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_set_header X-Forwarded-Proto $scheme;
 spec:
   ingressClassName: nginx
   rules:
   - host: devops.local
     http:
       paths:
-      - path: /jenkins
+      - path: /jenkins(/|$)(.*)
         pathType: Prefix
         backend:
           service:
