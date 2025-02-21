@@ -23,7 +23,7 @@ spec:
           image: openproject/openproject:15
           imagePullPolicy: Always
           ports:
-            - containerPort: 9000
+            - containerPort: 8080
           volumeMounts:
             - name: pgdata
               mountPath: /var/openproject/pgdata
@@ -44,6 +44,11 @@ spec:
                 secretKeyRef:
                   name: openproject-db-secret
                   key: password
+            - name: APACHE_SERVER_NAME
+              value: "devops.local"
+            - name: PORT
+              value: "9000"
+
       volumes:
         - name: pgdata
           persistentVolumeClaim:
