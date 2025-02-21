@@ -1,3 +1,5 @@
+# kubectl create secret generic openproject-secret --from-literal=SECRET_KEY_BASE=$(openssl rand -hex 32) -n devops-tools
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,6 +31,18 @@ spec:
           env:
             - name: OPENPROJECT_HTTPS
               value: "false"
+            - name: OPENPROJECT_SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: openproject-secret
+                  key: SECRET_KEY_BASE
+            - name: OPENPROJECT_DB_USERNAME
+              value: "openproject"
+            - name: OPENPROJECT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openproject-db-secret
+                  key: password
       volumes:
         - name: pgdata
           persistentVolumeClaim:
@@ -49,7 +63,7 @@ spec:
   ports:
     - protocol: TCP
       nodePort: 32000
-      port: 80
+      port: 8080
       targetPort: 8080
 ---
 apiVersion: v1
@@ -80,7 +94,6 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: openproject-pgdata
-  namespace: devops-tools
 spec:
   capacity:
     storage: 10Gi
@@ -95,7 +108,6 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: openproject-assets
-  namespace: devops-tools
 spec:
   capacity:
     storage: 5Gi
