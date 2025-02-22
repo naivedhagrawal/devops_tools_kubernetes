@@ -4,41 +4,32 @@ apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
 - role: control-plane
   extraPortMappings:
-  # Web Apps & DevOps Tools
-  - containerPort: 80
-    hostPort: 80
-  - containerPort: 443
-    hostPort: 443
-  - containerPort: 8080
-    hostPort: 8080
-  - containerPort: 9000
-    hostPort: 9000  # SonarQube
-  - containerPort: 5000
-    hostPort: 5000  # Docker Registry
+  - containerPort: 31000
+    hostPort: 80 #gitlab port
 
-  # Monitoring & Logging
-  - containerPort: 3000
-    hostPort: 3000  # Grafana
-  - containerPort: 9090
-    hostPort: 9090  # Prometheus
-  - containerPort: 5601
-    hostPort: 5601  # Kibana
-  - containerPort: 9200
-    hostPort: 9200  # Elasticsearch
+  - containerPort: 31001
+    hostPort: 8080 #jenkins port
 
-  # Database Services
-  - containerPort: 5432
-    hostPort: 5432  # PostgreSQL
-  - containerPort: 3306
-    hostPort: 3306  # MySQL
-  - containerPort: 27017
-    hostPort: 27017 # MongoDB
+  - containerPort: 31002
+    hostPort: 5432 #postgres port
 
-  # Kubernetes & NodePort Support
-  - containerPort: 6443
-    hostPort: 6443  # Kubernetes API
-  - containerPort: 10250
-    hostPort: 10250 # Kubelet API
+  - containerPort: 31003
+    hostPort: 5433 #postgres port
+
+  - containerPort: 31004
+    hostPort: 9099 #prometheus port
+
+  - containerPort: 31005
+    hostPort: 6000 #wiki port
+
+  - containerPort: 31006
+    hostPort: 3000 #grafana port
+
+  - containerPort: 31007
+    hostPort: 9000 #openproject port
+
+  - containerPort: 31008
+    hostPort: 8090 #zap port
 
 - role: worker
   extraMounts:
