@@ -157,6 +157,8 @@ spec:
           operator: In
           values:
           - kind-worker
+  local:
+    path: /home/data/wiki
 
 #Persistent Volume Claim
 ---
