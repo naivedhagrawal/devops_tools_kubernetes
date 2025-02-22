@@ -80,7 +80,7 @@ spec:
         - name: wiki
           image: requarks/wiki:latest
           ports:
-            - containerPort: 6000
+            - containerPort: 3000
           env:
             - name: DB_TYPE
               value: "postgres"
@@ -103,8 +103,6 @@ spec:
                 secretKeyRef:
                   name: postgres-secret
                   key: POSTGRES_DB
-            - name: PORT
-              value: "6000"
           volumeMounts:
             - name: wiki-storage
               mountPath: /wiki/data
@@ -125,9 +123,9 @@ spec:
     app: wiki
   ports:
     - protocol: TCP
-      port: 6000
-      targetPort: 6000
-      nodePort: 32005
+      port: 3000
+      targetPort: 3000
+      nodePort: 32006
 
 #Volumes
 ---
