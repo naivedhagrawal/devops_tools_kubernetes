@@ -143,7 +143,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-path
   hostPath:
-    path: /home/data/wiki
+    path: /home/appdata/wiki
 ---
 # Persistent Volume Claims
 apiVersion: v1
