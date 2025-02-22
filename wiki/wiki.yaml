@@ -126,7 +126,7 @@ spec:
       port: 6000
       targetPort: 3000
       nodePort: 32005
-      
+
 #Volumes
 ---
 kind: StorageClass
@@ -154,7 +154,7 @@ spec:
   accessModes:
     - ReadWriteMany
   local:
-    path: "/home/appdata/wiki"
+    path: /home/data/wiki
   nodeAffinity:
     required:
       nodeSelectorTerms:
