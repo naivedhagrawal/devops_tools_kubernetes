@@ -75,6 +75,10 @@ spec:
       labels:
         app: wiki
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox
+          command: ['sh', '-c', 'until nc -z wiki-postgres-service 5432; do echo waiting for database; sleep 2; done;']
       containers:
         - name: wiki
           image: requarks/wiki:latest
