@@ -103,6 +103,8 @@ spec:
                 secretKeyRef:
                   name: postgres-secret
                   key: POSTGRES_DB
+            - name: PORT
+              value: "6000"
           volumeMounts:
             - name: wiki-storage
               mountPath: /wiki/data
