@@ -80,7 +80,7 @@ spec:
         - name: wiki
           image: requarks/wiki:latest
           ports:
-            - containerPort: 3000
+            - containerPort: 6000
           env:
             - name: DB_TYPE
               value: "postgres"
@@ -124,7 +124,7 @@ spec:
   ports:
     - protocol: TCP
       port: 6000
-      targetPort: 3000
+      targetPort: 6000
       nodePort: 32005
 
 #Volumes
