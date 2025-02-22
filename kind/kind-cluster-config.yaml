@@ -6,15 +6,22 @@ nodes:
   extraPortMappings:
   - containerPort: 31000
     hostPort: 80 #gitlab port
-    #listenAddress: "0.0.0.0" # Optional, defaults to "0.0.0.0"
-    #protocol: tcp # Optional, defaults to tcp
   - containerPort: 31001
     hostPort: 8080 #jenkins port
+  - containerPort: 31002
+    hostPort: 5432 #postgres port
+  - containerPort: 31003
+    hostPort: 5433 #postgres port
+  - containerPort: 31004
+    hostPort: 9090 #prometheus port
+  - containerPort: 31005
+    hostPort: 6000 #wiki port
   - containerPort: 31006
     hostPort: 3000 #grafana port
   - containerPort: 31007
-    hostPort: 9000 #prometheus
-  #image: kindest/node:v1.32.0
+    hostPort: 9000 #openproject port
+  - containerPort: 31008
+    hostPort: 8090 #zap port
 
 - role: worker
   extraMounts:
@@ -28,10 +35,16 @@ nodes:
     containerPath: /home/data/grafana
   - hostPath: /home/appdata/prometheus
     containerPath: /home/data/prometheus
+  - hostPath: /home/appdata/wiki
+    containerPath: /home/data/wiki
+  - hostPath: /home/appdata/openproject
+    containerPath: /home/data/openproject
+  - hostPath: /home/appdata/zap
+    containerPath: /home/data/zap
+  - hostPath: /home/appdata/workspace
+    containerPath: /home/data/workspace
   - hostPath: /home/appdata/other
     containerPath: /home/data/other
-
-  #image: kindest/node:v1.32.0
 
 # kind create cluster --config kind-cluster-config.yaml --name kind
 # kubectl apply -f namespace.yaml
