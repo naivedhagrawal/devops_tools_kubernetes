@@ -13,7 +13,7 @@ nodes:
   - containerPort: 31003
     hostPort: 5433 #postgres port
   - containerPort: 31004
-    hostPort: 9090 #prometheus port
+    hostPort: 9099 #prometheus port
   - containerPort: 31005
     hostPort: 6000 #wiki port
   - containerPort: 31006
