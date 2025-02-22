@@ -126,21 +126,45 @@ spec:
       port: 6000
       targetPort: 3000
       nodePort: 32005
+      
+#Volumes
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: local-storage-wiki
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+#Persistent Volume
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: wiki-pv
-  namespace: devops-tools
+  labels:
+    type: local
 spec:
+  storageClassName: local-storage-wiki
+  claimRef:
+    name: wiki-pvc
+    namespace: devops-tools
   capacity:
     storage: 10Gi
   accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  hostPath:
+    - ReadWriteMany
+  local:
     path: "/home/appdata/wiki"
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - kind-worker
 
+#Persistent Volume Claim
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -148,8 +172,9 @@ metadata:
   name: wiki-pvc
   namespace: devops-tools
 spec:
+  storageClassName: local-storage-wiki
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 10Gi
