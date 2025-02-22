@@ -6,44 +6,25 @@ nodes:
   extraPortMappings:
   # Web Apps & DevOps Tools
   - containerPort: 80
-    hostPort: 80    # GitLab / Web apps
+    hostPort: 80
   - containerPort: 443
-    hostPort: 443   # HTTPS
+    hostPort: 443
   - containerPort: 8080
-    hostPort: 8080  # Jenkins, Other DevOps tools
-  - containerPort: 8081
-    hostPort: 8081  # Artifactory, Nexus, or other tools
-  - containerPort: 8443
-    hostPort: 8443  # Secure web apps
+    hostPort: 8080
   - containerPort: 9000
     hostPort: 9000  # SonarQube
-  - containerPort: 9001
-    hostPort: 9001  # Alternate SonarQube
   - containerPort: 5000
-    hostPort: 5000  # Docker Private Registry
-  - containerPort: 32000-32767
-    hostPort: 32000-32767
-    protocol: TCP   # NodePort Range for Kubernetes
+    hostPort: 5000  # Docker Registry
 
   # Monitoring & Logging
   - containerPort: 3000
     hostPort: 3000  # Grafana
   - containerPort: 9090
     hostPort: 9090  # Prometheus
-  - containerPort: 9093
-    hostPort: 9093  # Alertmanager
-  - containerPort: 3100
-    hostPort: 3100  # Loki
   - containerPort: 5601
     hostPort: 5601  # Kibana
   - containerPort: 9200
     hostPort: 9200  # Elasticsearch
-  - containerPort: 5044
-    hostPort: 5044  # Logstash Beats
-  - containerPort: 514
-    hostPort: 514   # Syslog
-  - containerPort: 24224
-    hostPort: 24224 # Fluentd
 
   # Database Services
   - containerPort: 5432
@@ -52,30 +33,12 @@ nodes:
     hostPort: 3306  # MySQL
   - containerPort: 27017
     hostPort: 27017 # MongoDB
-  - containerPort: 6379
-    hostPort: 6379  # Redis
-  - containerPort: 2181
-    hostPort: 2181  # Zookeeper
-  - containerPort: 9092
-    hostPort: 9092  # Kafka
 
-  # Kubernetes & Cloud
+  # Kubernetes & NodePort Support
   - containerPort: 6443
-    hostPort: 6443  # Kubernetes API Server
-  - containerPort: 2379
-    hostPort: 2379  # etcd
-  - containerPort: 2380
-    hostPort: 2380  # etcd
+    hostPort: 6443  # Kubernetes API
   - containerPort: 10250
     hostPort: 10250 # Kubelet API
-  - containerPort: 10251
-    hostPort: 10251 # Kube-Scheduler
-  - containerPort: 10252
-    hostPort: 10252 # Kube-Controller-Manager
-  - containerPort: 10257
-    hostPort: 10257 # Kubernetes Controller Secure
-  - containerPort: 10259
-    hostPort: 10259 # Kubernetes Scheduler Secure
 
 - role: worker
   extraMounts:
