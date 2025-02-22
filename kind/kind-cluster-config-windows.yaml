@@ -20,10 +20,10 @@ nodes:
     hostPort: 9099 #prometheus port
 
   - containerPort: 31005
-    hostPort: 6000 #wiki port
+    hostPort: 6000
 
   - containerPort: 31006
-    hostPort: 3000 #grafana port
+    hostPort: 3000 #wiki port
 
   - containerPort: 31007
     hostPort: 9000 #openproject port
