@@ -58,7 +58,6 @@ spec:
     - protocol: TCP
       port: 5432
       targetPort: 5432
-  clusterIP: None
 
 ---
 apiVersion: apps/v1
@@ -146,15 +145,10 @@ metadata:
     type: local
 spec:
   storageClassName: local-storage-wiki
-  claimRef:
-    name: wiki-pvc
-    namespace: devops-tools
   capacity:
     storage: 10Gi
   accessModes:
-    - ReadWriteMany
-  local:
-    path: /home/data/wiki
+    - ReadWriteOnce
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -174,7 +168,7 @@ metadata:
 spec:
   storageClassName: local-storage-wiki
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi
