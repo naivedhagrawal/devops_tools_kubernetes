@@ -84,16 +84,12 @@ volumeBindingMode: WaitForFirstConsumer
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  namespace: devops-tools
   name: postgres-pv
   labels:
     type: local
     app: postgres
 spec:
   storageClassName: local-postgres
-  claimRef:
-    name: postgres-pvc
-    namespace: devops-tools
   capacity:
     storage: 20Gi
   accessModes:
@@ -112,7 +108,6 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  namespace: devops-tools
   name: postgres-pvc
 spec:
   accessModes:
@@ -131,3 +126,4 @@ type: Opaque
 stringData:
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
+  POSTGRES_DB: wikijs
