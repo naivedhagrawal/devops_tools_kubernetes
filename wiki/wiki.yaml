@@ -51,13 +51,13 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 5
             timeoutSeconds: 5
-          startupProbe: # Add startup probe
+          startupProbe:
             exec:
               command:
                 - /bin/sh
                 - -c
                 - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
-            failureThreshold: 30 # Allow more time for startup
+            failureThreshold: 30
             periodSeconds: 10
           resources:
             requests:
@@ -87,7 +87,7 @@ metadata:
   name: postgres-wikijs
   namespace: devops-tools
 spec:
-  type: ClusterIP  # Or LoadBalancer if external access needed
+  type: ClusterIP
   selector:
     app: postgres
   ports:
@@ -117,14 +117,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   local:  # REPLACE with appropriate configuration for your storage
     path: /home/data/postgres # REPLACE for production
-  nodeAffinity: # REMOVE for production unless you have a specific reason
-    required:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kubernetes.io/hostname
-              operator: In
-              values:
-                - kind-worker # REMOVE for production
+  # nodeAffinity: REMOVED
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -147,7 +140,7 @@ metadata:
 type: Opaque
 stringData:
   POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres # **IMPORTANT: CHANGE THIS PASSWORD!**
+  POSTGRES_PASSWORD: <generate_strong_password> # **IMPORTANT: CHANGE THIS PASSWORD!**
   POSTGRES_DB: wikijs
 ---
 apiVersion: apps/v1
@@ -174,7 +167,7 @@ spec:
             - name: DB_TYPE
               value: "postgres"
             - name: DB_HOST
-              value: "postgres-wikijs.devops-tools.svc.cluster.local" # Correct service name
+              value: "postgres-wikijs.devops-tools.svc.cluster.local"
             - name: DB_PORT
               value: "5432"
             - name: DB_USER
@@ -225,14 +218,14 @@ metadata:
   name: wiki-service
   namespace: devops-tools
 spec:
-  type: NodePort # Or NodePort if LoadBalancer is not available
+  type: NodePort # Changed to NodePort
   selector:
     app: wiki
   ports:
     - protocol: TCP
       port: 6000 # External port
       targetPort: 3000
-      nodePort: 32005 # Only needed if type is NodePort
+      nodePort: 32005 # NodePort - Choose a port in the 30000-32767 range
 ---
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
@@ -255,14 +248,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   local:  # REPLACE with appropriate configuration for your storage
     path: /home/data/wiki # REPLACE for production
-  nodeAffinity:  # REMOVE for production unless you have a specific reason
-    required:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kubernetes.io/hostname
-              operator: In
-              values:
-                - kind-worker # REMOVE for production
+  # nodeAffinity: REMOVED
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
