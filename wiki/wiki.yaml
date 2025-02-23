@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,8 +13,6 @@ spec:
       labels:
         app: wiki
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: kind-worker
       containers:
         - name: wiki
           image: requarks/wiki:latest
@@ -25,55 +22,73 @@ spec:
             - name: DB_TYPE
               value: "postgres"
             - name: DB_HOST
-              value: "postgres.devops-tools.svc.cluster.local"
+              value: "postgres-wikijs.devops-tools.svc.cluster.local"
             - name: DB_PORT
               value: "5432"
             - name: DB_USER
               valueFrom:
-                  secretKeyRef:
-                    name: postgres-secrets
-                    key: POSTGRES_USER
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_USER
             - name: DB_PASS
               valueFrom:
-                  secretKeyRef:
-                    name: postgres-secrets
-                    key: POSTGRES_PASSWORD
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PASSWORD
             - name: DB_NAME
               valueFrom:
-                  secretKeyRef:
-                    name: postgres-secrets
-                    key: POSTGRES_DB
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_DB
           volumeMounts:
             - name: wiki-storage
               mountPath: /wiki/data
+          resources:
+            requests:
+              cpu: 1
+              memory: 2Gi
+            limits:
+              cpu: 2
+              memory: 4Gi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 5
       volumes:
         - name: wiki-storage
           persistentVolumeClaim:
             claimName: wiki-pvc
-
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: wiki-service
+  namespace: devops-tools
 spec:
-  type: NodePort
+  type: NodePort # Or NodePort if LoadBalancer is not available
   selector:
     app: wiki
   ports:
     - protocol: TCP
-      port: 6000
+      port: 6000 # External port
       targetPort: 3000
-      nodePort: 32005
+      nodePort: 32005 # Only needed if type is NodePort
 ---
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: local-wiki-storage
-provisioner: kubernetes.io/no-provisioner
+  name: local-wiki-storage # REPLACE with cloud-provided StorageClass for production
+provisioner: kubernetes.io/no-provisioner # REPLACE for production
 volumeBindingMode: WaitForFirstConsumer
 ---
-# Persistent Volumes
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -84,21 +99,29 @@ spec:
   capacity:
     storage: 5Gi
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteOnce # Consider ReadWriteMany if your storage supports it
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: local-wiki-storage
-  hostPath:
-    path: /home/data/wiki
+  storageClassName: local-wiki-storage # Match StorageClass name
+  hostPath: # REPLACE with appropriate configuration for your storage
+    path: /home/data/wiki  # REPLACE for production
+  nodeAffinity: # REMOVE for production unless you have a specific reason
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - kind-worker # REMOVE for production
 ---
-# Persistent Volume Claims
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: wiki-pvc
+  namespace: devops-tools
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: local-wiki-storage
+  storageClassName: local-wiki-storage # Match StorageClass name
   resources:
     requests:
       storage: 5Gi
