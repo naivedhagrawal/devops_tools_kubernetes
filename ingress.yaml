@@ -1,20 +1,28 @@
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-rules
+  name: devops-ingress
   namespace: devops-tools
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /jenkins/$1
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-  - host: devops.local
-    http:
-      paths:
-      - path: /jenkins/
-        pathType: Prefix
-        backend:
-          service:
-            name: jenkins-service
-            port:
-              number: 8080
+    - host: devops.local
+      http:
+        paths:
+          - path: /wiki
+            pathType: Prefix
+            backend:
+              service:
+                name: wiki-service
+                port:
+                  number: 3000
+          - path: /jenkins
+            pathType: Prefix
+            backend:
+              service:
+                name: jenkins-service
+                port:
+                  number: 8080
