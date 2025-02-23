@@ -26,6 +26,14 @@ spec:
       containers:
         - name: postgres
           image: postgres:15
+          command: ["/bin/sh", "-c"]
+          args:
+            - >
+              if [ ! -d "/var/lib/postgresql/data/base" ]; then
+                echo "Running initialization script...";
+                psql -U postgres -f /docker-entrypoint-initdb.d/init-db.sql;
+              fi;
+              exec docker-entrypoint.sh postgres;
           envFrom:
             - secretRef:
                 name: postgres-secrets
