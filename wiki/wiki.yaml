@@ -1,3 +1,155 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-db
+  namespace: devops-tools
+data:
+  init-db.sql: |
+    CREATE DATABASE IF NOT EXISTS wikijs;
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-wikijs
+  namespace: devops-tools
+spec:
+  serviceName: postgres-wikijs
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          envFrom:
+            - secretRef:
+                name: postgres-secrets
+          ports:
+            - containerPort: 5432
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
+            initialDelaySeconds: 90
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+            successThreshold: 1
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            timeoutSeconds: 5
+          startupProbe: # Add startup probe
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
+            failureThreshold: 30 # Allow more time for startup
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 1
+              memory: 2Gi
+            limits:
+              cpu: 2
+              memory: 4Gi
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: data-disk
+              mountPath: /var/lib/postgresql/data
+            - name: init-script
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: data-disk
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+        - name: init-script
+          configMap:
+            name: postgres-init-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-wikijs
+  namespace: devops-tools
+spec:
+  type: ClusterIP  # Or LoadBalancer if external access needed
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: local-postgres # REPLACE with cloud-provided StorageClass for production
+provisioner: kubernetes.io/no-provisioner # REPLACE for production
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv
+  labels:
+    type: local
+    app: postgres
+spec:
+  storageClassName: local-postgres # Match StorageClass name
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce # Consider ReadWriteMany if your storage supports it
+  persistentVolumeReclaimPolicy: Retain
+  local:  # REPLACE with appropriate configuration for your storage
+    path: /home/data/postgres # REPLACE for production
+  nodeAffinity: # REMOVE for production unless you have a specific reason
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - kind-worker # REMOVE for production
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: devops-tools
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-postgres # Match StorageClass name
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secrets
+  namespace: devops-tools
+type: Opaque
+stringData:
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres # **IMPORTANT: CHANGE THIS PASSWORD!**
+  POSTGRES_DB: wikijs
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,7 +174,7 @@ spec:
             - name: DB_TYPE
               value: "postgres"
             - name: DB_HOST
-              value: "postgres-wikijs.devops-tools.svc.cluster.local"
+              value: "postgres-wikijs.devops-tools.svc.cluster.local" # Correct service name
             - name: DB_PORT
               value: "5432"
             - name: DB_USER
@@ -101,10 +253,9 @@ spec:
   accessModes:
     - ReadWriteOnce # Consider ReadWriteMany if your storage supports it
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: local-wiki-storage # Match StorageClass name
-  hostPath: # REPLACE with appropriate configuration for your storage
-    path: /home/data/wiki  # REPLACE for production
-  nodeAffinity: # REMOVE for production unless you have a specific reason
+  local:  # REPLACE with appropriate configuration for your storage
+    path: /home/data/wiki # REPLACE for production
+  nodeAffinity:  # REMOVE for production unless you have a specific reason
     required:
       nodeSelectorTerms:
         - matchExpressions:
