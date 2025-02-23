@@ -14,8 +14,8 @@ spec:
       labels:
         app: postgres
     spec:
-      securityContext:  # Pod-level securityContext
-        fsGroup: 999   # Set the group ID for volumes
+      securityContext:
+        fsGroup: 999
       containers:
         - name: postgres
           image: postgres:15
@@ -59,20 +59,8 @@ spec:
             limits:
               cpu: 2
               memory: 4Gi
-          securityContext:  # Container-level securityContext
-            runAsUser: 999  # Run as postgres user
-          volumeMounts:
-            - name: data-disk
-              mountPath: /var/lib/postgresql/data
-            - name: init-script
-              mountPath: /docker-entrypoint-initdb.d
-      volumes:
-        - name: data-disk
-          persistentVolumeClaim:
-            claimName: postgres-pvc
-        - name: init-script
-          configMap:
-            name: postgres-init-db
+          securityContext:
+            runAsUser: 999
 ---
 apiVersion: v1
 kind: Service
@@ -87,51 +75,6 @@ spec:
     - port: 5432
       targetPort: 5432
 ---
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: local-postgres # REPLACE with cloud-provided StorageClass for production
-provisioner: kubernetes.io/no-provisioner # REPLACE for production
-volumeBindingMode: WaitForFirstConsumer
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: postgres-pv
-  labels:
-    type: local
-    app: postgres
-spec:
-  storageClassName: local-postgres # Match StorageClass name
-  capacity:
-    storage: 20Gi
-  accessModes:
-    - ReadWriteOnce # Consider ReadWriteMany if your storage supports it
-  persistentVolumeReclaimPolicy: Retain
-  local:  # REPLACE with appropriate configuration for your storage
-    path: /home/data/postgres # REPLACE for production
-  nodeAffinity: # RESTORED - Required for local volumes
-    required:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kubernetes.io/hostname
-              operator: In
-              values:
-                - kind-worker # **REPLACE with your node's hostname**
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: postgres-pvc
-  namespace: devops-tools
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: local-postgres # Match StorageClass name
-  resources:
-    requests:
-      storage: 20Gi
----
 apiVersion: v1
 kind: Secret
 metadata:
@@ -140,7 +83,7 @@ metadata:
 type: Opaque
 stringData:
   POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres # **IMPORTANT: CHANGE THIS PASSWORD!**
+  POSTGRES_PASSWORD: postgres
   POSTGRES_DB: wikijs
 ---
 apiVersion: apps/v1
@@ -185,9 +128,6 @@ spec:
                 secretKeyRef:
                   name: postgres-secrets
                   key: POSTGRES_DB
-          volumeMounts:
-            - name: wiki-storage
-              mountPath: /wiki/data
           resources:
             requests:
               cpu: 1
@@ -207,10 +147,6 @@ spec:
               port: 3000
             initialDelaySeconds: 15
             periodSeconds: 5
-      volumes:
-        - name: wiki-storage
-          persistentVolumeClaim:
-            claimName: wiki-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -218,55 +154,11 @@ metadata:
   name: wiki-service
   namespace: devops-tools
 spec:
-  type: NodePort # Changed to NodePort
+  type: NodePort
   selector:
     app: wiki
   ports:
     - protocol: TCP
-      port: 6000 # External port
+      port: 3000
       targetPort: 3000
-      nodePort: 32005 # NodePort - Choose a port in the 30000-32767 range
----
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: local-wiki-storage # REPLACE with cloud-provided StorageClass for production
-provisioner: kubernetes.io/no-provisioner # REPLACE for production
-volumeBindingMode: WaitForFirstConsumer
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: wiki-pv
-  labels:
-    app: wiki
-spec:
-  storageClassName: local-wiki-storage # Match StorageClass name
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce # Consider ReadWriteMany if your storage supports it
-  persistentVolumeReclaimPolicy: Retain
-  local:  # REPLACE with appropriate configuration for your storage
-    path: /home/data/wiki # REPLACE for production
-  nodeAffinity:  # RESTORED - Required for local volumes
-    required:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kubernetes.io/hostname
-              operator: In
-              values:
-                - kind-worker # **REPLACE with your node's hostname**
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: wiki-pvc
-  namespace: devops-tools
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: local-wiki-storage # Match StorageClass name
-  resources:
-    requests:
-      storage: 5Gi
+      nodePort: 30000
