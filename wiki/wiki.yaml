@@ -117,7 +117,14 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   local:  # REPLACE with appropriate configuration for your storage
     path: /home/data/postgres # REPLACE for production
-  # nodeAffinity: REMOVED
+  nodeAffinity: # RESTORED - Required for local volumes
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - kind-worker # **REPLACE with your node's hostname**
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -140,7 +147,7 @@ metadata:
 type: Opaque
 stringData:
   POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: <generate_strong_password> # **IMPORTANT: CHANGE THIS PASSWORD!**
+  POSTGRES_PASSWORD: postgres # **IMPORTANT: CHANGE THIS PASSWORD!**
   POSTGRES_DB: wikijs
 ---
 apiVersion: apps/v1
@@ -248,7 +255,14 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   local:  # REPLACE with appropriate configuration for your storage
     path: /home/data/wiki # REPLACE for production
-  # nodeAffinity: REMOVED
+  nodeAffinity:  # RESTORED - Required for local volumes
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - kind-worker # **REPLACE with your node's hostname**
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
