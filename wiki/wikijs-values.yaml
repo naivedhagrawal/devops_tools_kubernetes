@@ -1,5 +1,0 @@
-service:
-  type: NodePort
-  port: 6000   # External service port
-  targetPort: 3000  # Application's internal port
-  nodePort: 32005  # NodePort
