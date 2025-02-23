@@ -6,6 +6,7 @@ metadata:
 data:
   init-db.sql: |
     CREATE DATABASE IF NOT EXISTS wikijs;
+    CREATE TABLE test (id SERIAL PRIMARY KEY, name TEXT);
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -67,7 +68,8 @@ spec:
               cpu: 2
               memory: 4Gi
           securityContext:
-            runAsUser: 0
+            runAsUser: 999  # Run as postgres user
+            fsGroup: 999
           volumeMounts:
             - name: data-disk
               mountPath: /var/lib/postgresql/data
