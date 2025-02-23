@@ -5,7 +5,12 @@ metadata:
   namespace: devops-tools
 data:
   init-db.sql: |
-    CREATE DATABASE wikijs;
+    DO $$ 
+    BEGIN 
+      IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'wikijs') THEN 
+        CREATE DATABASE wikijs; 
+      END IF; 
+    END $$;
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -29,10 +34,8 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - >
-              if [ ! -d "/var/lib/postgresql/data/base" ]; then
-                echo "Running initialization script...";
-                psql -U postgres -f /docker-entrypoint-initdb.d/init-db.sql;
-              fi;
+              until psql -U postgres -c "SELECT 1" > /dev/null 2>&1; do sleep 1; done;
+              psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'wikijs'" | grep -q 1 || psql -U postgres -c "CREATE DATABASE wikijs";
               exec docker-entrypoint.sh postgres;
           envFrom:
             - secretRef:
