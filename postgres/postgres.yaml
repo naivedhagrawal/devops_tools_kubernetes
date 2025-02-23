@@ -5,20 +5,15 @@ metadata:
   namespace: devops-tools
 data:
   init-db.sql: |
-    DO $$ 
-    BEGIN 
-      IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'wikijs') THEN 
-        CREATE DATABASE wikijs; 
-      END IF; 
-    END $$;
+    CREATE DATABASE IF NOT EXISTS wikijs;
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres
+  name: postgres-wikijs
   namespace: devops-tools
 spec:
-  serviceName: postgres
+  serviceName: postgres-wikijs
   replicas: 1
   selector:
     matchLabels:
@@ -31,12 +26,6 @@ spec:
       containers:
         - name: postgres
           image: postgres:15
-          command: ["/bin/sh", "-c"]
-          args:
-            - >
-              until psql -U postgres -c "SELECT 1" > /dev/null 2>&1; do sleep 1; done;
-              psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'wikijs'" | grep -q 1 || psql -U postgres -c "CREATE DATABASE wikijs";
-              exec docker-entrypoint.sh postgres;
           envFrom:
             - secretRef:
                 name: postgres-secrets
@@ -83,13 +72,11 @@ spec:
         - name: init-script
           configMap:
             name: postgres-init-db
-      nodeSelector:
-        kubernetes.io/hostname: kind-worker
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: postgres-wikijs
   namespace: devops-tools
 spec:
   type: ClusterIP
@@ -102,8 +89,8 @@ spec:
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: local-postgres
-provisioner: kubernetes.io/no-provisioner
+  name: local-postgres # Replace with cloud-provided StorageClass for production
+provisioner: kubernetes.io/no-provisioner # Replace for production
 volumeBindingMode: WaitForFirstConsumer
 ---
 kind: PersistentVolume
@@ -114,21 +101,21 @@ metadata:
     type: local
     app: postgres
 spec:
-  storageClassName: local-postgres
+  storageClassName: local-postgres # Match StorageClass name
   capacity:
     storage: 20Gi
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteOnce # Consider ReadWriteMany if your storage supports it
   local:
-    path: /home/data/postgres
-  nodeAffinity:
+    path: /home/data/postgres # Adjust path if not using local volume
+  nodeAffinity: # Remove for production unless absolutely necessary
     required:
       nodeSelectorTerms:
         - matchExpressions:
             - key: kubernetes.io/hostname
               operator: In
               values:
-                - kind-worker
+                - kind-worker # Remove for production
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -137,7 +124,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: local-postgres
+  storageClassName: local-postgres # Match StorageClass name
   resources:
     requests:
       storage: 20Gi
@@ -150,5 +137,5 @@ metadata:
 type: Opaque
 stringData:
   POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
+  POSTGRES_PASSWORD: postgres # **IMPORTANT: CHANGE THIS PASSWORD!**
   POSTGRES_DB: wikijs
