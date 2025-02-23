@@ -241,6 +241,7 @@ metadata:
   labels:
     app: wiki
 spec:
+  storageClassName: local-wiki-storage # Match StorageClass name
   capacity:
     storage: 5Gi
   accessModes:
