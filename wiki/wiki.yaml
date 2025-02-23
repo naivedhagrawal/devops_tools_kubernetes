@@ -1,71 +1,10 @@
-# kubectl create secret generic postgres-secret --namespace=devops-tools --from-literal=POSTGRES_DB=wikijs --from-literal=POSTGRES_USER=wikiuser --from-literal=POSTGRES_PASSWORD=wikisecret
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: wiki-postgres
-  namespace: devops-tools
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: wiki-postgres
-  template:
-    metadata:
-      labels:
-        app: wiki-postgres
-    spec:
-      containers:
-        - name: postgres
-          image: postgres:15
-          env:
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: POSTGRES_DB
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: POSTGRES_PASSWORD
-          ports:
-            - containerPort: 5432
-          volumeMounts:
-            - mountPath: /var/lib/postgresql/data
-              name: postgres-storage
-      volumes:
-        - name: postgres-storage
-          persistentVolumeClaim:
-            claimName: wiki-pvc
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: wiki-postgres-service
-  namespace: devops-tools
-spec:
-  selector:
-    app: wiki-postgres
-  ports:
-    - protocol: TCP
-      port: 5432
-      targetPort: 5432
-
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wiki
   namespace: devops-tools
-spec:
+  spec:
   replicas: 1
   selector:
     matchLabels:
@@ -75,10 +14,8 @@ spec:
       labels:
         app: wiki
     spec:
-      initContainers:
-        - name: wait-for-postgres
-          image: busybox
-          command: ['sh', '-c', 'until nc -z wiki-postgres-service 5432; do echo waiting for database; sleep 2; done;']
+      nodeSelector:
+        kubernetes.io/hostname: kind-worker
       containers:
         - name: wiki
           image: requarks/wiki:latest
@@ -88,24 +25,24 @@ spec:
             - name: DB_TYPE
               value: "postgres"
             - name: DB_HOST
-              value: "wiki-postgres-service.devops-tools.svc.cluster.local"
+              value: "postgres.devops-tools.svc.cluster.local"
             - name: DB_PORT
               value: "5432"
             - name: DB_USER
               valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: POSTGRES_USER
+                  secretKeyRef:
+                    name: postgres-secrets
+                    key: POSTGRES_USER
             - name: DB_PASS
               valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: POSTGRES_PASSWORD
+                  secretKeyRef:
+                    name: postgres-secrets
+                    key: POSTGRES_PASSWORD
             - name: DB_NAME
               valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: POSTGRES_DB
+                  secretKeyRef:
+                    name: postgres-secrets
+                    key: POSTGRES_DB
           volumeMounts:
             - name: wiki-storage
               mountPath: /wiki/data
@@ -119,46 +56,49 @@ apiVersion: v1
 kind: Service
 metadata:
   name: wiki-service
-  namespace: devops-tools
-spec:
-  type: NodePort
+  spec:
+  type: ClusterIP
   selector:
     app: wiki
   ports:
     - protocol: TCP
-      port: 3000
+      port: 6000
       targetPort: 3000
-      nodePort: 32006
-
+      nodePort: 32005
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: local-wiki-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
 ---
 # Persistent Volumes
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: wiki-pv
-  namespace: devops-tools
   labels:
     app: wiki
 spec:
   capacity:
-    storage: 10Gi
+    storage: 5Gi
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: local-path
+  storageClassName: local-wiki-storage
   hostPath:
-    path: /home/appdata/wiki
+    path: /home/data/wiki
 ---
 # Persistent Volume Claims
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: wiki-pvc
-  namespace: devops-tools
 spec:
   accessModes:
-    - ReadWriteMany
-  storageClassName: local-path
+    - ReadWriteOnce
+  storageClassName: local-wiki-storage
   resources:
     requests:
-      storage: 10Gi
+      storage: 5Gi
