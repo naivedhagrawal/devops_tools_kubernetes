@@ -36,12 +36,20 @@ global:
     enabled: false
   artifacts:
     enabled: false
+    objectStore:
+      enabled: false
   lfs:
     enabled: false
+    objectStore:
+      enabled: false
   uploads:
     enabled: false
+    objectStore:
+      enabled: false
   packages:
     enabled: false
+    objectStore:
+      enabled: false
 
   ## Disable Global Certificates
   certificates:
@@ -80,12 +88,4 @@ gitlab-runner:
 
 ## Backup Configuration
 backup:
-  enabled: true
-  cron:
-    schedule: "0 2 * * *"  # Backup at 2 AM daily
-    retention: 7  # Keep backups for 7 days
-  persistence:
-    enabled: true
-    size: 20Gi
-    storageClass: ""
-    hostPath: "/home/appdata/gitlab/backups"
+  enabled: false
