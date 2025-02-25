@@ -35,6 +35,10 @@ global:
   objectStorage:
     enabled: false
 
+  ## Disable Global Certificates
+  certificates:
+    enabled: false
+
 ## Disable CertManager Issuer
 certmanager-issuer:
   enabled: false
