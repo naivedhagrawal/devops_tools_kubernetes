@@ -1,0 +1,71 @@
+global:
+  edition: ee  # Use "ee" for GitLab Enterprise Edition, "ce" for Community Edition
+
+  ## GitLab Initial Configuration
+  hosts:
+    domain: devops.local
+    gitlab: devops.local
+  email:
+    from: "naivedh@gmail.com"
+
+  ## Enable PostgreSQL
+  psql:
+    enabled: true
+  postgresql:
+    install: true
+    postgresqlUsername: gitlab
+    postgresqlDatabase: gitlabhq_production
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: ""
+      hostPath: "/home/appdata/gitlab/postgresql"
+
+  ## Enable Redis
+  redis:
+    enabled: true
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: ""
+      hostPath: "/home/appdata/gitlab/redis"
+
+  ## Disable Object Storage (MinIO)
+  minio:
+    enabled: false
+  objectStorage:
+    enabled: false
+
+## Disable Ingress, Use NodePort Instead
+ingress:
+  enabled: false
+
+## Expose GitLab Services via NodePort
+gitlab:
+  webservice:
+    service:
+      type: NodePort
+      nodePort: 31000  # HTTP
+
+## Enable GitLab Runner
+gitlab-runner:
+  enabled: true
+  runners:
+    privileged: true
+    executor: "kubernetes"
+    namespace: "gitlab-runner"
+  service:
+    type: NodePort
+    nodePort: 32000  # Runner Service NodePort
+
+## Backup Configuration
+backup:
+  enabled: true
+  cron:
+    schedule: "0 2 * * *"  # Backup at 2 AM daily
+    retention: 7  # Keep backups for 7 days
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: ""
+    hostPath: "/home/appdata/gitlab/backups"
