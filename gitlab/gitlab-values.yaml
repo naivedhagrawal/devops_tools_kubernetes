@@ -1,5 +1,5 @@
 global:
-  edition: ee  # Use "ee" for GitLab Enterprise Edition (includes additional features and support), "ce" for Community Edition (free and open-source)
+  edition: ee  # Use "ee" for GitLab Enterprise Edition, "ce" for Community Edition
 
   ## GitLab Initial Configuration
   hosts:
@@ -46,7 +46,7 @@ global:
 ## Disable CertManager Issuer
 certmanager-issuer:
   enabled: false
-  email: ""
+  email: "disabled@example.com"
 
 ## Disable Ingress, Use NodePort Instead
 ingress:
