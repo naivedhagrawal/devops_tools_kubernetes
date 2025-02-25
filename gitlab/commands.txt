@@ -5,3 +5,4 @@ helm install gitlab gitlab/gitlab --namespace devops-tools -f gitlab-values.yaml
   --set certmanager-issuer.email="disabled@example.com"
 
 
+kubectl create secret generic dummy-secret --namespace devops-tools --from-literal=key=dummyvalue

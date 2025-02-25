@@ -34,26 +34,27 @@ global:
     enabled: false
   objectStorage:
     enabled: false
+    connection: null
   artifacts:
     enabled: false
     objectStore:
       enabled: false
-      connection: {}
+      connection: null
   lfs:
     enabled: false
     objectStore:
       enabled: false
-      connection: {}
+      connection: null
   uploads:
     enabled: false
     objectStore:
       enabled: false
-      connection: {}
+      connection: null
   packages:
     enabled: false
     objectStore:
       enabled: false
-      connection: {}
+      connection: null
 
   ## Disable Global Certificates
   certificates:
@@ -67,14 +68,14 @@ global:
   appConfig:
     object_store:
       enabled: false
-      connection: {}
+      connection: null
 
   ## Toolbox Backup Configuration
   toolbox:
     backups:
       objectStorage:
         config:
-          secret: "dummy-secret"
+          secret: "gitlab-backup-secret"
 
 ## Disable CertManager Issuer
 certmanager-issuer:
