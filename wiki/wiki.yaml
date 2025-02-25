@@ -1,91 +1,4 @@
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: postgres-wikijs
-  namespace: devops-tools
-spec:
-  serviceName: postgres-wikijs
-  replicas: 1
-  selector:
-    matchLabels:
-      app: postgres
-  template:
-    metadata:
-      labels:
-        app: postgres
-    spec:
-      securityContext:
-        fsGroup: 999
-      containers:
-        - name: postgres
-          image: postgres:15
-          envFrom:
-            - secretRef:
-                name: postgres-secrets
-          ports:
-            - containerPort: 5432
-          livenessProbe:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
-            initialDelaySeconds: 90
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 6
-            successThreshold: 1
-          readinessProbe:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
-            initialDelaySeconds: 60
-            periodSeconds: 5
-            timeoutSeconds: 5
-          startupProbe:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
-            failureThreshold: 30
-            periodSeconds: 10
-          resources:
-            requests:
-              cpu: 1
-              memory: 2Gi
-            limits:
-              cpu: 2
-              memory: 4Gi
-          securityContext:
-            runAsUser: 999
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgres-wikijs
-  namespace: devops-tools
-spec:
-  type: ClusterIP
-  selector:
-    app: postgres
-  ports:
-    - port: 5432
-      targetPort: 5432
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: postgres-secrets
-  namespace: devops-tools
-type: Opaque
-stringData:
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
-  POSTGRES_DB: wikijs
----
+# Deploying Wiki.js on Kubernetes
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -110,7 +23,7 @@ spec:
             - name: DB_TYPE
               value: "postgres"
             - name: DB_HOST
-              value: "postgres-wikijs.devops-tools.svc.cluster.local"
+              value: "postgres.devops-tools.svc.cluster.local"
             - name: DB_PORT
               value: "5432"
             - name: DB_USER
@@ -147,6 +60,15 @@ spec:
               port: 3000
             initialDelaySeconds: 15
             periodSeconds: 5
+          volumeMounts:
+            - name: wiki-storage
+              mountPath: /var/wiki
+      volumes:
+        - name: wiki-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+
+# Service definition for the Wiki.js application
 ---
 apiVersion: v1
 kind: Service
@@ -159,6 +81,55 @@ spec:
     app: wiki
   ports:
     - protocol: TCP
-      port: 3000
+      port: 6000
       targetPort: 3000
-      nodePort: 30000
+      nodePort: 31005
+
+# Storage Class
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: local-wiki
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+# Persistent Volume
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: postgres-pv
+  labels:
+    type: local
+    app: postgres
+spec:
+  storageClassName: local-wiki
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  local:
+    path: /home/data/wiki
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - kind-worker
+
+# Persistent Volume Claim
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-wiki
+  resources:
+    requests:
+      storage: 1Gi

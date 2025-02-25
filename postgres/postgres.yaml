@@ -1,3 +1,4 @@
+# Statefulset
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -60,6 +61,9 @@ spec:
             claimName: postgres-pvc
       nodeSelector:
         kubernetes.io/hostname: kind-worker
+
+# Service
+# URL - http://postgres.devops-tools.svc.cluster.local/
 ---
 apiVersion: v1
 kind: Service
@@ -73,6 +77,8 @@ spec:
   ports:
     - port: 5432
       targetPort: 5432
+
+# Storage Class
 ---
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
@@ -80,11 +86,12 @@ metadata:
   name: local-postgres
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
+
+# Persistent Volume
 ---
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  namespace: devops-tools
   name: postgres-pv
   labels:
     type: local
@@ -108,11 +115,12 @@ spec:
               operator: In
               values:
                 - kind-worker
+
+# Persistent Volume Claim
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  namespace: devops-tools
   name: postgres-pvc
 spec:
   accessModes:
@@ -121,6 +129,8 @@ spec:
   resources:
     requests:
       storage: 20Gi
+
+# Secret
 ---
 apiVersion: v1
 kind: Secret
@@ -131,3 +141,4 @@ type: Opaque
 stringData:
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
+  POSTGRES_DB: wikijs
