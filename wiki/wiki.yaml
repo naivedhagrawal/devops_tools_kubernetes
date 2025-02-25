@@ -37,29 +37,6 @@ spec:
       storage: 1Gi
 
 ---
-# ConfigMap for Wiki.js Configuration
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: wiki-config
-  namespace: devops-tools
-data:
-  config.yml: |
-    port: 3001
-    bindIP: 0.0.0.0
-    db:
-      type: postgres
-      host: postgres.devops-tools.svc.cluster.local
-      port: 5432
-      user: "postgres"
-      pass: "postgres"
-      db: "wikijs"
-    ssl:
-      enabled: false
-    logLevel: info
-    logFormat: default
-
----
 # Deployment for Wiki.js
 apiVersion: apps/v1
 kind: Deployment
@@ -80,10 +57,8 @@ spec:
         - name: wiki
           image: requarks/wiki:latest
           ports:
-            - containerPort: 3001
+            - containerPort: 3000
           env:
-            - name: PORT
-              value: "3001"
             - name: DB_TYPE
               value: "postgres"
             - name: DB_HOST
@@ -91,25 +66,27 @@ spec:
             - name: DB_PORT
               value: "5432"
             - name: DB_USER
-              value: "postgres"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_USER
             - name: DB_PASS
-              value: "postgres"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PASSWORD
             - name: DB_NAME
-              value: "wikijs"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_DB
           volumeMounts:
             - name: wiki-storage
               mountPath: /var/wiki
-            - name: config-volume
-              mountPath: /wiki/config.yml
-              subPath: config.yml
-              readOnly: true
       volumes:
         - name: wiki-storage
           persistentVolumeClaim:
             claimName: wiki-pvc
-        - name: config-volume
-          configMap:
-            name: wiki-config
 
 ---
 # Service for Wiki.js
@@ -125,5 +102,5 @@ spec:
   ports:
     - protocol: TCP
       port: 6000
-      targetPort: 3001
+      targetPort: 3000
       nodePort: 31005
