@@ -11,7 +11,7 @@ metadata:
   name: jenkins
   namespace: devops-tools
   labels:
-    "app.kubernetes.io/name": 'jenkins'
+    "app.kubernetes.io/name": "jenkins"
 rules:
 - apiGroups: [""]
   resources: ["pods"]
@@ -79,7 +79,7 @@ spec:
   accessModes:
     - ReadWriteMany
   local:
-    path: c:\\appdata\\jenkins
+    path: c:/appdata/jenkins
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -87,7 +87,8 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - kind-worker
+          - docker-desktop
+
 
 #Persistent Volume Claim
 ---
@@ -133,7 +134,7 @@ spec:
       containers:
         - name: jenkins
           image: jenkins/jenkins:lts
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - name: httpport
               containerPort: 8080
