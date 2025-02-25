@@ -59,6 +59,18 @@ global:
   certmanager:
     install: false
 
+  ## Ensure Object Storage is Completely Disabled
+  appConfig:
+    object_store:
+      enabled: false
+
+  ## Toolbox Backup Configuration
+  toolbox:
+    backups:
+      objectStorage:
+        config:
+          secret: ""
+
 ## Disable CertManager Issuer
 certmanager-issuer:
   enabled: false
