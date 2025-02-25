@@ -38,22 +38,22 @@ global:
     enabled: false
     objectStore:
       enabled: false
-      connection: null
+      connection: {}
   lfs:
     enabled: false
     objectStore:
       enabled: false
-      connection: null
+      connection: {}
   uploads:
     enabled: false
     objectStore:
       enabled: false
-      connection: null
+      connection: {}
   packages:
     enabled: false
     objectStore:
       enabled: false
-      connection: null
+      connection: {}
 
   ## Disable Global Certificates
   certificates:
@@ -67,7 +67,7 @@ global:
   appConfig:
     object_store:
       enabled: false
-      connection: null
+      connection: {}
 
   ## Toolbox Backup Configuration
   toolbox:
