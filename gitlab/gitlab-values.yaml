@@ -74,7 +74,7 @@ global:
     backups:
       objectStorage:
         config:
-          secret: ""
+          secret: "dummy-secret"
 
 ## Disable CertManager Issuer
 certmanager-issuer:
