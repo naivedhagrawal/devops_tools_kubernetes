@@ -66,7 +66,7 @@ spec:
       volumes:
         - name: wiki-storage
           persistentVolumeClaim:
-            claimName: postgres-pvc
+            claimName: wiki-pvc
 
 # Service definition for the Wiki.js application
 ---
@@ -99,10 +99,7 @@ volumeBindingMode: WaitForFirstConsumer
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: postgres-pv
-  labels:
-    type: local
-    app: postgres
+  name: wiki-pv
 spec:
   storageClassName: local-wiki
   capacity:
@@ -125,7 +122,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: postgres-pvc
+  name: wiki-pvc
 spec:
   accessModes:
     - ReadWriteOnce
