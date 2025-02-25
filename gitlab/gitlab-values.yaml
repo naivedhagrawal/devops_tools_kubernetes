@@ -39,6 +39,10 @@ global:
   certificates:
     enabled: false
 
+  ## Disable CertManager
+  certmanager:
+    install: false
+
 ## Disable CertManager Issuer
 certmanager-issuer:
   enabled: false
