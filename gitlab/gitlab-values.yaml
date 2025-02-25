@@ -38,6 +38,7 @@ global:
 ## Disable CertManager Issuer
 certmanager-issuer:
   enabled: false
+  email: ""
 
 ## Disable Ingress, Use NodePort Instead
 ingress:
