@@ -79,7 +79,7 @@ spec:
   accessModes:
     - ReadWriteMany
   local:
-    path: /home/data/jenkins
+    path: /home/appdata/jenkins
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -87,7 +87,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - docker-desktop
+          - kind-worker
 
 #Persistent Volume Claim
 ---
