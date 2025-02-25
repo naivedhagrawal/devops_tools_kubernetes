@@ -1,5 +1,5 @@
 global:
-  edition: ee  # Use "ee" for GitLab Enterprise Edition, "ce" for Community Edition
+  edition: ee  # Use "ee" for GitLab Enterprise Edition (includes additional features and support), "ce" for Community Edition (free and open-source)
 
   ## GitLab Initial Configuration
   hosts:
