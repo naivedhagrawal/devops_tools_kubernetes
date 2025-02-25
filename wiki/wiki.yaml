@@ -51,9 +51,9 @@ data:
       type: postgres
       host: postgres.devops-tools.svc.cluster.local
       port: 5432
-      user: ${DB_USER}
-      pass: ${DB_PASS}
-      db: ${DB_NAME}
+      user: "postgres"
+      pass: "postgres"
+      db: "wikijs"
     ssl:
       enabled: false
     logLevel: info
@@ -91,20 +91,11 @@ spec:
             - name: DB_PORT
               value: "5432"
             - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secrets
-                  key: POSTGRES_USER
+              value: "postgres"
             - name: DB_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secrets
-                  key: POSTGRES_PASSWORD
+              value: "postgres"
             - name: DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secrets
-                  key: POSTGRES_DB
+              value: "wikijs"
           volumeMounts:
             - name: wiki-storage
               mountPath: /var/wiki
