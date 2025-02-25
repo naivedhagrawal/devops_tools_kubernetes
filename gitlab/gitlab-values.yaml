@@ -34,6 +34,14 @@ global:
     enabled: false
   objectStorage:
     enabled: false
+  artifacts:
+    enabled: false
+  lfs:
+    enabled: false
+  uploads:
+    enabled: false
+  packages:
+    enabled: false
 
   ## Disable Global Certificates
   certificates:
