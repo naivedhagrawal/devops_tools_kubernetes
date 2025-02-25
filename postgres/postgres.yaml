@@ -1,4 +1,33 @@
-# Statefulset
+# Persistent Volume for PostgreSQL
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv
+spec:
+  storageClassName: hostpath-storage
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/data/postgres"
+
+---
+# Persistent Volume Claim for PostgreSQL
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: hostpath-storage
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+# StatefulSet for PostgreSQL
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -23,35 +52,6 @@ spec:
                 name: postgres-secrets
           ports:
             - containerPort: 5432
-          livenessProbe:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 6
-            successThreshold: 1
-          readinessProbe:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            timeoutSeconds: 5
-          resources:
-            requests:
-              cpu: 1
-              memory: 2Gi
-            limits:
-              cpu: 2
-              memory: 4Gi
-          securityContext:
-            runAsUser: 0
           volumeMounts:
             - name: data-disk
               mountPath: /var/lib/postgresql/data
@@ -59,12 +59,9 @@ spec:
         - name: data-disk
           persistentVolumeClaim:
             claimName: postgres-pvc
-      nodeSelector:
-        kubernetes.io/hostname: kind-worker
 
-# Service
-# URL - http://postgres.devops-tools.svc.cluster.local/
 ---
+# Service for PostgreSQL
 apiVersion: v1
 kind: Service
 metadata:
@@ -78,60 +75,8 @@ spec:
     - port: 5432
       targetPort: 5432
 
-# Storage Class
 ---
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: local-postgres
-provisioner: kubernetes.io/no-provisioner
-volumeBindingMode: WaitForFirstConsumer
-
-# Persistent Volume
----
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  name: postgres-pv
-  labels:
-    type: local
-    app: postgres
-spec:
-  storageClassName: local-postgres
-  claimRef:
-    name: postgres-pvc
-    namespace: devops-tools
-  capacity:
-    storage: 20Gi
-  accessModes:
-    - ReadWriteOnce
-  local:
-    path: /home/data/postgres
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kubernetes.io/hostname
-              operator: In
-              values:
-                - kind-worker
-
-# Persistent Volume Claim
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: postgres-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: local-postgres
-  resources:
-    requests:
-      storage: 20Gi
-
-# Secret
----
+# Secret for PostgreSQL
 apiVersion: v1
 kind: Secret
 metadata:

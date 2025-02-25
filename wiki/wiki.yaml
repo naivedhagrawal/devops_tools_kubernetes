@@ -1,4 +1,43 @@
-# Deploying Wiki.js on Kubernetes
+---
+# Storage Class (for Kind)
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: hostpath-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: Immediate
+
+---
+# Persistent Volume for Wiki.js
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wiki-pv
+spec:
+  storageClassName: hostpath-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/data/wiki"
+
+---
+# Persistent Volume Claim for Wiki.js
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wiki-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: hostpath-storage
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+# Deployment for Wiki.js
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -41,25 +80,6 @@ spec:
                 secretKeyRef:
                   name: postgres-secrets
                   key: POSTGRES_DB
-          resources:
-            requests:
-              cpu: 1
-              memory: 2Gi
-            limits:
-              cpu: 2
-              memory: 4Gi
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 3000
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 3000
-            initialDelaySeconds: 15
-            periodSeconds: 5
           volumeMounts:
             - name: wiki-storage
               mountPath: /var/wiki
@@ -68,8 +88,8 @@ spec:
           persistentVolumeClaim:
             claimName: wiki-pvc
 
-# Service definition for the Wiki.js application
 ---
+# Service for Wiki.js
 apiVersion: v1
 kind: Service
 metadata:
@@ -84,49 +104,3 @@ spec:
       port: 6000
       targetPort: 3000
       nodePort: 31005
-
-# Storage Class
----
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: local-wiki
-provisioner: kubernetes.io/no-provisioner
-volumeBindingMode: WaitForFirstConsumer
-
-# Persistent Volume
----
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  name: wiki-pv
-spec:
-  storageClassName: local-wiki
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteOnce
-  local:
-    path: /home/data/wiki
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kubernetes.io/hostname
-              operator: In
-              values:
-                - kind-worker
-
-# Persistent Volume Claim
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: wiki-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: local-wiki
-  resources:
-    requests:
-      storage: 1Gi
