@@ -35,6 +35,10 @@ global:
   objectStorage:
     enabled: false
 
+## Disable CertManager Issuer
+certmanager-issuer:
+  enabled: false
+
 ## Disable Ingress, Use NodePort Instead
 ingress:
   enabled: false
