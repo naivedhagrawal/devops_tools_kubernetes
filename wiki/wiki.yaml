@@ -37,6 +37,36 @@ spec:
       storage: 1Gi
 
 ---
+# ConfigMap for Wiki.js Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wiki-config
+  namespace: devops-tools
+data:
+  config.yml: |
+    port: ${PORT}
+    bindIP: 0.0.0.0
+    db:
+      type: ${DB_TYPE}
+      host: ${DB_HOST}
+      port: ${DB_PORT}
+      user: ${DB_USER}
+      pass: ${DB_PASS}
+      db: ${DB_NAME}
+      storage: ${DB_FILEPATH}
+      ssl: ${DB_SSL}
+    ssl:
+      enabled: ${SSL_ACTIVE}
+      port: 3443
+      provider: letsencrypt
+      domain: ${LETSENCRYPT_DOMAIN}
+      subscriberEmail: ${LETSENCRYPT_EMAIL}
+    logLevel: ${LOG_LEVEL:info}
+    logFormat: ${LOG_FORMAT:default}
+    ha: ${HA_ACTIVE}
+
+---
 # Deployment for Wiki.js
 apiVersion: apps/v1
 kind: Deployment
@@ -85,10 +115,16 @@ spec:
           volumeMounts:
             - name: wiki-storage
               mountPath: /var/wiki
+            - name: config-volume
+              mountPath: /wiki/config.yml
+              subPath: config.yml
       volumes:
         - name: wiki-storage
           persistentVolumeClaim:
             claimName: wiki-pvc
+        - name: config-volume
+          configMap:
+            name: wiki-config
 
 ---
 # Service for Wiki.js
