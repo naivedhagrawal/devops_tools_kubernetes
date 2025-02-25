@@ -101,6 +101,6 @@ spec:
     app: wiki
   ports:
     - protocol: TCP
-      port: 3000
+      port: 6000
       targetPort: 3000
-      nodePort: 31006
+      nodePort: 31005
