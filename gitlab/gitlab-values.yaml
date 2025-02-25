@@ -3,10 +3,9 @@ global:
 
   ## GitLab Initial Configuration
   hosts:
-    domain: devops.local
-    gitlab: devops.local
-  email:
-    from: "naivedh@gmail.com"
+    domain: "devops.local"
+    gitlab:
+      name: "devops.local"
 
   ## Enable PostgreSQL
   psql:
