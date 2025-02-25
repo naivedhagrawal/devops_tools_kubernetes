@@ -79,7 +79,7 @@ spec:
   accessModes:
     - ReadWriteMany
   local:
-    path: /home/data/jenkins
+    path: c:\\appdata\\jenkins
   nodeAffinity:
     required:
       nodeSelectorTerms:
