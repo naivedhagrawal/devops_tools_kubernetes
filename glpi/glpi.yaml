@@ -1,4 +1,3 @@
-
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -130,7 +129,7 @@ spec:
       initContainers:
         - name: init-apache
           image: busybox
-          command: ["sh", "-c", "echo 'ServerName 127.0.0.1' > /mnt/apache2/apache2.conf"]
+          command: ["sh", "-c", "echo 'ServerName 127.0.0.1' > /mnt/apache2/apache2.conf && echo 'LoadModule mpm_prefork_module /usr/lib/apache2/modules/mod_mpm_prefork.so' >> /mnt/apache2/apache2.conf && echo 'LoadModule rewrite_module /usr/lib/apache2/modules/mod_rewrite.so' >> /mnt/apache2/apache2.conf"]
           volumeMounts:
             - name: apache-config
               mountPath: /mnt/apache2
