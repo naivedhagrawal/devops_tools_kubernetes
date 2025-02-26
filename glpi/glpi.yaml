@@ -66,12 +66,8 @@ kind: Secret
 metadata:
   name: mysql-secret
   namespace: devops-tools
-type: Opaque
 data:
-  mysql_root_password: bXlzcWw=       # base64 encoded "mysql"
-  mysql_user: Z2xwaQ==                # base64 encoded "glpi"
-  mysql_password: bXlzcWw=            # base64 encoded "mysql"
-  mysql_database: Z2xwaWRi             # base64 encoded "glpidb"
+  MYSQL_ROOT_PASSWORD: bXlzcWxzZWNyZXQK # base64 encoded value for 'mysqlsecret'
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -134,14 +130,19 @@ spec:
     spec:
       initContainers:
         - name: init-apache
-          image: busybox
-          command: ["sh", "-c", "echo 'ServerName 127.0.0.1' > /mnt/apache2/apache2.conf && \
-                   echo 'LoadModule mpm_prefork_module /usr/lib/apache2/modules/mod_mpm_prefork.so' >> /mnt/apache2/apache2.conf && \
-                   echo 'LoadModule rewrite_module /usr/lib/apache2/modules/mod_rewrite.so' >> /mnt/apache2/apache2.conf && \
-                   mkdir -p /etc/apache2/sites-available && \
-                   touch /etc/apache2/sites-available/000-default.conf && \
-                   a2enmod rewrite && \
-                   mkdir -p /etc/apache2/logs"]
+          image: debian:latest
+          command:
+            - "sh"
+            - "-c"
+            - |
+              apt-get update && apt-get install -y apache2 && \
+              echo 'ServerName 127.0.0.1' > /mnt/apache2/apache2.conf && \
+              echo 'LoadModule mpm_prefork_module /usr/lib/apache2/modules/mod_mpm_prefork.so' >> /mnt/apache2/apache2.conf && \
+              echo 'LoadModule rewrite_module /usr/lib/apache2/modules/mod_rewrite.so' >> /mnt/apache2/apache2.conf && \
+              mkdir -p /etc/apache2/sites-available && \
+              touch /etc/apache2/sites-available/000-default.conf && \
+              a2enmod rewrite && \
+              mkdir -p /etc/apache2/logs
           volumeMounts:
             - name: apache-config
               mountPath: /mnt/apache2
@@ -150,9 +151,23 @@ spec:
           image: diouxx/glpi
           ports:
             - containerPort: 80
-          envFrom:
-            - secretRef:
-                name: mysql-secret
+          env:
+            - name: GLPI_DB_HOST
+              value: "mysql"
+            - name: GLPI_DB_NAME
+              value: "glpidb"
+            - name: GLPI_DB_USER
+              value: "glpi"
+            - name: GLPI_DB_PASSWORD
+              value: "mysql"
+            - name: APACHE_RUN_USER
+              value: "www-data"
+            - name: APACHE_RUN_GROUP
+              value: "www-data"
+            - name: APACHE_LOG_DIR
+              value: "/var/log/apache2"
+            - name: APACHE_PID_FILE
+              value: "/var/run/apache2.pid"
           resources:
             limits:
               memory: "512Mi"
