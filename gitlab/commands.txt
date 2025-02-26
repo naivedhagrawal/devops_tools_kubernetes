@@ -1,8 +1,0 @@
-helm install gitlab gitlab/gitlab --namespace devops-tools -f gitlab-values.yaml \
-  --set global.certificates.enabled=false \
-  --set certmanager.install=false \
-  --set certmanager-issuer.enabled=false \
-  --set certmanager-issuer.email="disabled@example.com"
-
-
-kubectl create secret generic dummy-secret --namespace devops-tools --from-literal=key=dummyvalue

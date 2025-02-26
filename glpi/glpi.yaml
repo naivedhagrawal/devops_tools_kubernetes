@@ -1,9 +1,18 @@
+# Storage Class (for Kind)
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: hostpath-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: Immediate
+---
 # Persistent Volume for GLPI
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: glpi-pv
 spec:
+  storageClassName: hostpath-storage
   capacity:
     storage: 5Gi
   accessModes:
@@ -18,6 +27,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: glpi-pvc
 spec:
+  storageClassName: hostpath-storage
   accessModes:
     - ReadWriteOnce
   resources:
@@ -32,6 +42,7 @@ kind: PersistentVolume
 metadata:
   name: mysql-pv
 spec:
+  storageClassName: hostpath-storage
   capacity:
     storage: 5Gi
   accessModes:
@@ -46,6 +57,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: mysql-pvc
 spec:
+  storageClassName: hostpath-storage
   accessModes:
     - ReadWriteOnce
   resources:
