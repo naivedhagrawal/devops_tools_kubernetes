@@ -140,7 +140,7 @@ spec:
     spec:
       containers:
         - name: glpi
-          image: diouxx/glpi
+          image: naivedh/glpi:latest
           ports:
             - containerPort: 80
           env:
