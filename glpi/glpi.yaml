@@ -113,16 +113,6 @@ spec:
       targetPort: 3306
 
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: apache-config
-  namespace: devops-tools
-data:
-  httpd.conf: |
-    ServerName ${SERVER_NAME}
-
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -145,8 +135,6 @@ spec:
           ports:
             - containerPort: 80
           env:
-            - name: SERVER_NAME
-              value: "localhost"  # Optional: Set the ServerName via env variable
             - name: GLPI_DB_HOST
               value: "mysql"
             - name: GLPI_DB_NAME
@@ -158,16 +146,10 @@ spec:
           volumeMounts:
             - mountPath: /var/www/html/glpi/files
               name: glpi-storage
-            - mountPath: /etc/apache2/httpd.conf  # Mount the custom Apache config file
-              name: apache-config
-              subPath: httpd.conf  # Use the httpd.conf file from the ConfigMap
       volumes:
         - name: glpi-storage
           persistentVolumeClaim:
             claimName: glpi-pvc
-        - name: apache-config
-          configMap:
-            name: apache-config  # This references the ConfigMap
 
 ---
 apiVersion: v1
