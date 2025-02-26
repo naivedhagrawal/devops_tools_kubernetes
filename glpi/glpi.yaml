@@ -124,7 +124,7 @@ metadata:
   namespace: devops-tools
 data:
   httpd.conf: |
-    ServerName localhost
+    ServerName ${SERVER_NAME}
 
 ---
 apiVersion: apps/v1
