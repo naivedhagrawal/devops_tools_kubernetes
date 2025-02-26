@@ -1,0 +1,166 @@
+# Persistent Volume for GLPI
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: glpi-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/data/glpi"
+
+# Persistent Volume Claim for GLPI
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: glpi-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: glpi-pv
+
+# Persistent Volume for MySQL
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/data/mysql"
+
+# Persistent Volume Claim for MySQL
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: mysql-pv
+
+# Deployment MySQL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: devops-tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "mysql"
+            - name: MYSQL_DATABASE
+              value: "glpidb"
+            - name: MYSQL_USER
+              value: "glpi"
+            - name: MYSQL_PASSWORD
+              value: "mysql"
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-storage
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+
+# Service MySQL
+# URL - mysql.devops-tools.svc.cluster.local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: devops-tools
+spec:
+  selector:
+    app: mysql
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+
+# Deployment GLPI
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glpi
+  namespace: devops-tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: glpi
+  template:
+    metadata:
+      labels:
+        app: glpi
+    spec:
+      containers:
+        - name: glpi
+          image: diouxx/glpi
+          ports:
+            - containerPort: 80
+          env:
+            - name: GLPI_DB_HOST
+              value: "mysql"
+            - name: GLPI_DB_NAME
+              value: "glpidb"
+            - name: GLPI_DB_USER
+              value: "glpi"
+            - name: GLPI_DB_PASSWORD
+              value: "mysql"
+          volumeMounts:
+            - mountPath: /var/www/html/glpi/files
+              name: glpi-storage
+      volumes:
+        - name: glpi-storage
+          persistentVolumeClaim:
+            claimName: glpi-pvc
+
+# Service GLPI
+# URL - glpi.devops-tools.svc.cluster.local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: glpi
+  namespace: devops-tools
+spec:
+  selector:
+    app: glpi
+  ports:
+    - protocol: TCP
+      port: 90
+      targetPort: 80
+      nodePort: 30009
+  type: NodePort

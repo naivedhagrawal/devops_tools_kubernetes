@@ -19,9 +19,6 @@ nodes:
   - containerPort: 31004
     hostPort: 9099 #prometheus port
 
-  - containerPort: 31005
-    hostPort: 6000 
-
   - containerPort: 31006
     hostPort: 3000 #wiki port
 
@@ -30,6 +27,9 @@ nodes:
 
   - containerPort: 31008
     hostPort: 8090 #zap port
+  
+  - containerPort: 31009
+    hostPort: 90 #glpi port
 
 - role: worker
   extraMounts:
@@ -56,6 +56,9 @@ nodes:
 
   - hostPath: /home/appdata/zap
     containerPath: /home/data/zap
+  
+  - hostPath: /home/appdata/glpi
+    containerPath: /home/data/glpi
 
   - hostPath: /home/appdata/workspace
     containerPath: /home/data/workspace
