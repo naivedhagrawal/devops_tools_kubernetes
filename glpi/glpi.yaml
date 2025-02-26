@@ -137,6 +137,8 @@ spec:
           ports:
             - containerPort: 80
           env:
+            - name: SERVER_NAME
+              value: "localhost"
             - name: GLPI_DB_HOST
               value: "mysql"
             - name: GLPI_DB_NAME
