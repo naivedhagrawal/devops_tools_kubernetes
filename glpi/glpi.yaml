@@ -135,7 +135,7 @@ spec:
               mountPath: /mnt/apache2
       containers:
         - name: glpi
-          image: diouxx/glpi:php7.4
+          image: diouxx/glpi
           ports:
             - containerPort: 80
           env:
