@@ -162,7 +162,7 @@ spec:
     app: glpi
   ports:
     - protocol: TCP
-      port: 1024
+      port: 80
       targetPort: 80
-      nodePort: 30002
+      nodePort: 30000
   type: NodePort
