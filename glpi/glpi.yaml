@@ -1,4 +1,8 @@
-# Storage Class (for Kind)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: devops-tools
+---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -6,11 +10,11 @@ metadata:
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: Immediate
 ---
-# Persistent Volume for GLPI
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: glpi-pv
+  namespace: devops-tools
 spec:
   storageClassName: hostpath-storage
   capacity:
@@ -19,13 +23,12 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: "/home/data/glpi"
-
-# Persistent Volume Claim for GLPI
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: glpi-pvc
+  namespace: devops-tools
 spec:
   storageClassName: hostpath-storage
   accessModes:
@@ -34,13 +37,12 @@ spec:
     requests:
       storage: 5Gi
   volumeName: glpi-pv
-
-# Persistent Volume for MySQL
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: mysql-pv
+  namespace: devops-tools
 spec:
   storageClassName: hostpath-storage
   capacity:
@@ -49,13 +51,12 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: "/home/data/mysql"
-
-# Persistent Volume Claim for MySQL
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pvc
+  namespace: devops-tools
 spec:
   storageClassName: hostpath-storage
   accessModes:
@@ -64,8 +65,6 @@ spec:
     requests:
       storage: 5Gi
   volumeName: mysql-pv
-
-# Deployment MySQL
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -103,9 +102,6 @@ spec:
         - name: mysql-storage
           persistentVolumeClaim:
             claimName: mysql-pvc
-
-# Service MySQL
-# URL - mysql.devops-tools.svc.cluster.local
 ---
 apiVersion: v1
 kind: Service
@@ -119,8 +115,6 @@ spec:
     - protocol: TCP
       port: 3306
       targetPort: 3306
-
-# Deployment GLPI
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -158,9 +152,6 @@ spec:
         - name: glpi-storage
           persistentVolumeClaim:
             claimName: glpi-pvc
-
-# Service GLPI
-# URL - glpi.devops-tools.svc.cluster.local
 ---
 apiVersion: v1
 kind: Service
