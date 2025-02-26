@@ -147,6 +147,14 @@ spec:
               value: "glpi"
             - name: GLPI_DB_PASSWORD
               value: "mysql"
+            - name: APACHE_RUN_USER
+              value: "www-data"
+            - name: APACHE_RUN_GROUP
+              value: "www-data"
+            - name: APACHE_LOG_DIR
+              value: "/var/log/apache2"
+            - name: APACHE_PID_FILE
+              value: "/var/run/apache2.pid"
           volumeMounts:
             - mountPath: /var/www/html/glpi/files
               name: glpi-storage
