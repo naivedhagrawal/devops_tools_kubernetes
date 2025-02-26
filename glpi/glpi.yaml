@@ -131,6 +131,13 @@ spec:
       labels:
         app: glpi
     spec:
+      initContainers:
+        - name: init-apache
+          image: busybox
+          command: ["sh", "-c", "echo 'ServerName localhost' > /mnt/apache2/apache2.conf"]
+          volumeMounts:
+            - name: apache-config
+              mountPath: /mnt/apache2
       containers:
         - name: glpi
           image: diouxx/glpi
@@ -148,10 +155,14 @@ spec:
           volumeMounts:
             - mountPath: /var/www/html/glpi/files
               name: glpi-storage
+            - mountPath: /etc/apache2
+              name: apache-config
       volumes:
         - name: glpi-storage
           persistentVolumeClaim:
             claimName: glpi-pvc
+        - name: apache-config
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -163,7 +174,7 @@ spec:
     app: glpi
   ports:
     - protocol: TCP
-      port: 90
+      port: 80
       targetPort: 80
-      nodePort: 30009
+      nodePort: 30000
   type: NodePort
