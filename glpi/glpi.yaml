@@ -141,6 +141,7 @@ spec:
       containers:
         - name: glpi
           image: naivedh/glpi:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           env:
