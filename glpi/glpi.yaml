@@ -165,6 +165,7 @@ spec:
               name: glpi-storage
             - mountPath: /etc/apache2
               name: apache-config
+      volumes:
         - name: glpi-storage
           persistentVolumeClaim:
             claimName: glpi-pvc
