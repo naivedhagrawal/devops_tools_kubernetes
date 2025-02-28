@@ -10,17 +10,14 @@ nodes:
       kind: ClusterConfiguration
       apiServer:
         extraArgs:
-          "enable-admission-plugins": "PodSecurityPolicy"
+          "admission-control-config-file": "/etc/kubernetes/admission-control.yaml"
   extraPortMappings:
     - containerPort: 80
       hostPort: 80
+    - containerPort: 443
+      hostPort: 443
 
 - role: worker
   extraMounts:
     - hostPath: /home/appdata
       containerPath: /home/data
-
-
-# kind create cluster --config kind-cluster-config.yaml --name kind
-# kubectl apply -f namespace.yaml
-# kubectl config set-context --current --namespace=devops-tools
