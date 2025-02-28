@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: jenkins.vmware.local
+  - host: jenkins.local
     http:
       paths:
       - path: /
