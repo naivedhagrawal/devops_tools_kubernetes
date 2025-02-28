@@ -1,23 +1,15 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: devops-ingress
+  name: jenkins-ingress
   namespace: devops-tools
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
+  ingressClassName: nginx
   rules:
-  - host: gitlab.192.168.92.200.nip.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: gitlab-service
-            port:
-              number: 80
-  - host: jenkins.192.168.92.200.nip.io
+  - host: jenkins.vmware.local
     http:
       paths:
       - path: /
@@ -27,13 +19,3 @@ spec:
             name: jenkins-service
             port:
               number: 8080
-  - host: grafana.192.168.92.200.nip.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: grafana-service
-            port:
-              number: 3000
