@@ -19,3 +19,8 @@ nodes:
   extraMounts:
     - hostPath: /home/appdata
       containerPath: /home/data
+
+
+# kind create cluster --config kind-cluster-config.yaml --name kind
+# kubectl apply -f namespace.yaml
+# kubectl config set-context --current --namespace=devops-tools
