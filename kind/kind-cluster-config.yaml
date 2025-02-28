@@ -12,7 +12,7 @@ nodes:
         extraArgs:
           "admission-control-config-file": "/etc/kubernetes/admission-control.yaml"
   extraMounts:
-    - hostPath: /home/user/admission-control.yaml
+    - hostPath: /root/devops_tools_kubernetes/kind/admission-control.yaml
       containerPath: /etc/kubernetes/admission-control.yaml
 
 - role: worker
