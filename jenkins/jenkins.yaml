@@ -143,18 +143,18 @@ metadata:
   name: jenkins-service
   namespace: devops-tools
   annotations:
-      prometheus.io/scrape: 'true'
-      prometheus.io/path:   /
-      prometheus.io/port:   '8080'
+    prometheus.io/scrape: 'true'
+    prometheus.io/path: /
+    prometheus.io/port: '8080'
 spec:
   selector: 
     app: jenkins
-  type: NodePort  
+  type: ClusterIP  # Change from NodePort to ClusterIP
   ports:
     - name: httpport
       protocol: TCP
       port: 8080
-      nodePort: 31001
+      targetPort: 8080
     - name: jnlpport
       protocol: TCP
       port: 50000
