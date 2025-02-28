@@ -1,10 +1,11 @@
-#Service Account
+# Service Account
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: jenkins-admin
   namespace: devops-tools
 ---
+# Role
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -26,6 +27,7 @@ rules:
   resources: ["secrets"]
   verbs: ["get"]
 ---
+# Role Binding
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -39,9 +41,8 @@ subjects:
 - kind: ServiceAccount
   name: jenkins-admin
   namespace: devops-tools
-
-#Secret
 ---
+# Secret
 apiVersion: v1
 kind: Secret
 metadata:
@@ -50,19 +51,8 @@ metadata:
   annotations:
     kubernetes.io/service-account.name: jenkins-admin
 type: kubernetes.io/service-account-token
-
-
-#Volumes
 ---
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: local-storage-jenkins
-provisioner: kubernetes.io/no-provisioner
-volumeBindingMode: WaitForFirstConsumer
-
-#Persistent Volume
----
+# Persistent Volume
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -71,26 +61,14 @@ metadata:
     type: local
 spec:
   storageClassName: local-storage-jenkins
-  claimRef:
-    name: jenkins-pv-claim
-    namespace: devops-tools
   capacity:
     storage: 10Gi
   accessModes:
     - ReadWriteMany
-  local:
+  hostPath:
     path: /home/data/jenkins
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - kind-worker
-
-#Persistent Volume Claim
 ---
+# Persistent Volume Claim
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -103,9 +81,8 @@ spec:
   resources:
     requests:
       storage: 10Gi
-
-#Deployment
 ---
+# Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -115,9 +92,6 @@ spec:
   replicas: 1
   strategy:
     type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1 
-      maxSurge: 1
   selector:
     matchLabels:
       app: jenkins
@@ -161,9 +135,8 @@ spec:
         - name: jenkins-data
           persistentVolumeClaim:
             claimName: jenkins-pv-claim
-
-#Service
 ---
+# Service
 apiVersion: v1
 kind: Service
 metadata:
