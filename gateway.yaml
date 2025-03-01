@@ -1,0 +1,31 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  name: my-gateway
+spec:
+  gatewayClassName: nginx-gateway
+  listeners:
+  - protocol: HTTP
+    port: 80
+    routes:
+      kind: HTTPRoute
+      selector:
+        matchLabels:
+          gateway: my-gateway
+
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: jenkins-route
+  labels:
+    gateway: my-gateway
+spec:
+  parentRefs:
+  - name: my-gateway
+  hostnames:
+  - "jenkins.192.168.92.200.nip.io"
+  rules:
+  - backendRefs:
+    - name: jenkins-service
+      port: 8080
