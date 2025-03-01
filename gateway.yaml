@@ -5,7 +5,8 @@ metadata:
 spec:
   gatewayClassName: nginx-gateway
   listeners:
-  - protocol: HTTP
+  - name: http-listener # Added the required name field
+    protocol: HTTP
     port: 80
 
 ---
