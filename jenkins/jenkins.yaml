@@ -87,7 +87,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - kind-worker
+          - docker-desktop
 
 #Persistent Volume Claim
 ---
