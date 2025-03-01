@@ -96,3 +96,7 @@ kubectl config set-context --current --namespace=devops-tools
 kind get nodes
 kubectl get nodes
 kubectl cluster-info --context kind-kind
+
+kind create cluster --config kind-cluster-config.yaml --name kind
+kubectl apply -f namespace.yaml
+kubectl config set-context --current --namespace=devops-tools
