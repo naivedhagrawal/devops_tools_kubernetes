@@ -65,9 +65,17 @@ spec:
   capacity:
     storage: 10Gi
   accessModes:
-    - ReadWriteOnce # Modified
+    - ReadWriteOnce
   local:
-    path: /home/data/jenkins # Ensure this path exists on your minikube node
+    path: /home/data/jenkins
+  nodeAffinity: # Added nodeAffinity
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - "minikube" # Correct node hostname
 
 #Persistent Volume Claim
 ---
@@ -79,7 +87,7 @@ metadata:
 spec:
   storageClassName: local-storage-jenkins
   accessModes:
-    - ReadWriteOnce # Modified
+    - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi
