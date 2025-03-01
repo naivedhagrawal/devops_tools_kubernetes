@@ -3,48 +3,6 @@ apiVersion: kind.x-k8s.io/v1alpha4
 
 nodes:
 - role: control-plane
-  extraPortMappings:
-  - containerPort: 31000
-    hostPort: 80 #gitlab port
-  
-  - containerPort: 31001
-    hostPort: 8080 #jenkins port
-  
-  - containerPort: 31002
-    hostPort: 1024 
-  
-  - containerPort: 31003
-    hostPort: 1025 
-  
-  - containerPort: 31004
-    hostPort: 9099 #prometheus port
-  
-  - containerPort: 31006
-    hostPort: 3000 #wiki port
-  
-  - containerPort: 31007
-    hostPort: 9000 #openproject port
-  
-  - containerPort: 31008
-    hostPort: 8090 #zap port
-  
-  - containerPort: 31009
-    hostPort: 90 #glpi port
-  
-  - containerPort: 31010
-    hostPort: 9443 #secure API port
-  
-  - containerPort: 31011
-    hostPort: 8888 #dev tool port
-  
-  - containerPort: 31012
-    hostPort: 5000 #registry port
-  
-  - containerPort: 31013
-    hostPort: 7070 #monitoring tool port
-  
-  - containerPort: 31014
-    hostPort: 6060 #debugging tool port
 
 - role: worker
   extraMounts:
