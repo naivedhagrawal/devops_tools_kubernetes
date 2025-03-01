@@ -40,6 +40,18 @@ subjects:
   name: jenkins-admin
   namespace: devops-tools
 
+#Secret
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sa-token-secret
+  namespace: devops-tools
+  annotations:
+    kubernetes.io/service-account.name: jenkins-admin
+type: kubernetes.io/service-account-token
+
+
 #Volumes
 ---
 kind: StorageClass
@@ -65,9 +77,17 @@ spec:
   capacity:
     storage: 10Gi
   accessModes:
-    - ReadWriteOnce # Modified
+    - ReadWriteMany
   local:
-    path: /home/data/jenkins # Ensure this path exists on your minikube node
+    path: /home/data/jenkins
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - kind-worker
 
 #Persistent Volume Claim
 ---
@@ -79,7 +99,7 @@ metadata:
 spec:
   storageClassName: local-storage-jenkins
   accessModes:
-    - ReadWriteOnce # Modified
+    - ReadWriteMany
   resources:
     requests:
       storage: 10Gi
@@ -96,7 +116,7 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1
+      maxUnavailable: 1 
       maxSurge: 1
   selector:
     matchLabels:
@@ -150,17 +170,18 @@ metadata:
   name: jenkins-service
   namespace: devops-tools
   annotations:
-    prometheus.io/scrape: 'true'
-    prometheus.io/path:  /
-    prometheus.io/port:  '8080'
+      prometheus.io/scrape: 'true'
+      prometheus.io/path:   /
+      prometheus.io/port:   '8080'
 spec:
-  selector:
+  selector: 
     app: jenkins
-  type: ClusterIP
+  type: ClusterIP 
   ports:
     - name: httpport
       protocol: TCP
       port: 8080
+    # nodePort: 31001
     - name: jnlpport
       protocol: TCP
       port: 50000
