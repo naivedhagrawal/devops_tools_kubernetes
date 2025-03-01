@@ -132,7 +132,7 @@ spec:
         runAsUser: 1000
       containers:
         - name: jenkins
-          image: jenkins/jenkins:lts
+          image: jenkins/jenkins:latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: httpport
