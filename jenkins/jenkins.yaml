@@ -176,13 +176,14 @@ metadata:
 spec:
   selector: 
     app: jenkins
- # type: ClusterIP 
+  type: NodePort 
   ports:
     - name: httpport
       protocol: TCP
+      nodePort: 31001
+      targetPort: 8080
       port: 8080
-    # nodePort: 31001
     - name: jnlpport
       protocol: TCP
       port: 50000
-    # targetPort: 50000
+      targetPort: 50000
