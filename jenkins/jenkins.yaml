@@ -176,7 +176,7 @@ metadata:
 spec:
   selector: 
     app: jenkins
-  type: ClusterIP 
+ # type: ClusterIP 
   ports:
     - name: httpport
       protocol: TCP
@@ -185,4 +185,4 @@ spec:
     - name: jnlpport
       protocol: TCP
       port: 50000
-      targetPort: 50000
+    # targetPort: 50000
