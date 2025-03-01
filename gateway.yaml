@@ -7,11 +7,6 @@ spec:
   listeners:
   - protocol: HTTP
     port: 80
-    routes:
-      kind: HTTPRoute
-      selector:
-        matchLabels:
-          gateway: my-gateway
 
 ---
 apiVersion: gateway.networking.k8s.io/v1beta1
@@ -24,7 +19,7 @@ spec:
   parentRefs:
   - name: my-gateway
   hostnames:
-  - "jenkins.192.168.92.200.nip.io"
+  - "jenkins.local"
   rules:
   - backendRefs:
     - name: jenkins-service
