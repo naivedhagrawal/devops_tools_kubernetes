@@ -122,7 +122,7 @@ spec:
       containers:
         - name: jenkins
           image: jenkins/jenkins:lts
-          imagePullPolicy: always
+          imagePullPolicy: IfNotPresent
           ports:
             - name: httpport
               containerPort: 8080
