@@ -8,7 +8,7 @@ nodes:
       hostPort: 30080
       protocol: TCP
     - containerPort: 30081
-      hostPort: 30081
+      hostPort: 30081 #Jenkins
       protocol: TCP
     - containerPort: 30082
       hostPort: 30082

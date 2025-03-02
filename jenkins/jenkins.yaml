@@ -169,7 +169,7 @@ spec:
   ports:
     - name: httpport
       protocol: TCP
-      nodePort: 31001
+      nodePort: 30081
       targetPort: 8080
       port: 8080
     - name: jnlpport
