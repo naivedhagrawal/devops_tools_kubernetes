@@ -71,23 +71,16 @@ metadata:
     type: local
 spec:
   storageClassName: local-storage-jenkins
-  claimRef:
-    name: jenkins-pv-claim
-    namespace: devops-tools
   capacity:
     storage: 10Gi
   accessModes:
     - ReadWriteMany
-  local:
-    path: /mnt/data/jenkins
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - docker-desktop
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /tmp/docker-desktop-root/run/desktop/mnt/host/c/Users/naive/data/jenkins
+  claimRef:
+    name: jenkins-pv-claim
+    namespace: devops-tools
 
 #Persistent Volume Claim
 ---
