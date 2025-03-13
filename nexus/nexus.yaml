@@ -50,7 +50,7 @@ spec:
     spec:
       containers:
       - name: nexus
-        image: sonatype/nexus3:3.22.0
+        image: sonatype/nexus3:latest
         ports:
         - containerPort: 8081
         volumeMounts:
