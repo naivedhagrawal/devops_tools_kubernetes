@@ -68,7 +68,7 @@ spec:
     app: openproject
   ports:
     - protocol: TCP
-      nodePort: 31007
+      nodePort: 30084
       port: 9000
       targetPort: 9000
 ---
