@@ -18,7 +18,7 @@ spec:
       containers:
         - name: zap
           image: zaproxy/zap-stable
-          args: ["zap.sh", "-daemon", "-host", "0.0.0.0", "-port", "8090", "-config", "api.disablekey=true", "-config", "api.addrs.addr.name=.*", "-config", "api.addrs.addr.regex=true", "-addonupdate", "-addoninstall", "reporting"]
+          args: ["zap.sh", "-daemon", "-host", "0.0.0.0", "-port", "8090", "-config", "api.disablekey=true", "-config", "api.addrs.addr.name=.*", "-config", "api.addrs.addr.regex=true", "-addonupdate", "-addoninstall", "reports"]
           ports:
             - containerPort: 8090
           livenessProbe:
@@ -36,7 +36,7 @@ spec:
           lifecycle:
             postStart:
               exec:
-                command: ["/bin/sh", "-c", "until curl -s http://localhost:8090/JSON/core/view/version/; do sleep 5; done && curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reporting"]
+                command: ["/bin/sh", "-c", "until curl -s http://localhost:8090/JSON/core/view/version/; do sleep 5; done && curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reports"]
 ---
 apiVersion: v1
 kind: Service
