@@ -23,20 +23,20 @@ spec:
             - containerPort: 8090
           resources:
             requests:
-              cpu: "2"
-              memory: "2Gi"
+              cpu: "1"
+              memory: "1Gi"
             limits:
-              cpu: "12"
-              memory: "8Gi"
+              cpu: "4"
+              memory: "4Gi"
           livenessProbe:
             httpGet:
-              path: /
+              path: /JSON/core/view/version/
               port: 8090
             initialDelaySeconds: 10
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /
+              path: /JSON/core/view/version/
               port: 8090
             initialDelaySeconds: 5
             periodSeconds: 10
@@ -49,10 +49,11 @@ metadata:
   labels:
     app: zap
 spec:
+  type: NodePort
   selector:
     app: zap
   ports:
     - protocol: TCP
       port: 8090
       targetPort: 8090
-  clusterIP: None  # Headless Service
+      nodePort: 30090
