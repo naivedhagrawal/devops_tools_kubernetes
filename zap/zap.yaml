@@ -18,7 +18,7 @@ spec:
       containers:
         - name: zap
           image: zaproxy/zap-stable
-          args: ["zap.sh", "-daemon", "-host", "0.0.0.0", "-port", "8090", "-config", "api.disablekey=true", "-config", "api.addrs.addr.name=.*", "-config", "api.addrs.addr.regex=true", "-addonupdate", "-addoninstall", "reports", "-Xmx8192m", "-config", "scanner.threadPerHost=5", "-config", "selenium.headless=false", "-config", "spider.threads=2", "-config", "ascan.threads=2"]
+          args: ["zap.sh", "-daemon", "-host", "0.0.0.0", "-port", "8090", "-config", "api.disablekey=true", "-config", "api.addrs.addr.name=.*", "-config", "api.addrs.addr.regex=true", "-addonupdate", "-addoninstall", "reports", "-addoninstall", "reportTemplates", "-Xmx8192m", "-config", "scanner.threadPerHost=5", "-config", "selenium.headless=false", "-config", "spider.threads=2", "-config", "ascan.threads=2"]
           ports:
             - containerPort: 8090
           livenessProbe:
@@ -36,7 +36,7 @@ spec:
           lifecycle:
             postStart:
               exec:
-                command: ["/bin/sh", "-c", "until curl -s http://localhost:8090/JSON/core/view/version/; do sleep 5; done && curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reports"]
+                command: ["/bin/sh", "-c", "until curl -s http://localhost:8090/JSON/core/view/version/; do sleep 5; done && curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reports && curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reportTemplates"]
 ---
 apiVersion: v1
 kind: Service
