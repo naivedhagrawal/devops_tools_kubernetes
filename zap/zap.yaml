@@ -33,6 +33,10 @@ spec:
               port: 8090
             initialDelaySeconds: 5
             periodSeconds: 10
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reporting"]
 ---
 apiVersion: v1
 kind: Service
