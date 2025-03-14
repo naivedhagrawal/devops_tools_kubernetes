@@ -25,7 +25,7 @@ spec:
       containers:
         - name: zap
           image: zaproxy/zap-stable
-          workingDir: /zap/reports  # Ensure proper working directory
+          workingDir: /zap/reports
           args: ["zap.sh", "-daemon", "-host", "0.0.0.0", "-port", "8090", "-config", "api.disablekey=true", "-config", "api.addrs.addr.name=.*", "-config", "api.addrs.addr.regex=true", "-addonupdate", "-addoninstall", "reports", "-addoninstall", "reportTemplates", "-Xmx8192m", "-config", "scanner.threadPerHost=5", "-config", "selenium.headless=false", "-config", "spider.threads=2", "-config", "ascan.threads=2"]
           ports:
             - containerPort: 8090
@@ -53,7 +53,9 @@ spec:
               mountPath: /zap/reports
       volumes:
         - name: zap-reports
-          emptyDir: {}
+          hostPath:
+            path: /home/data/zap-reports
+            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service
