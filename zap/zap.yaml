@@ -15,12 +15,23 @@ spec:
       labels:
         app: zap
     spec:
+      initContainers:
+        - name: init-permissions
+          image: busybox
+          command: ["sh", "-c", "mkdir -p /home/zap && chmod -R 777 /home/zap"]
+          volumeMounts:
+            - name: zap-home
+              mountPath: /home/zap
       containers:
         - name: zap
           image: zaproxy/zap-stable
           args: ["zap.sh", "-daemon", "-host", "0.0.0.0", "-port", "8090", "-config", "api.disablekey=true", "-config", "api.addrs.addr.name=.*", "-config", "api.addrs.addr.regex=true", "-addonupdate", "-addoninstall", "reports", "-addoninstall", "reportTemplates", "-Xmx8192m", "-config", "scanner.threadPerHost=5", "-config", "selenium.headless=false", "-config", "spider.threads=2", "-config", "ascan.threads=2"]
           ports:
             - containerPort: 8090
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            fsGroup: 0
           livenessProbe:
             httpGet:
               path: /JSON/core/view/version/
@@ -37,6 +48,12 @@ spec:
             postStart:
               exec:
                 command: ["/bin/sh", "-c", "until curl -s http://localhost:8090/JSON/core/view/version/; do sleep 5; done && curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reports && curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reportTemplates"]
+          volumeMounts:
+            - name: zap-home
+              mountPath: /home/zap
+      volumes:
+        - name: zap-home
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
