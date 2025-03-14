@@ -18,14 +18,14 @@ spec:
       initContainers:
         - name: init-permissions
           image: busybox
-          command: ["sh", "-c", "mkdir -p /home/zap && chown -R 1000:1000 /home/zap && chmod -R 775 /home/zap"]
+          command: ["sh", "-c", "mkdir -p /zap/reports && chown -R 1000:1000 /zap/reports && chmod -R 775 /zap/reports"]
           volumeMounts:
-            - name: zap-home
-              mountPath: /home/zap
+            - name: zap-reports
+              mountPath: /zap/reports
       containers:
         - name: zap
           image: zaproxy/zap-stable
-          workingDir: /home/zap  # Ensure proper working directory
+          workingDir: /zap/reports  # Ensure proper working directory
           args: ["zap.sh", "-daemon", "-host", "0.0.0.0", "-port", "8090", "-config", "api.disablekey=true", "-config", "api.addrs.addr.name=.*", "-config", "api.addrs.addr.regex=true", "-addonupdate", "-addoninstall", "reports", "-addoninstall", "reportTemplates", "-Xmx8192m", "-config", "scanner.threadPerHost=5", "-config", "selenium.headless=false", "-config", "spider.threads=2", "-config", "ascan.threads=2"]
           ports:
             - containerPort: 8090
@@ -47,12 +47,12 @@ spec:
           lifecycle:
             postStart:
               exec:
-                command: ["/bin/sh", "-c", "chown -R 1000:1000 /home/zap && chmod -R 775 /home/zap && until curl -s http://localhost:8090/JSON/core/view/version/; do sleep 5; done && curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reports && curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reportTemplates"]
+                command: ["/bin/sh", "-c", "chown -R 1000:1000 /zap/reports && chmod -R 775 /zap/reports && until curl -s http://localhost:8090/JSON/core/view/version/; do sleep 5; done && curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reports && curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reportTemplates"]
           volumeMounts:
-            - name: zap-home
-              mountPath: /home/zap
+            - name: zap-reports
+              mountPath: /zap/reports
       volumes:
-        - name: zap-home
+        - name: zap-reports
           emptyDir: {}
 ---
 apiVersion: v1
