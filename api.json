@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "abcd-1234-efgh-5678",
-    "name": "Sample API Collection",
+    "name": "JSONPlaceholder API Collection",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -11,10 +11,10 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "https://api.example.com/v1/users",
+          "raw": "https://jsonplaceholder.typicode.com/users",
           "protocol": "https",
-          "host": ["api", "example", "com"],
-          "path": ["v1", "users"]
+          "host": ["jsonplaceholder", "typicode", "com"],
+          "path": ["users"]
         }
       },
       "response": []
@@ -25,10 +25,24 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "https://api.example.com/v1/users/:id",
+          "raw": "https://jsonplaceholder.typicode.com/users/1",
           "protocol": "https",
-          "host": ["api", "example", "com"],
-          "path": ["v1", "users", ":id"]
+          "host": ["jsonplaceholder", "typicode", "com"],
+          "path": ["users", "1"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Posts",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://jsonplaceholder.typicode.com/posts",
+          "protocol": "https",
+          "host": ["jsonplaceholder", "typicode", "com"],
+          "path": ["posts"]
         }
       },
       "response": []
