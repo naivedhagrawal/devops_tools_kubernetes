@@ -15,10 +15,12 @@ spec:
       labels:
         app: zap
     spec:
+      securityContext:
+        fsGroup: 1000
       initContainers:
         - name: init-permissions
           image: busybox
-          command: ["sh", "-c", "mkdir -p /home/zap && chmod -R 777 /home/zap"]
+          command: ["sh", "-c", "mkdir -p /home/zap && chown -R 1000:1000 /home/zap && chmod -R 775 /home/zap"]
           volumeMounts:
             - name: zap-home
               mountPath: /home/zap
@@ -29,8 +31,8 @@ spec:
           ports:
             - containerPort: 8090
           securityContext:
-            runAsUser: 0
-            runAsGroup: 0
+            runAsUser: 1000
+            runAsGroup: 1000
           livenessProbe:
             httpGet:
               path: /JSON/core/view/version/
