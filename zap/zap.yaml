@@ -27,7 +27,7 @@ spec:
               chmod -R 775 /zap/reports
           volumeMounts:
             - name: zap
-              mountPath: /zap/reports
+              mountPath: /zap
       containers:
         - name: zap
           image: zaproxy/zap-stable
@@ -104,7 +104,7 @@ spec:
                     fi;
           volumeMounts:
             - name: zap
-              mountPath: /zap/reports
+              mountPath: /zap
       volumes:
         - name: zap
           hostPath:
