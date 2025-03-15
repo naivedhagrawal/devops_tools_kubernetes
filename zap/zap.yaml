@@ -27,7 +27,7 @@ spec:
               chmod -R 775 /zap/reports
           volumeMounts:
             - name: zap
-              mountPath: /zap
+              mountPath: /zap/reports
       containers:
         - name: zap
           image: zaproxy/zap-stable
@@ -48,8 +48,6 @@ spec:
             - "-addonupdate"
             - "-addoninstall"
             - "reports"
-            - "-addoninstall"
-            - "spiderajax"
             - "-addoninstall"
             - "reportTemplates"
             - "-Xmx8192m"
@@ -96,8 +94,8 @@ spec:
                       sleep 10;
                     done;
                     echo "Selenium is ready. Setting permissions and installing add-ons.";
-                    chown -R 1000:1000 /zap/reports /zap/addons /zap/themes; 
-                    chmod -R 775 /zap/reports /zap/addons /zap/themes; 
+                    chown -R 1000:1000 /zap/reports; 
+                    chmod -R 775 /zap/reports; 
                     if ! curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reports; then 
                       echo "Failed to install reports add-on"; 
                     fi;
@@ -106,7 +104,7 @@ spec:
                     fi;
           volumeMounts:
             - name: zap
-              mountPath: /zap
+              mountPath: /zap/reports
       volumes:
         - name: zap
           hostPath:
