@@ -50,7 +50,7 @@ spec:
             - name: POSTGRES_USER
               value: backstage
             - name: POSTGRES_PASSWORD
-              value: backstage
+              value: mysecurepassword
           ports:
             - containerPort: 5432
           volumeMounts:
@@ -93,7 +93,7 @@ data:
     backend:
       database:
         client: pg
-        connection: "postgres://backstage:backstage@postgres.devops-tools.svc.cluster.local:5432/backstage"
+        connection: "postgres://backstage:mysecurepassword@postgres.devops-tools.svc.cluster.local:5432/backstage"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -115,7 +115,7 @@ spec:
           image: ghcr.io/backstage/backstage:latest
           env:
             - name: APP_CONFIG_backend_database_connection
-              value: "postgres://backstage:backstage@postgres.devops-tools.svc.cluster.local:5432/backstage"
+              value: "postgres://backstage:mysecurepassword@postgres.devops-tools.svc.cluster.local:5432/backstage"
           ports:
             - containerPort: 7007
           volumeMounts:
