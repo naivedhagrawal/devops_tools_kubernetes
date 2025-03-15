@@ -110,23 +110,11 @@ spec:
                     fi;
           volumeMounts:
             - name: zap-reports
-              mountPath: /zap/reports
-            - name: zap-addons
-              mountPath: /zap/addons
-            - name: zap-themes
-              mountPath: /zap/themes
+              mountPath: /zap
       volumes:
         - name: zap-reports
           hostPath:
-            path: /home/data/zap-reports
-            type: DirectoryOrCreate
-        - name: zap-addons
-          hostPath:
-            path: /home/data/zap-addons
-            type: DirectoryOrCreate
-        - name: zap-themes
-          hostPath:
-            path: /home/data/zap-themes
+            path: /home/data/zap
             type: DirectoryOrCreate
 ---
 apiVersion: v1
