@@ -22,12 +22,16 @@ spec:
             - "sh"
             - "-c"
             - >
-              mkdir -p /zap/reports && 
-              chown -R 1000:1000 /zap/reports && 
-              chmod -R 775 /zap/reports
+              mkdir -p /zap/reports /zap/addons /zap/themes && 
+              chown -R 1000:1000 /zap/reports /zap/addons /zap/themes && 
+              chmod -R 775 /zap/reports /zap/addons /zap/themes
           volumeMounts:
             - name: zap-reports
               mountPath: /zap/reports
+            - name: zap-addons
+              mountPath: /zap/addons
+            - name: zap-themes
+              mountPath: /zap/themes
       containers:
         - name: zap
           image: zaproxy/zap-stable
@@ -96,8 +100,8 @@ spec:
                       sleep 10;
                     done;
                     echo "Selenium is ready. Setting permissions and installing add-ons.";
-                    chown -R 1000:1000 /zap/reports; 
-                    chmod -R 775 /zap/reports; 
+                    chown -R 1000:1000 /zap/reports /zap/addons /zap/themes; 
+                    chmod -R 775 /zap/reports /zap/addons /zap/themes; 
                     if ! curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reports; then 
                       echo "Failed to install reports add-on"; 
                     fi;
@@ -107,10 +111,22 @@ spec:
           volumeMounts:
             - name: zap-reports
               mountPath: /zap/reports
+            - name: zap-addons
+              mountPath: /zap/addons
+            - name: zap-themes
+              mountPath: /zap/themes
       volumes:
         - name: zap-reports
           hostPath:
             path: /home/data/zap-reports
+            type: DirectoryOrCreate
+        - name: zap-addons
+          hostPath:
+            path: /home/data/zap-addons
+            type: DirectoryOrCreate
+        - name: zap-themes
+          hostPath:
+            path: /home/data/zap-themes
             type: DirectoryOrCreate
 ---
 apiVersion: v1
