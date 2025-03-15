@@ -54,7 +54,7 @@ spec:
             - "-config"
             - "scanner.threadPerHost=5"
             - "-config"
-            - "selenium.firefox.webdriver=http://selenium-firefox:4444/wd/hub"
+            - "selenium.firefox.webdriver=http://selenium-firefox:4444"
             - "-config"
             - "selenium.headless=true"
             - "-config"
