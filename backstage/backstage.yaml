@@ -159,4 +159,5 @@ spec:
     - protocol: TCP
       nodePort: 30091
       targetPort: 7007
+      port: 7007
   type: NodePort
