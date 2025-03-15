@@ -24,15 +24,10 @@ spec:
             - >
               mkdir -p /zap/reports && 
               chown -R 1000:1000 /zap/reports && 
-              chmod -R 775 /zap/reports;
-              mkdir -p /zap/plugins && 
-              chown -R 1000:1000 /zap/plugins && 
-              chmod -R 775 /zap/plugins
+              chmod -R 775 /zap/reports
           volumeMounts:
             - name: zap-reports
               mountPath: /zap/reports
-            - name: zap-plugins
-              mountPath: /zap/plugins
       containers:
         - name: zap
           image: zaproxy/zap-stable
@@ -101,8 +96,6 @@ spec:
                     echo "Selenium is ready. Setting permissions and installing add-ons.";
                     chown -R 1000:1000 /zap/reports; 
                     chmod -R 775 /zap/reports; 
-                    chown -R 1000:1000 /zap/plugins; 
-                    chmod -R 775 /zap/plugins; 
                     if ! curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reports; then 
                       echo "Failed to install reports add-on"; 
                     fi;
@@ -112,16 +105,10 @@ spec:
           volumeMounts:
             - name: zap-reports
               mountPath: /zap/reports
-            - name: zap-plugins
-              mountPath: /zap/plugins
       volumes:
         - name: zap-reports
           hostPath:
             path: /home/data/zap-reports
-            type: DirectoryOrCreate
-        - name: zap-plugins
-          hostPath:
-            path: /home/data/zap-plugins
             type: DirectoryOrCreate
 ---
 apiVersion: v1
