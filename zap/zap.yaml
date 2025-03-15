@@ -108,7 +108,7 @@ spec:
             - name: zap
               mountPath: /zap
       volumes:
-        - name: zap-reports
+        - name: zap
           hostPath:
             path: /home/data/zap
             type: DirectoryOrCreate
