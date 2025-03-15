@@ -26,8 +26,8 @@ spec:
               chown -R 1000:1000 /zap/reports && 
               chmod -R 775 /zap/reports
           volumeMounts:
-            - name: zap
-              mountPath: /zap
+            - name: zap-reports
+              mountPath: /zap/reports
       containers:
         - name: zap
           image: zaproxy/zap-stable
@@ -103,10 +103,10 @@ spec:
                       echo "Failed to install reportTemplates add-on"; 
                     fi;
           volumeMounts:
-            - name: zap
+            - name: zap-reports
               mountPath: /zap
       volumes:
-        - name: zap
+        - name: zap-reports
           hostPath:
             path: /home/data/zap
             type: DirectoryOrCreate
