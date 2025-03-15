@@ -74,6 +74,25 @@ spec:
       port: 5432
       targetPort: 5432
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backstage-config
+  namespace: devops-tools
+data:
+  app-config.yaml: |
+    app:
+      title: Backstage
+    backend:
+      database:
+        client: pg
+        connection:
+          host: postgres
+          port: 5432
+          user: backstage
+          password: backstage
+          database: backstage
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -105,6 +124,14 @@ spec:
               value: backstage
           ports:
             - containerPort: 7007
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/app-config.yaml
+              subPath: app-config.yaml
+      volumes:
+        - name: config-volume
+          configMap:
+            name: backstage-config
 ---
 apiVersion: v1
 kind: Service
