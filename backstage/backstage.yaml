@@ -86,7 +86,7 @@ data:
     backend:
       database:
         client: pg
-        connection: postgres://backstage:backstage@postgres:5432/backstage
+        connection: "postgres://backstage:backstage@postgres:5432/backstage"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -106,9 +106,6 @@ spec:
       containers:
         - name: backstage
           image: ghcr.io/backstage/backstage:latest
-          env:
-            - name: DATABASE_URL
-              value: postgres://backstage:backstage@postgres:5432/backstage
           ports:
             - containerPort: 7007
           volumeMounts:
