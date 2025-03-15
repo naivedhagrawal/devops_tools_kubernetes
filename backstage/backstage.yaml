@@ -91,7 +91,7 @@ spec:
     spec:
       containers:
         - name: backstage
-          image: spotify/backstage:latest
+          image: ghcr.io/backstage/backstage:latest
           env:
             - name: POSTGRES_HOST
               value: postgres
