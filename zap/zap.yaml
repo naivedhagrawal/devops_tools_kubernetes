@@ -54,13 +54,16 @@ spec:
             - "-config"
             - "scanner.threadPerHost=5"
             - "-config"
-            - "selenium.firefox.webdriver=http://selenium-firefox:4444/wd/hub"
+            - "selenium.firefox.webdriver=http://selenium-firefox.devops-tools.svc.cluster.local:4444/wd/hub"
             - "-config"
             - "selenium.headless=true"
             - "-config"
             - "spider.threads=2"
             - "-config"
             - "ascan.threads=2"
+          env:
+            - name: ZAP_JAVA_OPTS
+              value: "-config selenium.firefox.webdriver=http://selenium-firefox.devops-tools.svc.cluster.local:4444/wd/hub"
           ports:
             - containerPort: 8090
           securityContext:
@@ -85,20 +88,11 @@ spec:
                   - "/bin/sh"
                   - "-c"
                   - >
-                    echo "Waiting for Selenium to be ready...";
-                    until curl -s http://selenium-firefox:4444/status | grep -q '"ready": true'; do 
-                      echo "Selenium not ready, retrying in 10s...";
-                      sleep 10;
-                    done;
-                    echo "Selenium is ready. Setting permissions and installing add-ons.";
-                    chown -R 1000:1000 /zap/reports; 
-                    chmod -R 775 /zap/reports; 
-                    if ! curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reports; then 
-                      echo "Failed to install reports add-on"; 
-                    fi;
-                    if ! curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reportTemplates; then 
-                      echo "Failed to install reportTemplates add-on"; 
-                    fi;
+                    until curl -s http://selenium-firefox:4444/status | grep -q '"ready": true'; do sleep 5; done &&
+                    chown -R 1000:1000 /zap/reports && 
+                    chmod -R 775 /zap/reports && 
+                    curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reports && 
+                    curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reportTemplates
           volumeMounts:
             - name: zap-reports
               mountPath: /zap/reports
