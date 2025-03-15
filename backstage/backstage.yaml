@@ -86,7 +86,7 @@ data:
     backend:
       database:
         client: pg
-        connection: "postgres://backstage:backstage@postgres:5432/backstage"
+        connection: "postgres://backstage:backstage@postgres.devops-tools.svc.cluster.local:5432/backstage"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -107,8 +107,8 @@ spec:
         - name: backstage
           image: ghcr.io/backstage/backstage:latest
           env:
-            - name: APP_CONFIG
-              value: "/app/config/app-config.yaml"
+            - name: APP_CONFIG_backend_database_connection
+              value: "postgres://backstage:backstage@postgres.devops-tools.svc.cluster.local:5432/backstage"
           ports:
             - containerPort: 7007
           volumeMounts:
