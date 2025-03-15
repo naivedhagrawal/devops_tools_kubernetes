@@ -104,11 +104,11 @@ spec:
                     fi;
           volumeMounts:
             - name: zap-reports
-              mountPath: /zap
+              mountPath: /zap/reports
       volumes:
         - name: zap-reports
           hostPath:
-            path: /home/data/zap
+            path: /home/data/zap-reports
             type: DirectoryOrCreate
 ---
 apiVersion: v1
