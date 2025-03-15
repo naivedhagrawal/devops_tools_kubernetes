@@ -157,6 +157,6 @@ spec:
     app: backstage
   ports:
     - protocol: TCP
-      port: 30091
+      nodePort: 30091
       targetPort: 7007
   type: NodePort
