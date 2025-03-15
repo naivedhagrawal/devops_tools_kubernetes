@@ -26,6 +26,18 @@ spec:
     requests:
       storage: 20Gi
 ---
+# Secret for PostgreSQL
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secrets
+  namespace: devops-tools
+type: Opaque
+stringData:
+  POSTGRES_USER: backstage
+  POSTGRES_PASSWORD: backstage
+  POSTGRES_DB: backstage
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -46,11 +58,20 @@ spec:
           image: postgres:15
           env:
             - name: POSTGRES_DB
-              value: backstage
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_DB
             - name: POSTGRES_USER
-              value: backstage
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
-              value: mysecurepassword
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PASSWORD
           ports:
             - containerPort: 5432
           volumeMounts:
@@ -93,7 +114,7 @@ data:
     backend:
       database:
         client: pg
-        connection: "postgres://backstage:mysecurepassword@postgres.devops-tools.svc.cluster.local:5432/backstage"
+        connection: "postgres://backstage:backstage@postgres.devops-tools.svc.cluster.local:5432/backstage"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -115,7 +136,7 @@ spec:
           image: ghcr.io/backstage/backstage:latest
           env:
             - name: APP_CONFIG_backend_database_connection
-              value: "postgres://backstage:mysecurepassword@postgres.devops-tools.svc.cluster.local:5432/backstage"
+              value: "postgres://backstage:backstage@postgres.devops-tools.svc.cluster.local:5432/backstage"
           ports:
             - containerPort: 7007
           volumeMounts:
