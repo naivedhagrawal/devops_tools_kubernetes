@@ -49,6 +49,8 @@ spec:
             - "-addoninstall"
             - "reports"
             - "-addoninstall"
+            - "ajaxSpider"
+            - "-addoninstall"
             - "reportTemplates"
             - "-Xmx8192m"
             - "-config"
