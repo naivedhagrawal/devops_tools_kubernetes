@@ -50,7 +50,7 @@ spec:
             - "reports"
             - "-addoninstall"
             - "reportTemplates"
-            - "-Xmx8192m"
+            - "-Xmx4096m"
             - "-config"
             - "scanner.threadPerHost=5"
             - "-config"
@@ -69,6 +69,13 @@ spec:
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
+          resources:
+            limits:
+              memory: "6Gi"
+              cpu: "2"
+            requests:
+              memory: "2Gi"
+              cpu: "1"
           livenessProbe:
             httpGet:
               path: /JSON/core/view/version/
@@ -88,7 +95,7 @@ spec:
                   - "/bin/sh"
                   - "-c"
                   - >
-                    until curl -s http://selenium-firefox:4444/status | grep -q '"ready": true'; do sleep 5; done &&
+                    until curl -s http://selenium-firefox:4444/status | jq -e '.value.ready == true' > /dev/null; do sleep 5; done &&
                     chown -R 1000:1000 /zap/reports && 
                     chmod -R 775 /zap/reports && 
                     curl -s http://localhost:8090/JSON/autoupdate/action/installAddon/?id=reports && 
