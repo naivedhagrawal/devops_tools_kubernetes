@@ -22,16 +22,12 @@ spec:
             - "sh"
             - "-c"
             - >
-              mkdir -p /zap/reports /zap/addons /zap/themes && 
-              chown -R 1000:1000 /zap/reports /zap/addons /zap/themes && 
-              chmod -R 775 /zap/reports /zap/addons /zap/themes
+              mkdir -p /zap/reports && 
+              chown -R 1000:1000 /zap/reports && 
+              chmod -R 775 /zap/reports
           volumeMounts:
-            - name: zap-reports
-              mountPath: /zap/reports
-            - name: zap-addons
-              mountPath: /zap/addons
-            - name: zap-themes
-              mountPath: /zap/themes
+            - name: zap
+              mountPath: /zap
       containers:
         - name: zap
           image: zaproxy/zap-stable
@@ -109,7 +105,7 @@ spec:
                       echo "Failed to install reportTemplates add-on"; 
                     fi;
           volumeMounts:
-            - name: zap-reports
+            - name: zap
               mountPath: /zap
       volumes:
         - name: zap-reports
