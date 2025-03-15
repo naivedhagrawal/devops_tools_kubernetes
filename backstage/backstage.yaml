@@ -111,6 +111,8 @@ data:
   app-config.yaml: |
     app:
       title: Backstage
+    frontend:
+      baseUrl: http://localhost:7007
     backend:
       database:
         client: pg
