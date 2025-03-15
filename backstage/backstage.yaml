@@ -112,6 +112,12 @@ data:
     app:
       title: Backstage
     backend:
+      baseUrl: http://devops.local:30091
+      listen:
+        port: 7007
+        host: 0.0.0.0
+      csp:
+        connect-src: ["'self'", "http://devops.local:30091"]
       database:
         client: pg
         connection: "postgres://backstage:backstage@postgres.devops-tools.svc.cluster.local:5432/backstage"
