@@ -109,15 +109,20 @@ metadata:
   namespace: devops-tools
 data:
   app-config.yaml: |
-    app:      
-      baseUrl: http://localhost:7007
-    backend:
-      baseUrl: http://localhost:7007
-      listen:
-        port: 7007
-      database:
-        client: pg
-        connection: "postgres://backstage:backstage@postgres.devops-tools.svc.cluster.local:5432/backstage"
+        app:      
+          baseUrl: http://localhost:7007
+        backend:
+          baseUrl: http://localhost:7007
+          listen:
+            port: 7007
+          database:
+            client: pg
+            connection:
+              host: postgres.devops-tools.svc.cluster.local
+              port: 5432
+              user: backstage
+              password: backstage
+              database: backstage
 ---
 apiVersion: apps/v1
 kind: Deployment
