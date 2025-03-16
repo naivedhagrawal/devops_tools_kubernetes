@@ -110,9 +110,9 @@ metadata:
 data:
   app-config.yaml: |
     app:      
-      baseUrl: http://backstage.devops-tools.svc.cluster.local:7007
+      baseUrl: http://localhost
     backend:
-      baseUrl: http://backstage.devops-tools.svc.cluster.local:7007
+      baseUrl: http://localhost
       listen:
         port: 7007
       database:
@@ -161,6 +161,6 @@ spec:
   ports:
     - protocol: TCP
       nodePort: 30091
-      targetPort: 7007
-      port: 7007
+      targetPort: http
+      port: 80
   type: NodePort
