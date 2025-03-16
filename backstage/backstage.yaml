@@ -137,9 +137,6 @@ spec:
       containers:
         - name: backstage
           image: ghcr.io/backstage/backstage:latest
-          env:
-            - name: APP_CONFIG_backend_database_connection
-              value: "postgres://backstage:backstage@postgres.devops-tools.svc.cluster.local:5432/backstage"
           ports:
             - containerPort: 7007
           volumeMounts:
