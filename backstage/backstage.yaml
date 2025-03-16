@@ -25,6 +25,7 @@ spec:
   resources:
     requests:
       storage: 20Gi
+
 ---
 # Secret for PostgreSQL
 apiVersion: v1
@@ -37,7 +38,9 @@ stringData:
   POSTGRES_USER: backstage
   POSTGRES_PASSWORD: backstage
   POSTGRES_DB: backstage
+
 ---
+# PostgreSQL Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -77,18 +80,13 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgres-storage
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              docker-entrypoint.sh postgres &
-              sleep 5
-              psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'backstage'" | grep -q 1 || psql -U postgres -c "CREATE DATABASE backstage WITH OWNER backstage;"
-              wait
       volumes:
         - name: postgres-storage
           persistentVolumeClaim:
             claimName: postgres-pvc
+
 ---
+# PostgreSQL Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -101,7 +99,9 @@ spec:
     - protocol: TCP
       port: 5432
       targetPort: 5432
+
 ---
+# ConfigMap for Backstage
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -109,7 +109,7 @@ metadata:
   namespace: devops-tools
 data:
   app-config.yaml: |
-    app:      
+    app:
       baseUrl: http://localhost:7007
     backend:
       baseUrl: http://localhost:7007
@@ -118,7 +118,9 @@ data:
       database:
         client: pg
         connection: "postgres://backstage:backstage@postgres.devops-tools.svc.cluster.local:5432/backstage"
+
 ---
+# Backstage Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -138,6 +140,14 @@ spec:
         - name: backstage
           image: ghcr.io/backstage/backstage:latest
           env:
+            - name: APP_CONFIG_app_baseUrl
+              value: "http://localhost:7007"
+            - name: APP_CONFIG_backend_baseUrl
+              value: "http://localhost:7007"
+            - name: APP_CONFIG_backend_listen_port
+              value: "7007"
+            - name: APP_CONFIG_backend_database_client
+              value: "pg"
             - name: APP_CONFIG_backend_database_connection
               value: "postgres://backstage:backstage@postgres.devops-tools.svc.cluster.local:5432/backstage"
           ports:
@@ -149,7 +159,9 @@ spec:
         - name: config-volume
           configMap:
             name: backstage-config
+
 ---
+# Backstage Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -160,7 +172,7 @@ spec:
     app: backstage
   ports:
     - protocol: TCP
-      nodePort: 30091
-      targetPort: http
       port: 7007
+      targetPort: 7007
+      nodePort: 30091
   type: NodePort
