@@ -146,7 +146,7 @@ spec:
             - containerPort: 7007
           volumeMounts:
             - name: config-volume
-              mountPath: /app/config
+              mountPath: /app
       volumes:
         - name: config-volume
           configMap:
