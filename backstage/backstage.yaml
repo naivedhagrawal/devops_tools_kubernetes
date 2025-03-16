@@ -112,14 +112,17 @@ data:
   app-config.yaml: |
     app:
       baseUrl: http://localhost:7007
+    organization:
+      name: Spotify
     backend:
       baseUrl: http://localhost:7007
       listen:
         port: 7007
-        host: 0.0.0.0
-      database:
-        client: pg
-        connection: "postgres://backstage:backstage@postgres.devops-tools.svc.cluster.local:5432/backstage"
+    cors:
+      origin: http://localhost:7007
+    database:
+      client: pg
+      connection: "postgres://backstage:backstage@postgres.devops-tools.svc.cluster.local:5432/backstage"
 
 ---
 # Backstage Deployment
@@ -141,21 +144,19 @@ spec:
       containers:
         - name: backstage
           image: ghcr.io/backstage/backstage:latest
-          env:
-            - name: APP_CONFIG_app_baseUrl
-              value: "http://localhost:7007"
-            - name: APP_CONFIG_backend_baseUrl
-              value: "http://localhost:7007"
-            - name: APP_CONFIG_backend_listen_port
-              value: "7007"
-            - name: APP_CONFIG_backend_listen_host
-              value: "0.0.0.0"
-            - name: APP_CONFIG_backend_database_client
-              value: "pg"
-            - name: APP_CONFIG_backend_database_connection
-              value: "postgres://backstage:backstage@postgres.devops-tools.svc.cluster.local:5432/backstage"
           ports:
             - containerPort: 7007
+          envFrom:
+            - secretRef:
+                name: postgres-secrets
+          readinessProbe:
+            httpGet:
+              port: 7007
+              path: /healthcheck
+          livenessProbe:
+            httpGet:
+              port: 7007
+              path: /healthcheck
           volumeMounts:
             - name: config-volume
               mountPath: /app/config
@@ -178,5 +179,5 @@ spec:
     - protocol: TCP
       port: 7007
       targetPort: 7007
-      nodePort: 30091
+      nodePort: 30091  # External port to access Backstage
   type: NodePort
