@@ -145,7 +145,7 @@ spec:
             - name: APP_CONFIG_backend_baseUrl
               value: "http://localhost:7007"
             - name: APP_CONFIG_backend_listen_port
-              value: "7007"
+              value: 7007
             - name: APP_CONFIG_backend_database_client
               value: "pg"
             - name: APP_CONFIG_backend_database_connection
