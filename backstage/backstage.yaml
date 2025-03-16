@@ -110,9 +110,9 @@ metadata:
 data:
   app-config.yaml: |
     app:      
-      baseUrl: http://localhost
+      baseUrl: http://localhost:7007
     backend:
-      baseUrl: http://localhost
+      baseUrl: http://localhost:7007
       listen:
         port: 7007
       database:
