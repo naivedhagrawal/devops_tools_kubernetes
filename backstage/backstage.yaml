@@ -109,10 +109,10 @@ metadata:
   namespace: devops-tools
 data:
   app-config.yaml: |
-    app:
-      baseUrl: http://localhost:7007
+    app:      
+      baseUrl: http://backstage.devops-tools.svc.cluster.local:7007
     backend:
-      baseUrl: http://localhost:7007
+      baseUrl: http://backstage.devops-tools.svc.cluster.local:7007
       listen:
         port: 7007
       database:
