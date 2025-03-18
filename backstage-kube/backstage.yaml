@@ -28,13 +28,13 @@ spec:
 # Secret for PostgreSQL
 apiVersion: v1
 kind: Secret
+type: Opaque  # Moved type here
 metadata:
   name: postgres-secrets
   namespace: devops-tools
   labels:
     app: postgres
     env: dev
-  type: Opaque
 stringData:
   POSTGRES_USER: backstage
   POSTGRES_PASSWORD: backstage
@@ -43,13 +43,13 @@ stringData:
 # Secret for GitHub OAuth
 apiVersion: v1
 kind: Secret
+type: Opaque  # Moved type here
 metadata:
   name: github-secrets
   namespace: devops-tools
   labels:
     app: backstage
     env: dev
-  type: Opaque
 stringData:
   GITHUB_CLIENT_ID: Ov23liTdg4cnjlZHraXG
   GITHUB_CLIENT_SECRET: c9a6462f3825782d07091724cb18a66b136185b8
@@ -276,7 +276,7 @@ spec:
     app: backstage
   ports:
     - protocol: TCP
-      nodePort: 30090
+      nodePort: 30091
       targetPort: 3000
       port: 3000
   type: NodePort
