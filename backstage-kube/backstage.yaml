@@ -217,7 +217,7 @@ spec:
               containerPort: 3000
           volumeMounts:
             - name: config-volume
-              mountPath: /app
+              mountPath: /app/config  # <-- Updated mountPath to prevent overwriting the app
           env:
             - name: GITHUB_CLIENT_ID
               valueFrom:
