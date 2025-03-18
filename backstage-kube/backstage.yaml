@@ -210,6 +210,7 @@ spec:
       containers:
         - name: backstage
           image: naivedh/backstage:latest
+          imagePullPolicy: Always
           ports:
             - name: backend-port
               containerPort: 7007
