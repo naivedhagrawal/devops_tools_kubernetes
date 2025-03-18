@@ -28,7 +28,6 @@ spec:
 # Secret for PostgreSQL
 apiVersion: v1
 kind: Secret
-type: Opaque  # Moved type here
 metadata:
   name: postgres-secrets
   namespace: devops-tools
@@ -43,7 +42,6 @@ stringData:
 # Secret for GitHub OAuth
 apiVersion: v1
 kind: Secret
-type: Opaque  # Moved type here
 metadata:
   name: github-secrets
   namespace: devops-tools
@@ -250,7 +248,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: backstage-backend
+  name: backstage
   namespace: devops-tools
   labels:
     app: backstage
@@ -262,19 +260,6 @@ spec:
       nodePort: 30091
       targetPort: 7007
       port: 7007
-  type: NodePort
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: backstage-frontend
-  namespace: devops-tools
-  labels:
-    app: backstage
-spec:
-  selector:
-    app: backstage
-  ports:
     - protocol: TCP
       nodePort: 30092
       targetPort: 3000
