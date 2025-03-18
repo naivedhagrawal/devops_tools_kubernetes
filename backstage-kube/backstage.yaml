@@ -31,7 +31,10 @@ kind: Secret
 metadata:
   name: postgres-secrets
   namespace: devops-tools
-type: Opaque
+  labels:
+    app: postgres
+    env: dev
+  type: Opaque
 stringData:
   POSTGRES_USER: backstage
   POSTGRES_PASSWORD: backstage
@@ -43,7 +46,10 @@ kind: Secret
 metadata:
   name: github-secrets
   namespace: devops-tools
-type: Opaque
+  labels:
+    app: backstage
+    env: dev
+  type: Opaque
 stringData:
   GITHUB_CLIENT_ID: Ov23liTdg4cnjlZHraXG
   GITHUB_CLIENT_SECRET: c9a6462f3825782d07091724cb18a66b136185b8
@@ -53,6 +59,8 @@ kind: Deployment
 metadata:
   name: postgres
   namespace: devops-tools
+  labels:
+    app: postgres
 spec:
   replicas: 1
   selector:
@@ -97,6 +105,8 @@ kind: Service
 metadata:
   name: postgres
   namespace: devops-tools
+  labels:
+    app: postgres
 spec:
   selector:
     app: postgres
@@ -110,23 +120,46 @@ kind: ConfigMap
 metadata:
   name: backstage-config
   namespace: devops-tools
+  labels:
+    app: backstage
+    env: dev
 data:
   app-config.yaml: |
     app:
-      baseUrl: http://localhost:7007
+      title: AXIS MAXLIFE INSURANCE
+      baseUrl: http://localhost:3000
+    organization:
+      name: AXIS MAXLIFE INSURANCE
     backend:
       baseUrl: http://localhost:7007
       listen:
         port: 7007
         host: 0.0.0.0
+      csp:
+        connect-src: ['self', 'http:', 'https:']
+      cors:
+        origin: http://localhost:3000
+        methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+        credentials: true
       database:
         client: pg
         connection:
           host: postgres.devops-tools.svc.cluster.local
           port: 5432
-          user: backstage
-          password: backstage
-          database: backstage
+          user: ${POSTGRES_USER}
+          password: ${POSTGRES_PASSWORD}
+          database: ${POSTGRES_DB}
+    integrations:
+      github:
+        - host: github.com
+          token: ${GITHUB_TOKEN}
+    proxy: {}
+    techdocs:
+      builder: 'local'
+      generator:
+        runIn: 'local'
+      publisher:
+        type: 'local'
     auth:
       providers:
         github:
@@ -134,12 +167,36 @@ data:
             clientId: ${GITHUB_CLIENT_ID}
             clientSecret: ${GITHUB_CLIENT_SECRET}
             callbackUrl: http://localhost:7007/api/auth/github/handler/frame
+    scaffolder: {}
+    catalog:
+      import:
+        entityFilename: catalog-info.yaml
+        pullRequestBranchName: backstage-integration
+      rules:
+        - allow: [Component, System, API, Resource, Location]
+      locations:
+        - type: file
+          target: ../../examples/entities.yaml
+        - type: file
+          target: ../../examples/template/template.yaml
+          rules:
+            - allow: [Template]
+        - type: file
+          target: ../../examples/org.yaml
+          rules:
+            - allow: [User, Group]
+      useUrlReadersSearch: true
+    permission:
+      enabled: true
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backstage
   namespace: devops-tools
+  labels:
+    app: backstage
+    env: dev
 spec:
   replicas: 1
   selector:
@@ -155,6 +212,7 @@ spec:
           image: naivedh/backstage:latest
           ports:
             - containerPort: 7007
+            - containerPort: 3000
           volumeMounts:
             - name: config-volume
               mountPath: /app
@@ -169,6 +227,21 @@ spec:
                 secretKeyRef:
                   name: github-secrets
                   key: GITHUB_CLIENT_SECRET
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_DB
       volumes:
         - name: config-volume
           configMap:
@@ -177,8 +250,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: backstage
+  name: backstage-backend
   namespace: devops-tools
+  labels:
+    app: backstage
 spec:
   selector:
     app: backstage
@@ -187,4 +262,21 @@ spec:
       nodePort: 30091
       targetPort: 7007
       port: 7007
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backstage-frontend
+  namespace: devops-tools
+  labels:
+    app: backstage
+spec:
+  selector:
+    app: backstage
+  ports:
+    - protocol: TCP
+      nodePort: 30090
+      targetPort: 3000
+      port: 3000
   type: NodePort
