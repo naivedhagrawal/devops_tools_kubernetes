@@ -89,7 +89,8 @@ spec:
                   name: postgres-secrets
                   key: POSTGRES_PASSWORD
           ports:
-            - containerPort: 5432
+            - name: postgres-port
+              containerPort: 5432
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgres-storage
@@ -109,7 +110,8 @@ spec:
   selector:
     app: postgres
   ports:
-    - protocol: TCP
+    - name: postgres-port
+      protocol: TCP
       port: 5432
       targetPort: 5432
 ---
@@ -209,8 +211,10 @@ spec:
         - name: backstage
           image: naivedh/backstage:latest
           ports:
-            - containerPort: 7007
-            - containerPort: 3000
+            - name: backend-port
+              containerPort: 7007
+            - name: frontend-port
+              containerPort: 3000
           volumeMounts:
             - name: config-volume
               mountPath: /app
@@ -256,11 +260,13 @@ spec:
   selector:
     app: backstage
   ports:
-    - protocol: TCP
+    - name: backend-port
+      protocol: TCP
       nodePort: 30091
       targetPort: 7007
       port: 7007
-    - protocol: TCP
+    - name: frontend-port
+      protocol: TCP
       nodePort: 30092
       targetPort: 3000
       port: 3000
