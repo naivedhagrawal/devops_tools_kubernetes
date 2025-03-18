@@ -19,16 +19,16 @@ backend:
   database:
     client: pg
     connection:
-      host: localhost
+      host: postgres.devops-tools.svc.cluster.local  # Match Kubernetes service name
       port: 5432
-      user: backstage
-      password: backstage
-      database: backstage
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+      database: ${POSTGRES_DB}
 
 integrations:
   github:
     - host: github.com
-      token: ${GITHUB_TOKEN}  # Use env var for security
+      token: ${GITHUB_TOKEN}  # Reference GitHub token from Kubernetes secrets
 
 proxy: {}
 
