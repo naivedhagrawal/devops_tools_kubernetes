@@ -11,7 +11,6 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: "/home/data/postgres"
-
 ---
 # Persistent Volume Claim for PostgreSQL
 apiVersion: v1
@@ -37,6 +36,17 @@ stringData:
   POSTGRES_USER: backstage
   POSTGRES_PASSWORD: backstage
   POSTGRES_DB: backstage
+---
+# Secret for GitHub OAuth
+apiVersion: v1
+kind: Secret
+metadata:
+  name: github-secrets
+  namespace: devops-tools
+type: Opaque
+stringData:
+  GITHUB_CLIENT_ID: Ov23liTdg4cnjlZHraXG
+  GITHUB_CLIENT_SECRET: c9a6462f3825782d07091724cb18a66b136185b8
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -77,13 +87,6 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgres-storage
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              docker-entrypoint.sh postgres &
-              sleep 5
-              psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'backstage'" | grep -q 1 || psql -U postgres -c "CREATE DATABASE backstage WITH OWNER backstage;"
-              wait
       volumes:
         - name: postgres-storage
           persistentVolumeClaim:
@@ -109,20 +112,28 @@ metadata:
   namespace: devops-tools
 data:
   app-config.yaml: |
-        app:      
-          baseUrl: http://localhost:7007
-        backend:
-          baseUrl: http://localhost:7007
-          listen:
-            port: 7007
-          database:
-            client: pg
-            connection:
-              host: postgres.devops-tools.svc.cluster.local
-              port: 5432
-              user: backstage
-              password: backstage
-              database: backstage
+    app:
+      baseUrl: http://localhost:7007
+    backend:
+      baseUrl: http://localhost:7007
+      listen:
+        port: 7007
+        host: 0.0.0.0
+      database:
+        client: pg
+        connection:
+          host: postgres.devops-tools.svc.cluster.local
+          port: 5432
+          user: backstage
+          password: backstage
+          database: backstage
+    auth:
+      providers:
+        github:
+          development:
+            clientId: ${GITHUB_CLIENT_ID}
+            clientSecret: ${GITHUB_CLIENT_SECRET}
+            callbackUrl: http://localhost:7007/api/auth/github/handler/frame
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -141,12 +152,23 @@ spec:
     spec:
       containers:
         - name: backstage
-          image: ghcr.io/backstage/backstage:latest
+          image: naivedh/backstage:latest
           ports:
             - containerPort: 7007
           volumeMounts:
             - name: config-volume
               mountPath: /app
+          env:
+            - name: GITHUB_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: github-secrets
+                  key: GITHUB_CLIENT_ID
+            - name: GITHUB_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: github-secrets
+                  key: GITHUB_CLIENT_SECRET
       volumes:
         - name: config-volume
           configMap:
@@ -163,6 +185,6 @@ spec:
   ports:
     - protocol: TCP
       nodePort: 30091
-      targetPort: http
+      targetPort: 7007
       port: 7007
   type: NodePort
