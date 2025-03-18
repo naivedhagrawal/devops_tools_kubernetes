@@ -253,6 +253,8 @@ spec:
               value: "backstage"
             - name: POSTGRES_DB
               value: "backstage"
+            - name: POSTGRES_PORT
+              value: "5432"
       volumes:
         - name: config-volume
           configMap:
@@ -269,14 +271,14 @@ spec:
   selector:
     app: backstage
   ports:
-    - name: backend-port
+    - name: backend
       protocol: TCP
-      nodePort: 30091
-      targetPort: 7007
       port: 7007
-    - name: frontend-port
+      targetPort: 7007
+      nodePort: 32091   # Exposed backend on NodePort
+    - name: frontend
       protocol: TCP
-      nodePort: 30092
-      targetPort: 3000
       port: 3000
+      targetPort: 3000
+      nodePort: 32092   # Exposed frontend on NodePort
   type: NodePort
