@@ -158,9 +158,9 @@ data:
         connection:
           host: postgres.devops-tools.svc.cluster.local
           port: 5432
-          user: ${POSTGRES_USER}
-          password: ${POSTGRES_PASSWORD}
-          database: ${POSTGRES_DB}
+          user: backstage
+          password: backstage
+          database: backstage
     integrations:
       github:
         - host: github.com
@@ -248,20 +248,11 @@ spec:
                   name: github-secrets
                   key: GITHUB_TOKEN
             - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secrets
-                  key: POSTGRES_USER
+              value: "backstage"
             - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secrets
-                  key: POSTGRES_PASSWORD
+              value: "backstage"
             - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secrets
-                  key: POSTGRES_DB
+              value: "backstage"
       volumes:
         - name: config-volume
           configMap:
