@@ -158,9 +158,9 @@ data:
         connection:
           host: postgres.devops-tools.svc.cluster.local
           port: 5432
-          user: backstage
-          password: backstage
-          database: backstage
+          user: ${POSTGRES_USER}
+          password: ${POSTGRES_PASSWORD}
+          database: ${POSTGRES_DB}
     integrations:
       github:
         - host: github.com
@@ -231,30 +231,23 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /app/config
-          env:
-            - name: GITHUB_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: github-secrets
-                  key: GITHUB_CLIENT_ID
-            - name: GITHUB_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: github-secrets
-                  key: GITHUB_CLIENT_SECRET
-            - name: GITHUB_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: github-secrets
-                  key: GITHUB_TOKEN
-            - name: POSTGRES_USER
-              value: "backstage"
-            - name: POSTGRES_PASSWORD
-              value: "backstage"
-            - name: POSTGRES_DB
-              value: "backstage"
-            - name: POSTGRES_PORT
-              value: "5432"
+          envFrom:
+            - secretRef:
+                name: github-secrets
+            - secretRef:
+                name: postgres-secrets
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 7007
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 7007
+            initialDelaySeconds: 10
+            periodSeconds: 5
       volumes:
         - name: config-volume
           configMap:
