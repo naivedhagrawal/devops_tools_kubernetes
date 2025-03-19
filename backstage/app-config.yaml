@@ -1,19 +1,19 @@
 app:
   title: Scaffolded Backstage App
-  baseUrl: http://localhost:3000
+  baseUrl: http://192.168.229.130:3000
 
 organization:
   name: My Company
 
 backend:
-  baseUrl: http://localhost:7007
+  baseUrl: http://192.168.229.130:7007
   listen:
     host: 0.0.0.0
     port: 7007
   csp:
     connect-src: ["'self'", 'http:', 'https:']
   cors:
-    origin: http://localhost:3000
+    origin: http://192.168.229.130:3000
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
   database:
