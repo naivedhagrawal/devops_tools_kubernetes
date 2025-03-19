@@ -6,7 +6,7 @@ organization:
   name: My Company
 
 backend:
-  baseUrl: http://192.168.229.130:7007
+  baseUrl: http://localhost:7007
   listen:
     host: 0.0.0.0
     port: 7007
