@@ -221,7 +221,7 @@ spec:
     spec:
       containers:
         - name: backstage
-          image: naivedh/backstage:latest
+          image: ghcr.io/backstage/backstage:latest
           imagePullPolicy: Always
           ports:
             - name: backend-port
@@ -275,10 +275,10 @@ spec:
       protocol: TCP
       port: 7007
       targetPort: 7007
-      nodePort: 32091   # Exposed backend on NodePort
+      nodePort: 32091
     - name: frontend
       protocol: TCP
       port: 3000
       targetPort: 3000
-      nodePort: 32092   # Exposed frontend on NodePort
+      nodePort: 32092
   type: NodePort
