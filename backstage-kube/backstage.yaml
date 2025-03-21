@@ -231,6 +231,8 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /app/config
+            - name: data-volume                    # ✅ Mount PVC here
+              mountPath: /app                 # Path inside container
           envFrom:
             - secretRef:
                 name: github-secrets
@@ -252,6 +254,9 @@ spec:
         - name: config-volume
           configMap:
             name: backstage-config
+        - name: data-volume                      # ✅ Use PVC here
+          persistentVolumeClaim:
+            claimName: backstage-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -275,3 +280,35 @@ spec:
       targetPort: 3000
       nodePort: 32092
   type: NodePort
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: backstage-pv
+  labels:                                # ✅ Add label for PVC binding
+    app: backstage
+spec:
+  storageClassName: hostpath-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/data/backstage"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backstage-pvc
+  labels:
+    app: backstage                      # ✅ Label to match PV
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: hostpath-storage
+  resources:
+    requests:
+      storage: 1Gi
+  selector:                             # ✅ Ensure it binds to the right PV
+    matchLabels:
+      app: backstage
