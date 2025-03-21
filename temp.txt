@@ -1,3 +1,73 @@
-kubectl create secret generic gitlab-runner-secret \
-   --from-literal=runner-registration-token='glrt-t1_6wRky1BVQ5QiSV2xf7wu' \
-   -n devops-tools
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backstage-config
+  namespace: devops-tools
+  labels:
+    app: backstage
+    env: dev
+data:
+  app-config.yaml: |
+    app:
+      title: AXIS MAXLIFE INSURANCE
+      baseUrl: http://localhost:7007
+    organization:
+      name: AXIS MAXLIFE INSURANCE
+    backend:
+      baseUrl: http://localhost:7007
+      listen:
+        port: 7007
+      csp:
+        connect-src: ['self', 'http:', 'https:']
+      cors:
+        origin: http://localhost:7007
+        methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+        credentials: true
+      database:
+        client: pg
+        connection:
+          host: postgres.devops-tools.svc.cluster.local
+          port: 5432
+          user: ${POSTGRES_USER}
+          password: ${POSTGRES_PASSWORD}
+          database: ${POSTGRES_DB}
+    integrations:
+      github:
+        - host: github.com
+          token: ${GITHUB_TOKEN}
+    proxy: {}
+    techdocs:
+      builder: 'local'
+      generator:
+        runIn: 'local'
+      publisher:
+        type: 'local'
+    auth:
+      providers:
+        github:
+          development:
+            clientId: ${GITHUB_CLIENT_ID}
+            clientSecret: ${GITHUB_CLIENT_SECRET}
+            callbackUrl: http://localhost:7007/api/auth/github/handler/frame
+    scaffolder: {}
+    catalog:
+      import:
+        entityFilename: catalog-info.yaml
+        pullRequestBranchName: backstage-integration
+      rules:
+        - allow: [Component, System, API, Resource, Location]
+      locations:
+        - type: file
+          target: ../../examples/entities.yaml
+        - type: file
+          target: ../../examples/template/template.yaml
+          rules:
+            - allow: [Template]
+        - type: file
+          target: ../../examples/org.yaml
+          rules:
+            - allow: [User, Group]
+      useUrlReadersSearch: true
+    permission:
+      enabled: true
