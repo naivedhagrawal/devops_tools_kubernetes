@@ -234,7 +234,7 @@ spec:
             - name: config-volume
               mountPath: /app/config
             - name: data-volume                    # ✅ Mount PVC here
-              mountPath: /app                 # Path inside container
+              mountPath: /app/data              # Path inside container
           envFrom:
             - secretRef:
                 name: github-secrets
