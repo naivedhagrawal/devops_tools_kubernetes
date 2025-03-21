@@ -154,8 +154,6 @@ spec:
           ports:
             - name: backend-port
               containerPort: 7007
-            - name: frontend-port
-              containerPort: 3000
           envFrom:
             - secretRef:
                 name: github-secrets
@@ -189,10 +187,5 @@ spec:
       protocol: TCP
       port: 7007
       targetPort: 7007
-      nodePort: 32098
-    - name: frontend
-      protocol: TCP
-      port: 3000
-      targetPort: 3000
-      nodePort: 32099
+      nodePort: 32082
   type: NodePort
