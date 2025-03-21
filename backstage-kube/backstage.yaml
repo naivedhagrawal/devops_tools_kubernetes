@@ -221,7 +221,7 @@ spec:
     spec:
       containers:
         - name: backstage
-          image: ghcr.io/backstage/backstage:latest
+          image: naivedh/backstage:latest
           imagePullPolicy: Always
           ports:
             - name: backend-port
