@@ -197,6 +197,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false" # Disable HTTPS for now
 spec:
+  ingressClassName: nginx
   rules:
     - host: devops.local
       http:
