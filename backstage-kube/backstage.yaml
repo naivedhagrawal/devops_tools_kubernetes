@@ -202,7 +202,7 @@ spec:
     - host: devops.local
       http:
         paths:
-          - path: /
+          - path: /backstage
             pathType: Prefix
             backend:
               service:
