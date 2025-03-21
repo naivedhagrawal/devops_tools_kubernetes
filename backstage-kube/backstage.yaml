@@ -141,17 +141,17 @@ data:
   app-config.yaml: |
     app:
       title: AXIS MAXLIFE INSURANCE
-      baseUrl: http://172.18.0.3:30099
+      baseUrl: http://localhost:3000
     organization:
       name: AXIS MAXLIFE INSURANCE
     backend:
-      baseUrl: http://172.18.0.3:30098
+      baseUrl: http://localhost:7007
       listen:
         port: 7007
       csp:
         connect-src: ['self', 'http:', 'https:']
       cors:
-        origin: http://172.18.0.3:30099
+        origin: http://localhost:3000
         methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
         credentials: true
       database:
