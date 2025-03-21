@@ -275,12 +275,12 @@ spec:
       protocol: TCP
       port: 7007
       targetPort: 7007
-      nodePort: 32091
+      nodePort: 32098
     - name: frontend
       protocol: TCP
       port: 3000
       targetPort: 3000
-      nodePort: 32092
+      nodePort: 32099
   type: NodePort
 ---
 apiVersion: v1
