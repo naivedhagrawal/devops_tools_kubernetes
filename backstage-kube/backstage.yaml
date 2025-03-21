@@ -206,6 +206,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: backstage
+                name: backstage-nodeport
                 port:
                   number: 7007
