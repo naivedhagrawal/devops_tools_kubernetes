@@ -187,7 +187,7 @@ spec:
       protocol: TCP
       port: 7007
       targetPort: 7007
-  type: ClusterIP
+  type: NodePort
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -206,6 +206,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: backstage-nodeport
+                name: backstage
                 port:
                   number: 7007
