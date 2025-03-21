@@ -35,6 +35,8 @@ metadata:
     app: postgres
     env: dev
 stringData:
+  POSTGRES_HOST: postgres.devops-tools.svc.cluster.local
+  POSTGRES_PORT: "5432"
   POSTGRES_USER: backstage
   POSTGRES_PASSWORD: backstage
   POSTGRES_DB: backstage
