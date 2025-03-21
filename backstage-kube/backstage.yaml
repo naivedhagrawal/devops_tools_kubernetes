@@ -156,9 +156,6 @@ spec:
               containerPort: 7007
             - name: frontend-port
               containerPort: 3000
-          volumeMounts:
-            - name: config-volume
-              mountPath: /app/config
             - name: data-volume                    # ✅ Mount PVC here
               mountPath: /app/data              # Path inside container
           envFrom:
@@ -179,9 +176,6 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 5
       volumes:
-        - name: config-volume
-          configMap:
-            name: backstage-config
         - name: data-volume                      # ✅ Use PVC here
           persistentVolumeClaim:
             claimName: backstage-pvc
