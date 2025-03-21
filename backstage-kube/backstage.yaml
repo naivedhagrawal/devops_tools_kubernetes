@@ -187,5 +187,24 @@ spec:
       protocol: TCP
       port: 7007
       targetPort: 7007
-      nodePort: 30082
-  type: NodePort
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backstage-ingress
+  namespace: devops-tools
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false" # Disable HTTPS for now
+spec:
+  rules:
+    - host: devops.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: backstage
+                port:
+                  number: 7007
