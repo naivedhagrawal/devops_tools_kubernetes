@@ -1,6 +1,6 @@
 app:
   # Should be the same as backend.baseUrl when using the `app-backend` plugin.
-  baseUrl: http://0.0.0.0:7007
+  baseUrl: http://devops.local/backstage
 
 backend:
   # Note that the baseUrl should be the URL that the browser and other clients
