@@ -206,6 +206,16 @@ spec:
       allowedRoutes:
         namespaces:
           from: Same
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: devops.local
+      tls:
+        certificateRefs:
+          - name: backstage-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
 ---
 apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
@@ -225,4 +235,3 @@ spec:
       backendRefs:
         - name: backstage
           port: 7007
-
