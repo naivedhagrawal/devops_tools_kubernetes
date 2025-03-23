@@ -103,7 +103,7 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1 
+      maxUnavailable: 1
       maxSurge: 1
   selector:
     matchLabels:
@@ -156,21 +156,36 @@ kind: Service
 metadata:
   name: jenkins-service
   namespace: devops-tools
-  annotations:
-      prometheus.io/scrape: 'true'
-      prometheus.io/path:   /
-      prometheus.io/port:   '8080'
 spec:
-  selector: 
+  selector:
     app: jenkins
-  type: NodePort 
+  type: ClusterIP # Change the service type to ClusterIP
   ports:
     - name: httpport
-      protocol: TCP
-      nodePort: 30081
-      targetPort: 8080
       port: 8080
+      targetPort: 8080
     - name: jnlpport
-      protocol: TCP
       port: 50000
       targetPort: 50000
+
+---
+#Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jenkins-ingress
+  namespace: devops-tools
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /  # Add this annotation
+spec:
+  rules:
+  - host: devops.local # Updated hostname
+    http:
+      paths:
+      - path: /jenkins # Updated path
+        pathType: Prefix
+        backend:
+          service:
+            name: jenkins-service
+            port:
+              name: httpport
