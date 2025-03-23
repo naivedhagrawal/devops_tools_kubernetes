@@ -137,14 +137,12 @@ spec:
             httpGet:
               path: "/login"
               port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 10
           volumeMounts:
             - name: jenkins-data
               mountPath: /var/jenkins_home
           env:
             - name: JENKINS_OPTS
-              value: "-Dhudson.model.Hudson.rootUrl=http://devops.local/jenkins/ -Dorg.kohsuke.stapler. Stapler.handleRESTful=false" # Added Stapler property
+              value: "-Dhudson.model.Hudson.rootUrl=http://devops.local/jenkins/ -Dorg.kohsuke.stapler.Stapler.handleRESTful=false" # Corrected JENKINS_OPTS
       volumes:
         - name: jenkins-data
           persistentVolumeClaim:
@@ -178,7 +176,7 @@ metadata:
   namespace: devops-tools
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /  # Keep this.
-    nginx.ingress.kubernetes.io/use-forwarded-headers: "true" # Add this
+    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
 spec:
   rules:
   - host: devops.local
