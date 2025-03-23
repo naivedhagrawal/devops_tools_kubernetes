@@ -152,8 +152,10 @@ metadata:
 spec:
   selector:
     app: backstage
+  type: NodePort
   ports:
     - name: backend
       protocol: TCP
       port: 7007
       targetPort: 7007
+      nodePort: 30081
