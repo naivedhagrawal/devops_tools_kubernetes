@@ -1,8 +1,7 @@
 kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha7
+apiVersion: kind.x-k8s.io/v1alpha4 # Corrected apiVersion
 nodes:
 - role: control-plane
-  image: kindest/node:v1.29.0  # Explicit Kubernetes version
   kubeadmConfigPatches:
   - |
     kind: InitConfiguration
@@ -14,13 +13,16 @@ nodes:
     apiServer:
       extraArgs:
         enable-admission-plugins: "NodeRestriction,AlwaysPullImages"
+    networking: # Correct indentation for networking
+      podSubnet: "10.244.0.0/16"
   extraPortMappings:
   - containerPort: 80
     hostPort: 80
+    protocol: TCP
   - containerPort: 443
     hostPort: 443
+    protocol: TCP
 - role: worker
-  image: kindest/node:v1.29.0  # Explicit Kubernetes version
   extraMounts:
   - hostPath: /home/data
     containerPath: /home/data
@@ -30,13 +32,6 @@ nodes:
     nodeRegistration:
       kubeletExtraArgs:
         node-labels: "worker-node=true"
-  # Improves network performance with kube-proxy config
+# Improves network performance with kube-proxy config
 networking:
   kubeProxyMode: "iptables"
-  podSubnet: "10.244.0.0/16"  # Define pod subnet explicitly
-
-
-
-# kind create cluster --config kind-cluster-config.yaml --name kind
-# kubectl apply -f namespace.yaml
-# kubectl config set-context --current --namespace=devops-tools
