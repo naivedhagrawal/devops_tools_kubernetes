@@ -139,11 +139,12 @@ spec:
               port: 8080
             initialDelaySeconds: 60
             periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
           volumeMounts:
             - name: jenkins-data
               mountPath: /var/jenkins_home
+          env:
+            - name: JENKINS_OPTS
+              value: "-Dhudson.model.Hudson.rootUrl=http://devops.local/jenkins/ -Dorg.kohsuke.stapler. Stapler.handleRESTful=false" # Added Stapler property
       volumes:
         - name: jenkins-data
           persistentVolumeClaim:
@@ -159,7 +160,7 @@ metadata:
 spec:
   selector:
     app: jenkins
-  type: ClusterIP # Change the service type to ClusterIP
+  type: ClusterIP
   ports:
     - name: httpport
       port: 8080
@@ -176,13 +177,14 @@ metadata:
   name: jenkins-ingress
   namespace: devops-tools
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /  # Add this annotation
+    nginx.ingress.kubernetes.io/rewrite-target: /  # Keep this.
+    nginx.ingress.kubernetes.io/use-forwarded-headers: "true" # Add this
 spec:
   rules:
-  - host: devops.local # Updated hostname
+  - host: devops.local
     http:
       paths:
-      - path: /jenkins # Updated path
+      - path: /jenkins
         pathType: Prefix
         backend:
           service:
