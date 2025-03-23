@@ -52,5 +52,10 @@
       "prettier --write"
     ]
   },
-  "packageManager": "yarn@4.4.1"
+  "packageManager": "yarn@4.4.1",
+  "dependencies": {
+    "@backstage/plugin-auth-backend": "^0.24.4",
+    "@backstage/plugin-auth-node": "^0.6.1",
+    "@backstage/plugin-catalog-backend": "^1.32.0"
+  }
 }
