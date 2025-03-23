@@ -137,10 +137,6 @@ spec:
             httpGet:
               path: "/login"
               port: 8080
-            initialDelaySeconds: 60  # Increased initial delay
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 5 # Increased failure threshold
           volumeMounts:
             - name: jenkins-data
               mountPath: /var/jenkins_home
