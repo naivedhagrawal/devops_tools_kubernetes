@@ -32,8 +32,10 @@ auth:
   providers:
     guest: {}
     github:
-      clientId: ${GITHUB_CLIENT_ID}
-      clientSecret: ${GITHUB_CLIENT_SECRET}
+      development:
+        clientId: ${GITHUB_CLIENT_ID}
+        clientSecret: ${GITHUB_CLIENT_SECRET}
+        callbackUrl: 'http://localhost:7007/api/auth/github/handler/frame'
       signIn:
           resolvers:
             # Matches the GitHub username with the Backstage user entity name.

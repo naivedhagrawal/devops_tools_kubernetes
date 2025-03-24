@@ -11,10 +11,10 @@ nodes:
       hostPort: 30081 
       protocol: TCP
     - containerPort: 30082
-      hostPort: 30082
+      hostPort: 30082 
       protocol: TCP
     - containerPort: 30083
-      hostPort: 30083
+      hostPort: 30083 #Wiki.js
       protocol: TCP
     - containerPort: 30084
       hostPort: 30084
