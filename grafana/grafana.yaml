@@ -79,20 +79,9 @@ spec:
     - port: 3000
       protocol: TCP
       targetPort: http-grafana
-      nodePort: 31006
+      nodePort: 30084
   selector:
     app: grafana
-  sessionAffinity: None
-
-
-#Volumes
----
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: local-storage-grafana
-provisioner: kubernetes.io/no-provisioner
-volumeBindingMode: WaitForFirstConsumer
 
 #Persistent Volume and Persistent Volume Claim
 ---
@@ -101,27 +90,14 @@ kind: PersistentVolume
 metadata:
   namespace: devops-tools
   name: grafana-pv
-  labels:
-    type: local
 spec:
-  storageClassName: local-storage-grafana
-  claimRef:
-    name: grafana-pvc
-    namespace: devops-tools
+  storageClassName: hostpath-storage
   capacity:
     storage: 10Gi
   accessModes:
-    - ReadWriteMany
-  local:
-    path: /home/data/grafana
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - kind-worker
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/data/grafana"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -129,9 +105,9 @@ metadata:
   namespace: devops-tools
   name: grafana-pvc
 spec:
-  storageClassName: local-storage-grafana
+  storageClassName: hostpath-storage
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi

@@ -17,7 +17,7 @@ nodes:
       hostPort: 30083 #Wiki.js
       protocol: TCP
     - containerPort: 30084
-      hostPort: 30084
+      hostPort: 30084 #Grafana
       protocol: TCP
     - containerPort: 30085
       hostPort: 30085
