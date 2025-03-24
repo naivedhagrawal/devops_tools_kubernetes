@@ -1,18 +1,9 @@
----
-# Storage Class (for Kind)
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: hostpath-storage
-provisioner: kubernetes.io/no-provisioner
-volumeBindingMode: Immediate
-
----
 # Persistent Volume for Wiki.js
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: wiki-pv
+  namespace: devops-tools
 spec:
   storageClassName: hostpath-storage
   capacity:
@@ -28,6 +19,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: wiki-pvc
+  namespace: devops-tools
 spec:
   accessModes:
     - ReadWriteOnce
@@ -62,23 +54,23 @@ spec:
             - name: DB_TYPE
               value: "postgres"
             - name: DB_HOST
-              value: "postgres.devops-tools.svc.cluster.local"
+              value: "postgres-wiki.devops-tools.svc.cluster.local"
             - name: DB_PORT
               value: "5432"
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secrets
+                  name: postgres-secrets-wiki
                   key: POSTGRES_USER
             - name: DB_PASS
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secrets
+                  name: postgres-secrets-wiki
                   key: POSTGRES_PASSWORD
             - name: DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secrets
+                  name: postgres-secrets-wiki
                   key: POSTGRES_DB
           volumeMounts:
             - name: wiki-storage
@@ -104,3 +96,98 @@ spec:
       port: 3000
       targetPort: 3000
       nodePort: 30083
+
+
+      
+---
+# Persistent Volume for PostgreSQL
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv-wiki
+  namespace: devops-tools
+spec:
+  storageClassName: hostpath-storage
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/data/postgres-wiki"
+
+---
+# Persistent Volume Claim for PostgreSQL
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc-wiki
+  namespace: devops-tools
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: hostpath-storage
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+# StatefulSet for PostgreSQL
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-wiki
+  namespace: devops-tools
+spec:
+  serviceName: postgres-wiki
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-wiki
+  template:
+    metadata:
+      labels:
+        app: postgres-wiki
+    spec:
+      containers:
+        - name: postgres-wiki
+          image: postgres:latest
+          envFrom:
+            - secretRef:
+                name: postgres-secrets-wiki
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: data-disk
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: data-disk
+          persistentVolumeClaim:
+            claimName: postgres-pvc-wiki
+
+---
+# Service for PostgreSQL
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-wiki
+  namespace: devops-tools
+spec:
+  type: ClusterIP
+  selector:
+    app: postgres-wiki
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+# Secret for PostgreSQL
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secrets-wiki
+  namespace: devops-tools
+type: Opaque
+stringData:
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_DB: wikijs
