@@ -1,18 +1,26 @@
-import { createRouter } from '@backstage/plugin-catalog-backend';
-import { PluginEnvironment } from '../types';
+import { createBackend } from '@backstage/backend-defaults';
+import { catalogPlugin } from '@backstage/plugin-catalog-backend';
+import { Router } from 'express';
 import { GithubOrgReaderProcessor } from '@backstage/plugin-catalog-backend-module-github';
 
-export default async function createPlugin(env: PluginEnvironment) {
-  const builder = await createRouter(env);
+interface PluginEnvironment {
+  logger: any;
+  config: any;
+  database: any;
+  permissions: any;
+}
 
-  // Add the GitHub Org Reader Processor
-  builder.catalogBuilder.addProcessor(
+export default async function createPlugin(env: PluginEnvironment): Promise<Router> {
+  const backend = createBackend();
+  const catalog = backend.add(catalogPlugin());
+
+  catalog.addProcessor(
     GithubOrgReaderProcessor.fromConfig(env.config, {
       logger: env.logger,
-      schedule: env.scheduler,
-      reader: env.reader,
     })
   );
 
-  return builder;
+  await backend.start();
+  const { router } = await catalog.build();
+  return router;
 }
