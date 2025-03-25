@@ -7,8 +7,7 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { PluginEnvironment } from './types';
-import catalog from './plugins/catalog';
+import catalog from './plugins/catalog.ts';
 
 const backend = createBackend();
 
