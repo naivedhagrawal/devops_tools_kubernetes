@@ -23,7 +23,7 @@ nodes:
       hostPort: 30085 #Prometheus
       protocol: TCP
     - containerPort: 30086
-      hostPort: 30086
+      hostPort: 30086 #Gitlab
       protocol: TCP
     - containerPort: 30087
       hostPort: 30087

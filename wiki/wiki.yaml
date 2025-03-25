@@ -74,7 +74,7 @@ spec:
                   key: POSTGRES_DB
           volumeMounts:
             - name: wiki-storage
-              mountPath: "/wiki"
+              mountPath: /wiki/data
       volumes:
         - name: wiki-storage
           persistentVolumeClaim:

@@ -26,7 +26,7 @@ spec:
               mountPath: /etc/gitlab
           env:
             - name: EXTERNAL_URL
-              value: "http://devops.local:80"
+              value: "http://devops.local:30086"
           readinessProbe:
             httpGet:
               path: /
@@ -60,7 +60,7 @@ spec:
     app: gitlab
   ports:
     - protocol: TCP
-      nodePort: 31000
+      nodePort: 30086
       port: 80
       targetPort: 80
 

@@ -119,7 +119,7 @@ spec:
         runAsUser: 1000
       containers:
         - name: jenkins
-          image: jenkins/jenkins:latest
+          image: jenkins/jenkins:alpine
           imagePullPolicy: Always
           ports:
             - name: httpport
