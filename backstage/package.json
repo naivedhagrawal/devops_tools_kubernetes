@@ -56,6 +56,7 @@
   "dependencies": {
     "@backstage/plugin-auth-backend": "^0.24.4",
     "@backstage/plugin-auth-node": "^0.6.1",
-    "@backstage/plugin-catalog-backend": "^1.32.0"
+    "@backstage/plugin-catalog-backend": "^1.32.0",
+    "@backstage/plugin-catalog-backend-module-github": "^0.7.11"
   }
 }
