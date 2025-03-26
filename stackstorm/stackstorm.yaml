@@ -1,7 +1,7 @@
 apiVersion: v1
-kind: PersistentVolumeClaim
+kind: PersistentVolume
 metadata:
-  name: postgres-pv-stackstrorm
+  name: postgres-pv-stackstorm
   namespace: devops-tools
 spec:
   storageClassName: hostpath-storage
@@ -26,7 +26,7 @@ spec:
       storage: 20Gi
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
+kind: PersistentVolume
 metadata:
   name: rabbitmq-pv-stackstorm
   namespace: devops-tools
@@ -55,22 +55,22 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres-stackstrorm
+  name: postgres-stackstorm
   namespace: devops-tools
   labels:
-    app: postgres-stackstrorm
+    app: postgres-stackstorm
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: postgres-stackstrorm
+      app: postgres-stackstorm
   template:
     metadata:
       labels:
-        app: postgres-stackstrorm
+        app: postgres-stackstorm
     spec:
       containers:
-      - name: postgres
+      - name: postgres-stackstorm
         image: postgres:latest
         ports:
         - containerPort: 5432
@@ -83,26 +83,25 @@ spec:
           value: stackstorm
         volumeMounts:
         - name: postgres-data
-          mountPath: /var/lib/postgres/data
+          mountPath: /var/lib/postgresql/data
       volumes:
       - name: postgres-data
         persistentVolumeClaim:
           claimName: postgres-pvc-stackstorm
-
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-stackstrorm
+  name: postgres-stackstorm
   namespace: devops-tools
   labels:
-    app: postgres-stackstrorm
+    app: postgres-stackstorm
 spec:
   ports:
     - port: 5432
       targetPort: 5432
   selector:
-    app: postgres-stackstrorm
+    app: postgres-stackstorm
   type: ClusterIP
 ---
 apiVersion: apps/v1
@@ -140,7 +139,6 @@ spec:
       - name: rabbitmq-data
         persistentVolumeClaim:
           claimName: rabbitmq-pvc-stackstorm
-
 ---
 apiVersion: v1
 kind: Service
@@ -152,8 +150,10 @@ metadata:
 spec:
   ports:
     - port: 5672
+      name: amqp
       targetPort: 5672
     - port: 15672
+      name: management
       targetPort: 15672
   selector:
     app: rabbitmq-stackstorm
@@ -185,7 +185,7 @@ spec:
         - name: ST2_CONFIG_DB_TYPE
           value: postgres
         - name: ST2_CONFIG_DB_HOST
-          value: postgres-stackstrorm
+          value: postgres-stackstorm
         - name: ST2_CONFIG_DB_PORT
           value: "5432"
         - name: ST2_CONFIG_DB_NAME
@@ -202,7 +202,17 @@ spec:
           value: stackstorm
         - name: ST2_CONFIG_RABBITMQ_PASSWORD
           value: stackstorm
-
+        volumeMounts:
+        - name: auth-volume
+          mountPath: /etc/st2/st2.htpasswd
+          subPath: st2.htpasswd
+      volumes:
+      - name: auth-volume
+        secret:
+          secretName: st2-auth-secret
+          items:
+          - key: st2.htpasswd
+            path: st2.htpasswd
 ---
 apiVersion: v1
 kind: Service
@@ -215,7 +225,7 @@ spec:
   ports:
     - port: 9101
       targetPort: 9101
-      nodePort: 30087
+      nodePort: 30090
   selector:
     app: stackstorm
   type: NodePort
