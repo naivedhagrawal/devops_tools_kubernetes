@@ -26,7 +26,7 @@ nodes:
       hostPort: 30086 #Gitlab
       protocol: TCP
     - containerPort: 30087
-      hostPort: 30087
+      hostPort: 30087 #Stackstorm
       protocol: TCP
     - containerPort: 30088
       hostPort: 30088
