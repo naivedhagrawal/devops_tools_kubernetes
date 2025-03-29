@@ -133,17 +133,12 @@ spec:
               mountPath: /fonts
       containers:
         - name: jenkins
-          image: jenkins/jenkins:latest
+          image: jenkins/jenkins
           imagePullPolicy: Always
           args: ["--httpPort=8080"]
           env:
             - name: JAVA_OPTS
-              value: >-
-                -Dfile.encoding=UTF-8
-                -Dsun.jnu.encoding=UTF-8
-                -Dorg.apache.lucene.store.MMapDirectory.enableMemorySegments=false
-                --enable-native-access=ALL-UNNAMED
-                --add-opens=java.base/java.lang.foreign=ALL-UNNAMED
+              value: "-Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8"
           ports:
             - name: httpport
               containerPort: 8080
