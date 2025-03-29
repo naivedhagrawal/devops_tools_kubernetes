@@ -133,7 +133,7 @@ spec:
               mountPath: /fonts
       containers:
         - name: jenkins
-          image: jenkins/jenkins:lts
+          image: jenkins/jenkins
           args: ["--httpPort=8080"]
           env:
             - name: JAVA_OPTS
