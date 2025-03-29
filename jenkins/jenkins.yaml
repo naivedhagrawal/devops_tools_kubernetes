@@ -133,7 +133,7 @@ spec:
               mountPath: /fonts
       containers:
         - name: jenkins
-          image: jenkins/jenkins
+          image: jenkins/jenkins:latest
           imagePullPolicy: Always
           args: ["--httpPort=8080"]
           env:
