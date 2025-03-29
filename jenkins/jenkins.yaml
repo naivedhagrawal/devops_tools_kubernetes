@@ -120,6 +120,9 @@ spec:
       initContainers:
         - name: install-fonts
           image: alpine:latest
+          securityContext:
+            runAsUser: 0   # Run as root
+            runAsGroup: 0   # Run as root group
           command: ["/bin/sh", "-c"]
           args:
             - |
