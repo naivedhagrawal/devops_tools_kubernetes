@@ -1,4 +1,4 @@
-# kubectl create secret generic gitlab-runner-secret --namespace=devops-tools --from-literal=runner-registration-token=glrt-t1_jY-8-LJGcXUJsN6MvBWg
+# kubectl create secret generic gitlab-runner-secret --namespace=devops-tools --from-literal=runner-registration-token=
 
 ---
 # ServiceAccount for GitLab Runner
