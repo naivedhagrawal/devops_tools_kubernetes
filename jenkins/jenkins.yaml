@@ -134,6 +134,7 @@ spec:
       containers:
         - name: jenkins
           image: jenkins/jenkins
+          imagePullPolicy: Always
           args: ["--httpPort=8080"]
           env:
             - name: JAVA_OPTS
