@@ -117,10 +117,24 @@ spec:
       securityContext:
         fsGroup: 1000
         runAsUser: 1000
+      initContainers:
+        - name: install-fonts
+          image: alpine:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apk add --no-cache font-noto font-noto-cjk font-noto-emoji
+              cp -r /usr/share/fonts /fonts
+          volumeMounts:
+            - name: font-cache
+              mountPath: /fonts
       containers:
         - name: jenkins
-          image: jenkins/jenkins:alpine
-          imagePullPolicy: Always
+          image: jenkins/jenkins:lts
+          args: ["--httpPort=8080"]
+          env:
+            - name: JAVA_OPTS
+              value: "-Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8"
           ports:
             - name: httpport
               containerPort: 8080
@@ -144,10 +158,14 @@ spec:
           volumeMounts:
             - name: jenkins-data
               mountPath: /var/jenkins_home
+            - name: font-cache
+              mountPath: /usr/share/fonts
       volumes:
         - name: jenkins-data
           persistentVolumeClaim:
             claimName: jenkins-pv-claim
+        - name: font-cache
+          emptyDir: {}
 
 #Service
 ---
